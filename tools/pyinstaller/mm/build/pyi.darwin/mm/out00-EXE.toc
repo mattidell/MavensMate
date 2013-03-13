@@ -1,0 +1,10 @@
+('/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/mm/build/pyi.darwin/mm/mm',
+ True,
+ False,
+ None,
+ None,
+ [],
+ None,
+ True,
+ 0,
+ 1363211759)

@@ -1,0 +1,12 @@
+('/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/mmserver/build/pyi.darwin/mmserver/out00-PKG.pkg',
+ {'BINARY': 1,
+  'DATA': 1,
+  'EXECUTABLE': 1,
+  'EXTENSION': 1,
+  'PYMODULE': 1,
+  'PYSOURCE': 1},
+ [('out00-PYZ.pyz', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/mmserver/build/pyi.darwin/mmserver/out00-PYZ.pyz', 'PYZ'), ('_struct', '/Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_struct.so', 'EXTENSION'), ('iu', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/PyInstaller/loader/iu.pyc', 'PYMODULE'), ('struct', '/Users/josephferraro/Development/joey2/lib/python2.7/struct.pyc', 'PYMODULE'), ('archive', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/PyInstaller/loader/archive.pyc', 'PYMODULE'), ('_pyi_bootstrap', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/support/_pyi_bootstrap.py', 'PYSOURCE'), ('carchive', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/PyInstaller/loader/carchive.py', 'PYSOURCE'), ('mmserver', '/Users/josephferraro/Development/Python/mavensmate/mmserver/mmserver.py', 'PYSOURCE'), ('_pyi_egg_install.py', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/support/_pyi_egg_install.py', 'PYSOURCE'), ('pyi_rth_encodings', '/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/support/rthooks/pyi_rth_encodings.py', 'PYSOURCE')],
+ 1,
+ None,
+ True,
+ 0)

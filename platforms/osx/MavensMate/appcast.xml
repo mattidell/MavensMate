@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>MavensMate Changelog</title>
+      <link>http://joe-ferraro.com/mavensmate/appcast.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 0.1 beta (Initial release)</title>
+						<description><![CDATA[
+                <h2>Initial Release</h2>
+                <p>MavensMate.app is meant to run in the background and respond to requests from clients for operations like creating new projects, compiling metadata, or running unit tests.</p>
+                <p>Currently, the only text editor with a MavensMate plugin is Sublime Text. To download the MavensMate plugin for Sublime Text, <a href="https://github.com/joeferraro/MavensMate-SublimeText">click here</a></p>
+            ]]>
+            </description>
+            <pubDate>Sun, 10 March 2013 19:20:11 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.1" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC0CFQCrQZ410uZfG02kTBtfRDz0F1QIYQIUNXKoElLfU761vg8zwVuyvkgdn6s=" />
+         </item>
+   </channel>
+</rss>
