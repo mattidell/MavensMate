@@ -19,6 +19,12 @@ In order to provide context to your operation, simply pipe json to mm via STDIN.
 $ echo "{ "project_name" : "myproject" }"; mm -o compile_project
 ```
 
+### Command Line Arguments
+
+```
+-o : operation being requested (see full list of operations below)
+-c : plugin client making the request ("Sublime Text" [default], "TextMate", "Notepad++", etc.)
+```
 
 ### Supported Operations
 
