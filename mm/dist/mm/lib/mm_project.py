@@ -641,10 +641,13 @@ class MavensMateProject(object):
         return mm_util.parse_xml_from_file(self.location+"/src/package.xml")
 
     def get_is_metadata_indexed(self):
-        if os.path.exists(self.location+"/config/.org_metadata"):
-            json_data = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
-            return True
-        else:
+        try:
+            if os.path.exists(self.location+"/config/.org_metadata"):
+                json_data = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+                return True
+            else:
+                return False
+        except:
             return False
 
     def get_org_metadata(self):
