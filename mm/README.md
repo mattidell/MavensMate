@@ -1,26 +1,225 @@
-#MavensMate v2.0
+mm
+==========
 
-##Background
+mm is an executable that powers MavensMate IDEs. You can use mm to perform every important task relative to developing on the Force.com platform. For example, to compile a project:
 
-###Version 0.x
-The first version of MavensMate was a TextMate 1.5+ plugin, written mostly in Ruby, that enabled the creation of Salesforce.com-connected projects and the manipulation & deployment of certain elements of metadata.
+```
+$ mm -o compile_project
+```
 
-###Version 1.x (current)
-The delayed release of TextMate 2.0 along with the momentum of Sublime Text became the impetus for re-focusing development efforts away from TextMate. The Sublime Text plugin represents a major leap forward from a UX perspective and is currently in regular use by many developers (4,000+ downloads).
+You can also use mm to provide a default UI for tasks like creating a new projec, editing a project, running unit tests & anonymous apex, & deploying metadata to servers. Just use the --ui flag:
 
-###Version 2.x
-MavensMate v2.0 represents a fundamental shift in the way the tool is delivered & utilized. The grand vision is to deliver a cross-platform executable that is called directly by client "plugins" (e.g. a native Notepad++ plugin that executes commands like "compile file" "delete file" "deploy package", etc). The good news is that the first plugin is essentially already written (MavensMate-Sublime Text).
+```
+$ mm -o new_project --ui
+```
 
-##Testing
-We'll use the out of box testing framework for Python: http://docs.python.org/2/library/unittest.html
+In order to provide context to your operation, simply pipe json to mm via STDIN. For example:
 
-###Salesforce.com credentials to use for testing
-username: mm@force.com
-password: force
+```
+$ echo "{ "project_name" : "myproject" }"; mm -o compile_project
+```
 
-##Some Notes
-- We need to explore how to effectively deliver our application
-  * Do we need a mavensmate process to be running at all times?
-  * If not, what is the performance impact of calling mavensmate from the terminal?
-- Is a local HTTP server the most effective way to deliver communication between MavensMate UIs (new/edit project, deploy to server, etc)?
-- We're using pyinstaller to build a platform independent binary (more to come)
+
+### Supported Operations
+
+#### new_project
+
+```
+{
+	"project_name" 	: "myproject",
+	"username" 		: "username@foo.com",
+	"password" 		: "foo123"
+	"package" 		: [
+		"ApexClass" 	: "*",
+		"ApexComponent" : ["MyComponent1", "MyComponent2"]
+	]
+}		
+```
+
+#### edit_project
+
+> Modifies the contents of the project
+
+```
+{
+	"project_name" 	: "myproject",
+	"package" 		: [
+		"ApexClass" 	: "*",
+		"ApexComponent" : ["MyComponent1", "MyComponent2"]
+	]
+}		
+```
+
+#### compile_project
+
+> Sends the entire project for compilation to the server
+
+```
+{
+	"project_name" 	: "myproject"
+}		
+```
+
+#### clean_project
+
+> Reverts a project to server state based on package.xml
+
+```
+{
+	"project_name" 	: "myproject"
+}		
+```
+
+#### new_metadata
+
+> Creates a new ApexClass, ApexPage, ApexComponent, ApexTrigger
+
+```
+{
+	"project_name" 	: "myproject",
+	"metadata_type"	: "ApexClass",
+	"api_name" 		: "MyCoolClass"
+}		
+```
+
+#### refresh
+
+> Refreshes one or more files from the server
+
+```
+{
+	"project_name"	: "myproject",
+	"files" 		: ["/path/to/file/1", "/path/to/file/2"]
+}		
+```
+
+#### compile
+
+> Compiles one or more files from the server
+
+```
+{
+	"project_name"	: "myproject",
+	"files" 		: ["/path/to/file/1", "/path/to/file/2"]
+}		
+```
+
+#### delete
+
+> Deletes one or more files from the server
+
+```
+{
+	"project_name"	: "myproject",
+	"files" 		: ["/path/to/file/1", "/path/to/file/2"]
+}		
+```
+
+#### get_active_session
+
+> Retrieves an active session
+
+```
+{
+	"username"		: "username@domain.com",
+	"password" 		: "password123",
+	"org_type" 		: "Developer"
+}		
+```
+
+#### execute_apex
+
+```
+{
+     "project_name"    : "my project name"
+     "log_level"       : "DEBUG",
+     "log_category"    : "APEX_CODE",
+     "body"            : "String foo = 'bar';",
+}
+```
+
+#### update_credentials
+
+```
+{
+	"project_name"	: "myproject",
+	"username"		: "username@domain.com",
+	"password" 		: "password123",
+	"org_type" 		: "Developer"
+}		
+```
+
+#### unit_test
+
+```
+{
+    "classes" : [
+        "UnitTestClass1", "UnitTestClass2"
+    ],
+    "run_all_tests" : false
+}
+```
+
+#### deploy_to_server (or deploy)
+
+```
+{
+    "check_only"            : true,
+    "rollback_on_error"     : true,
+    "destinations"          : [
+        {
+            "username"              : "username@domain.com",
+            "org_type"              : "developer"
+        }
+    ],
+    "package"               : {
+        "ApexClass" : "*"
+    }
+}
+```
+
+#### list_metadata
+
+```
+{
+    "sid"             : "",
+    "metadata_type"   : "ApexClass",
+    "murl"            : ""
+}
+```
+
+#### index_metadata
+
+```
+{
+	"project_name"	: "myproject"
+}		
+```
+
+#### list_connections
+
+```
+{
+	"project_name"	: "myproject"
+}		
+```
+
+#### new_connection
+
+```
+{
+	"project_name"	: "myproject",
+	"username" 		: "username@domain.com",
+	"password" 		: "foo123",
+	"org_type" 		: "developer"
+}		
+```
+
+#### delete_connection
+
+```
+{
+	"project_name"	: "myproject",
+	"id" 			: "connection_id"
+}		
+```
