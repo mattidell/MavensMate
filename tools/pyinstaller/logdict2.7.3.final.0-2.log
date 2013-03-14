@@ -467,13 +467,17 @@ nt: None -> None
   DEL nt
 nt: None -> None
   DEL nt
-__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/PyInstaller/loader/iu.py imports=[('sys', 0, 0, -1), ('imp', 0, 0, -1), ('marshal', 0, 0, -1), ('zipimport', 0, 0, -1), ('__builtin__', 1, 0, -1), ('posix', 1, 1, -1), ('posix.stat', 1, 1, -1), ('posix.getcwd', 1, 1, -1), ('posix.environ', 1, 1, -1), ('posix.listdir', 1, 1, -1), ('nt', 1, 1, -1), ('nt.stat', 1, 1, -1), ('nt.getcwd', 1, 1, -1), ('nt.environ', 1, 1, -1), ('nt.listdir', 1, 1, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mmserver/mmserver.py imports=[('argparse', 0, 0, -1), ('lib.server.server', 0, 0, -1), ('lib.server.daemon', 0, 0, -1), ('lib.server.daemon.Daemon', 0, 0, -1), ('lib.config', 0, 0, -1), ('threading', 0, 0, -1)] binaries=[] datas=[]>
+__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/PyInstaller/loader/iu.py imports=[('sys', 0, 0, -1), ('imp', 0, 0, -1), ('marshal', 0, 0, -1), ('zipimport', 0, 0, -1), ('__builtin__', 1, 0, -1), ('posix', 1, 1, -1), ('posix.stat', 1, 1, -1), ('posix.getcwd', 1, 1, -1), ('posix.environ', 1, 1, -1), ('posix.listdir', 1, 1, -1), ('nt', 1, 1, -1), ('nt.stat', 1, 1, -1), ('nt.getcwd', 1, 1, -1), ('nt.environ', 1, 1, -1), ('nt.listdir', 1, 1, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mm/mm.py imports=[('os.path', 0, 0, -1), ('sys', 0, 0, -1), ('argparse', 0, 0, -1), ('traceback', 0, 0, -1), ('json', 0, 0, -1), ('lib.config', 0, 0, -1), ('lib.mm_util', 0, 0, -1), ('time', 0, 0, -1), ('urllib', 0, 0, -1), ('suds.client', 0, 0, -1), ('suds.client.Client', 0, 0, -1), ('lib.mm_connection', 0, 0, -1), ('lib.mm_connection.MavensMatePluginConnection', 0, 0, -1), ('lib.mm_client', 0, 0, -1), ('lib.mm_client.MavensMateClient', 0, 0, -1)] binaries=[] datas=[]>
 argparse: None -> <PyModule 'argparse' /Users/josephferraro/Development/joey2/lib/python2.7/argparse.pyc imports=[('collections', 0, 0, -1), ('copy', 0, 0, -1), ('os', 0, 0, -1), ('re', 0, 0, -1), ('sys', 0, 0, -1), ('textwrap', 0, 0, -1), ('gettext', 0, 0, -1), ('gettext.gettext', 0, 0, -1), ('warnings', 1, 1, -1), ('warnings', 1, 0, -1), ('warnings', 1, 0, -1)] binaries=[] datas=[]>
-lib: None -> <PkgModule 'lib' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/__init__.pyc imports=[] binaries=[] datas=[]>
-lib.server: None -> <PkgModule 'lib.server' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/__init__.pyc imports=[] binaries=[] datas=[]>
-lib.server.server: None -> <PyModule 'lib.server.server' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/server.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('BaseHTTPServer', 0, 0, -1), ('handler', 0, 0, -1), ('config', 0, 0, -1), ('lib.config', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.daemon: None -> <PyModule 'lib.server.daemon' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/daemon.pyc imports=[('atexit', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('signal', 0, 0, -1)] binaries=[] datas=[]>
-lib.config: None -> <PyModule 'lib.config' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/config.pyc imports=[('logging', 0, 0, -1), ('os.path', 0, 0, -1), ('sys', 0, 0, -1)] binaries=[] datas=[]>
+json: None -> <PkgModule 'json' /Users/josephferraro/Development/joey2/lib/python2.7/json/__init__.pyc imports=[('decoder', 0, 0, 1), ('decoder.JSONDecoder', 0, 0, 1), ('encoder', 0, 0, 1), ('encoder.JSONEncoder', 0, 0, 1)] binaries=[] datas=[]>
+lib: None -> <PkgModule 'lib' /Users/josephferraro/Development/Python/mavensmate/mm/lib/__init__.pyc imports=[] binaries=[] datas=[]>
+lib.config: None -> <PyModule 'lib.config' /Users/josephferraro/Development/Python/mavensmate/mm/lib/config.pyc imports=[('logging', 0, 0, -1), ('os.path', 0, 0, -1), ('sys', 0, 0, -1)] binaries=[] datas=[]>
+lib.mm_util: None -> <PyModule 'lib.mm_util' /Users/josephferraro/Development/Python/mavensmate/mm/lib/mm_util.pyc imports=[('keyring', 0, 0, -1), ('os', 0, 0, -1), ('yaml', 0, 0, -1), ('json', 0, 0, -1), ('re', 0, 0, -1), ('config', 0, 0, -1), ('shutil', 0, 0, -1), ('tempfile', 0, 0, -1), ('string', 0, 0, -1), ('random', 0, 0, -1), ('base64', 0, 0, -1), ('zipfile', 0, 0, -1), ('time', 0, 0, -1), ('threading', 0, 0, -1), ('sys', 0, 0, -1), ('re', 0, 0, -1), ('xmltodict', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.Environment', 0, 0, -1), ('jinja2.FileSystemLoader', 0, 0, -1)] binaries=[] datas=[]>
+urllib: None -> <PyModule 'urllib' /Users/josephferraro/Development/joey2/lib/python2.7/urllib.pyc imports=[('string', 0, 0, -1), ('socket', 0, 0, -1), ('os', 0, 0, -1), ('time', 0, 0, -1), ('sys', 0, 0, -1), ('base64', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urljoin', 0, 0, -1), ('nturl2path', 0, 1, -1), ('nturl2path.url2pathname', 0, 1, -1), ('nturl2path.pathname2url', 0, 1, -1), ('rourl2path', 0, 1, -1), ('rourl2path.url2pathname', 0, 1, -1), ('rourl2path.pathname2url', 0, 1, -1), ('ssl', 0, 0, -1), ('_scproxy', 0, 1, -1), ('_scproxy._get_proxy_settings', 0, 1, -1), ('_scproxy._get_proxies', 0, 1, -1), ('warnings', 1, 0, -1), ('warnings.warnpy3k', 1, 0, -1), ('tempfile', 1, 1, -1), ('httplib', 1, 0, -1), ('httplib', 1, 0, -1), ('mimetypes', 1, 0, -1), ('mimetools', 1, 0, -1), ('email.utils', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('mimetypes', 1, 0, -1), ('mimetools', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('ftplib', 1, 1, -1), ('mimetools', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('re', 1, 0, -1), ('re', 1, 0, -1), ('getpass', 1, 0, -1), ('ftplib', 1, 1, -1), ('mimetools', 1, 1, -1), ('cStringIO', 1, 1, -1), ('cStringIO.StringIO', 1, 1, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('ftplib', 1, 0, -1), ('ftplib', 1, 0, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 0, -1), ('socket', 1, 0, -1), ('fnmatch', 1, 0, -1), ('fnmatch.fnmatch', 1, 0, -1), ('_winreg', 1, 0, -1), ('re', 1, 1, -1), ('_winreg', 1, 0, -1), ('re', 1, 0, -1)] binaries=[] datas=[]>
+suds: None -> <PkgModule 'suds' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/__init__.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('client', 0, 0, -1)] binaries=[] datas=[]>
+suds.client: None -> <PyModule 'suds.client' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/client.pyc imports=[('suds', 0, 0, -1), ('suds.metrics', 0, 0, -1), ('cookielib', 0, 0, -1), ('cookielib.CookieJar', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.reader', 0, 0, -1), ('suds.reader.DefinitionsReader', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.TransportError', 0, 0, -1), ('suds.transport.Request', 0, 0, -1), ('suds.transport.https', 0, 0, -1), ('suds.transport.https.HttpAuthenticated', 0, 0, -1), ('suds.servicedefinition', 0, 0, -1), ('suds.servicedefinition.ServiceDefinition', 0, 0, -1), ('suds', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('sudsobject', 0, 0, -1), ('sudsobject.Factory', 0, 0, -1), ('sudsobject', 0, 0, -1), ('sudsobject.Object', 0, 0, -1), ('suds.resolver', 0, 0, -1), ('suds.resolver.PathResolver', 0, 0, -1), ('suds.builder', 0, 0, -1), ('suds.builder.Builder', 0, 0, -1), ('suds.wsdl', 0, 0, -1), ('suds.wsdl.Definitions', 0, 0, -1), ('suds.cache', 0, 0, -1), ('suds.cache.ObjectCache', 0, 0, -1), ('suds.sax.document', 0, 0, -1), ('suds.sax.document.Document', 0, 0, -1), ('suds.sax.parser', 0, 0, -1), ('suds.sax.parser.Parser', 0, 0, -1), ('suds.options', 0, 0, -1), ('suds.options.Options', 0, 0, -1), ('suds.properties', 0, 0, -1), ('suds.properties.Unskin', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urlparse', 0, 0, -1), ('copy', 0, 0, -1), ('copy.deepcopy', 0, 0, -1), ('suds.plugin', 0, 0, -1), ('suds.plugin.PluginContainer', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+lib.mm_connection: None -> <PyModule 'lib.mm_connection' /Users/josephferraro/Development/Python/mavensmate/mm/lib/mm_connection.pyc imports=[('os', 0, 0, -1), ('json', 0, 0, -1), ('mm_util', 0, 0, -1), ('sys', 0, 0, -1), ('enum', 0, 0, -1), ('enum.enum', 0, 0, -1), ('mm_project', 0, 0, -1), ('mm_project.MavensMateProject', 0, 0, -1)] binaries=[] datas=[]>
+lib.mm_client: None -> <PyModule 'lib.mm_client' /Users/josephferraro/Development/Python/mavensmate/mm/lib/mm_client.pyc imports=[('datetime', 0, 0, -1), ('re', 0, 0, -1), ('string', 0, 0, -1), ('sys', 0, 0, -1), ('unittest', 0, 0, -1), ('traceback', 0, 0, -1), ('json', 0, 0, -1), ('os', 0, 0, -1), ('yaml', 0, 0, -1), ('mm_util', 0, 0, -1), ('shutil', 0, 0, -1), ('config', 0, 0, -1), ('xmltodict', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('sforce.base', 0, 0, -1), ('sforce.base.SforceBaseClient', 0, 0, -1), ('suds', 0, 0, -1), ('suds.WebFault', 0, 0, -1), ('sforce.partner', 0, 0, -1), ('sforce.partner.SforcePartnerClient', 0, 0, -1), ('sforce.metadata', 0, 0, -1), ('sforce.metadata.SforceMetadataClient', 0, 0, -1), ('sforce.apex', 0, 0, -1), ('sforce.apex.SforceApexClient', 0, 0, -1)] binaries=[] datas=[]>
 _emx_link: None -> None
   DEL _emx_link
 _emx_link: None -> None
@@ -524,52 +528,6 @@ org: None -> None
   DEL org
 org: None -> None
   DEL org
-lib.server.sys: None -> None
-lib.server.os: None -> None
-lib.server.BaseHTTPServer: None -> None
-BaseHTTPServer: None -> <PyModule 'BaseHTTPServer' /Users/josephferraro/Development/joey2/lib/python2.7/BaseHTTPServer.pyc imports=[('sys', 0, 0, -1), ('time', 0, 0, -1), ('socket', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.filterwarnings', 0, 0, -1), ('warnings.catch_warnings', 0, 0, -1), ('mimetools', 0, 0, -1), ('SocketServer', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.handler: None -> <PyModule 'lib.server.handler' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/handler.pyc imports=[('BaseHTTPServer', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.config: None -> <PyModule 'lib.server.config' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/config.pyc imports=[('urlparse', 0, 0, -1), ('sys', 0, 0, -1), ('util', 0, 0, -1), ('json', 0, 0, -1), ('cgi', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('util', 0, 0, -1), ('util.BackgroundWorker', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urlparse', 0, 0, -1), ('urlparse.parse_qs', 0, 0, -1), ('lib.config', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.lib: None -> None
-socket: None -> <PyModule 'socket' /Users/josephferraro/Development/joey2/lib/python2.7/socket.pyc imports=[('_socket', 0, 0, -1), ('_socket', 0, 0, -1), ('_socket.*', 0, 0, -1), ('functools', 0, 0, -1), ('functools.partial', 0, 0, -1), ('types', 0, 0, -1), ('types.MethodType', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl', 0, 1, -1), ('_ssl.SSLError', 0, 1, -1), ('_ssl', 0, 1, -1), ('_ssl.RAND_add', 0, 1, -1), ('_ssl.RAND_egd', 0, 1, -1), ('_ssl.RAND_status', 0, 1, -1), ('_ssl.SSL_ERROR_ZERO_RETURN', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_READ', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_WRITE', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_X509_LOOKUP', 0, 1, -1), ('_ssl.SSL_ERROR_SYSCALL', 0, 1, -1), ('_ssl.SSL_ERROR_SSL', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_CONNECT', 0, 1, -1), ('_ssl.SSL_ERROR_EOF', 0, 1, -1), ('_ssl.SSL_ERROR_INVALID_ERROR_CODE', 0, 1, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('errno', 0, 0, -1), ('ssl', 1, 0, -1)] binaries=[] datas=[]>
-mimetools: None -> <PyModule 'mimetools' /Users/josephferraro/Development/joey2/lib/python2.7/mimetools.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('tempfile', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.filterwarnings', 0, 0, -1), ('warnings.catch_warnings', 0, 0, -1), ('rfc822', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.warnpy3k', 0, 0, -1), ('thread', 0, 0, -1), ('dummy_thread', 0, 1, -1), ('time', 1, 0, -1), ('socket', 1, 1, -1), ('base64', 1, 1, -1), ('quopri', 1, 1, -1), ('uu', 1, 1, -1), ('base64', 1, 1, -1), ('quopri', 1, 1, -1), ('uu', 1, 1, -1)] binaries=[] datas=[]>
-SocketServer: None -> <PyModule 'SocketServer' /Users/josephferraro/Development/joey2/lib/python2.7/SocketServer.pyc imports=[('socket', 0, 0, -1), ('select', 0, 0, -1), ('sys', 0, 0, -1), ('os', 0, 0, -1), ('threading', 0, 0, -1), ('dummy_threading', 0, 1, -1), ('traceback', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1)] binaries=[] datas=[]>
-_socket: None -> <ExtensionModule '_socket' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_socket.so imports=[] binaries=[] datas=[]>
-_ssl: None -> <ExtensionModule '_ssl' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_ssl.so imports=[] binaries=[] datas=[]>
-ssl: None -> <PyModule 'ssl' /Users/josephferraro/Development/joey2/lib/python2.7/ssl.pyc imports=[('textwrap', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.OPENSSL_VERSION_NUMBER', 0, 0, -1), ('_ssl.OPENSSL_VERSION_INFO', 0, 0, -1), ('_ssl.OPENSSL_VERSION', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.SSLError', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.CERT_NONE', 0, 0, -1), ('_ssl.CERT_OPTIONAL', 0, 0, -1), ('_ssl.CERT_REQUIRED', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.RAND_status', 0, 0, -1), ('_ssl.RAND_egd', 0, 0, -1), ('_ssl.RAND_add', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.SSL_ERROR_ZERO_RETURN', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_READ', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_WRITE', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_X509_LOOKUP', 0, 0, -1), ('_ssl.SSL_ERROR_SYSCALL', 0, 0, -1), ('_ssl.SSL_ERROR_SSL', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_CONNECT', 0, 0, -1), ('_ssl.SSL_ERROR_EOF', 0, 0, -1), ('_ssl.SSL_ERROR_INVALID_ERROR_CODE', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.PROTOCOL_SSLv3', 0, 0, -1), ('_ssl.PROTOCOL_SSLv23', 0, 0, -1), ('_ssl.PROTOCOL_TLSv1', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.PROTOCOL_SSLv2', 0, 0, -1), ('socket', 0, 0, -1), ('socket.socket', 0, 0, -1), ('socket._fileobject', 0, 0, -1), ('socket._delegate_methods', 0, 0, -1), ('socket.error', 0, 0, -1), ('socket', 0, 0, -1), ('socket.getnameinfo', 0, 0, -1), ('base64', 0, 0, -1), ('errno', 0, 0, -1), ('time', 1, 0, -1)] binaries=[] datas=[]>
-rfc822: None -> <PyModule 'rfc822' /Users/josephferraro/Development/joey2/lib/python2.7/rfc822.pyc imports=[('time', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.warnpy3k', 0, 0, -1), ('sys', 0, 1, -1), ('os', 0, 1, -1)] binaries=[] datas=[]>
-uu: None -> <PyModule 'uu' /Users/josephferraro/Development/joey2/lib/python2.7/uu.pyc imports=[('binascii', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('optparse', 1, 0, -1)] binaries=[] datas=[]>
-dummy_threading: None -> <PyModule 'dummy_threading' /Users/josephferraro/Development/joey2/lib/python2.7/dummy_threading.pyc imports=[('sys', 0, 0, -1), ('sys.modules', 0, 0, -1), ('dummy_thread', 0, 0, -1), ('threading', 0, 0, -1), ('_dummy_threading', 0, 0, -1), ('_dummy_threading.*', 0, 0, -1), ('_dummy_threading', 0, 0, -1), ('_dummy_threading.__all__', 0, 0, -1)] binaries=[] datas=[]>
-_dummy_threading: None -> None
-  DEL _dummy_threading
-_dummy_threading: None -> None
-  DEL _dummy_threading
-_dummy_threading: None -> None
-  DEL _dummy_threading
-_dummy_threading: None -> None
-  DEL _dummy_threading
-lib.server.urlparse: None -> None
-urlparse: None -> <PyModule 'urlparse' /Users/josephferraro/Development/joey2/lib/python2.7/urlparse.pyc imports=[('collections', 0, 0, -1), ('collections.namedtuple', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.util: None -> <PyModule 'lib.server.util' /Users/josephferraro/Development/Python/mavensmate/mmserver/lib/server/util.pyc imports=[('os', 0, 0, -1), ('random', 0, 0, -1), ('string', 0, 0, -1), ('tempfile', 0, 0, -1), ('json', 0, 0, -1), ('shutil', 0, 0, -1), ('threading', 0, 0, -1), ('subprocess', 0, 0, -1), ('lib.config', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.Environment', 0, 0, -1), ('jinja2.FileSystemLoader', 0, 0, -1)] binaries=[] datas=[]>
-lib.server.json: None -> None
-json: None -> <PkgModule 'json' /Users/josephferraro/Development/joey2/lib/python2.7/json/__init__.pyc imports=[('decoder', 0, 0, 1), ('decoder.JSONDecoder', 0, 0, 1), ('encoder', 0, 0, 1), ('encoder.JSONEncoder', 0, 0, 1)] binaries=[] datas=[]>
-lib.server.cgi: None -> None
-cgi: None -> <PyModule 'cgi' /Users/josephferraro/Development/joey2/lib/python2.7/cgi.pyc imports=[('operator', 0, 0, -1), ('operator.attrgetter', 0, 0, -1), ('sys', 0, 0, -1), ('os', 0, 0, -1), ('urllib', 0, 0, -1), ('UserDict', 0, 0, -1), ('urlparse', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.filterwarnings', 0, 0, -1), ('warnings.catch_warnings', 0, 0, -1), ('warnings.warn', 0, 0, -1), ('mimetools', 0, 0, -1), ('rfc822', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('tempfile', 1, 0, -1), ('traceback', 1, 0, -1), ('re', 1, 0, -1)] binaries=[] datas=[]>
-lib.server.multiprocessing: None -> None
-multiprocessing: None -> <PkgModule 'multiprocessing' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/__init__.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('multiprocessing.process', 0, 0, -1), ('multiprocessing.process.Process', 0, 0, -1), ('multiprocessing.process.current_process', 0, 0, -1), ('multiprocessing.process.active_children', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.SUBDEBUG', 0, 0, -1), ('multiprocessing.util.SUBWARNING', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing.managers', 1, 0, -1), ('multiprocessing.managers.SyncManager', 1, 0, -1), ('multiprocessing.connection', 1, 0, -1), ('multiprocessing.connection.Pipe', 1, 0, -1), ('multiprocessing.forking', 1, 1, -1), ('multiprocessing.forking.freeze_support', 1, 1, -1), ('multiprocessing.util', 1, 0, -1), ('multiprocessing.util.get_logger', 1, 0, -1), ('multiprocessing.util', 1, 0, -1), ('multiprocessing.util.log_to_stderr', 1, 0, -1), ('multiprocessing', 1, 0, -1), ('multiprocessing.reduction', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.Lock', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.RLock', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.Condition', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.Semaphore', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.BoundedSemaphore', 1, 0, -1), ('multiprocessing.synchronize', 1, 0, -1), ('multiprocessing.synchronize.Event', 1, 0, -1), ('multiprocessing.queues', 1, 0, -1), ('multiprocessing.queues.Queue', 1, 0, -1), ('multiprocessing.queues', 1, 0, -1), ('multiprocessing.queues.JoinableQueue', 1, 0, -1), ('multiprocessing.pool', 1, 0, -1), ('multiprocessing.pool.Pool', 1, 0, -1), ('multiprocessing.sharedctypes', 1, 0, -1), ('multiprocessing.sharedctypes.RawValue', 1, 0, -1), ('multiprocessing.sharedctypes', 1, 0, -1), ('multiprocessing.sharedctypes.RawArray', 1, 0, -1), ('multiprocessing.sharedctypes', 1, 0, -1), ('multiprocessing.sharedctypes.Value', 1, 0, -1), ('multiprocessing.sharedctypes', 1, 0, -1), ('multiprocessing.sharedctypes.Array', 1, 0, -1), ('multiprocessing.forking', 1, 0, -1), ('multiprocessing.forking.set_executable', 1, 0, -1)] binaries=[] datas=[]>
-lib.server.random: None -> None
-lib.server.string: None -> None
-lib.server.tempfile: None -> None
-lib.server.shutil: None -> None
-shutil: None -> <PyModule 'shutil' /Users/josephferraro/Development/joey2/lib/python2.7/shutil.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('stat', 0, 0, -1), ('os.path', 0, 0, -1), ('os.path.abspath', 0, 0, -1), ('fnmatch', 0, 0, -1), ('collections', 0, 0, -1), ('errno', 0, 0, -1), ('pwd', 0, 0, -1), ('pwd.getpwnam', 0, 0, -1), ('grp', 0, 0, -1), ('grp.getgrnam', 0, 0, -1), ('tarfile', 1, 0, -1), ('distutils.errors', 1, 0, -1), ('distutils.errors.DistutilsExecError', 1, 0, -1), ('distutils.spawn', 1, 0, -1), ('distutils.spawn.spawn', 1, 0, -1), ('zipfile', 1, 0, -1)] binaries=[] datas=[]>
-lib.server.threading: None -> None
-lib.server.subprocess: None -> None
-lib.server.jinja2: None -> None
-jinja2: None -> <PkgModule 'jinja2' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/__init__.pyc imports=[('jinja2.environment', 0, 0, -1), ('jinja2.environment.Environment', 0, 0, -1), ('jinja2.environment.Template', 0, 0, -1), ('jinja2.loaders', 0, 0, -1), ('jinja2.loaders.BaseLoader', 0, 0, -1), ('jinja2.loaders.FileSystemLoader', 0, 0, -1), ('jinja2.loaders.PackageLoader', 0, 0, -1), ('jinja2.loaders.DictLoader', 0, 0, -1), ('jinja2.loaders.FunctionLoader', 0, 0, -1), ('jinja2.loaders.PrefixLoader', 0, 0, -1), ('jinja2.loaders.ChoiceLoader', 0, 0, -1), ('jinja2.loaders.ModuleLoader', 0, 0, -1), ('jinja2.bccache', 0, 0, -1), ('jinja2.bccache.BytecodeCache', 0, 0, -1), ('jinja2.bccache.FileSystemBytecodeCache', 0, 0, -1), ('jinja2.bccache.MemcachedBytecodeCache', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.runtime.DebugUndefined', 0, 0, -1), ('jinja2.runtime.StrictUndefined', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateError', 0, 0, -1), ('jinja2.exceptions.UndefinedError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.exceptions.TemplatesNotFound', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.filters', 0, 0, -1), ('jinja2.filters.environmentfilter', 0, 0, -1), ('jinja2.filters.contextfilter', 0, 0, -1), ('jinja2.filters.evalcontextfilter', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.clear_caches', 0, 0, -1), ('jinja2.utils.environmentfunction', 0, 0, -1), ('jinja2.utils.evalcontextfunction', 0, 0, -1), ('jinja2.utils.contextfunction', 0, 0, -1), ('jinja2.utils.is_undefined', 0, 0, -1)] binaries=[] datas=[]>
-jinja2.Environment: None -> None
-  DEL jinja2.Environment
-jinja2.FileSystemLoader: None -> None
-  DEL jinja2.FileSystemLoader
 json.decoder: None -> <PyModule 'json.decoder' /Users/josephferraro/Development/joey2/lib/python2.7/json/decoder.pyc imports=[('re', 0, 0, -1), ('sys', 0, 0, -1), ('struct', 0, 0, -1), ('json', 0, 0, -1), ('json.scanner', 0, 0, -1), ('_json', 0, 0, -1), ('_json.scanstring', 0, 0, -1)] binaries=[] datas=[]>
 json.encoder: None -> <PyModule 'json.encoder' /Users/josephferraro/Development/joey2/lib/python2.7/json/encoder.pyc imports=[('re', 0, 0, -1), ('_json', 0, 0, -1), ('_json.encode_basestring_ascii', 0, 0, -1), ('_json', 0, 0, -1), ('_json.make_encoder', 0, 0, -1)] binaries=[] datas=[]>
 json.re: None -> None
@@ -579,162 +537,131 @@ json.json: None -> None
 json.scanner: None -> <PyModule 'json.scanner' /Users/josephferraro/Development/joey2/lib/python2.7/json/scanner.pyc imports=[('re', 0, 0, -1), ('_json', 0, 0, -1), ('_json.make_scanner', 0, 0, -1)] binaries=[] datas=[]>
 json._json: None -> None
 _json: None -> <ExtensionModule '_json' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_json.so imports=[] binaries=[] datas=[]>
-grp: None -> <ExtensionModule 'grp' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/grp.so imports=[] binaries=[] datas=[]>
-tarfile: None -> <PyModule 'tarfile' /Users/josephferraro/Development/joey2/lib/python2.7/tarfile.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('shutil', 0, 0, -1), ('stat', 0, 0, -1), ('errno', 0, 0, -1), ('time', 0, 0, -1), ('struct', 0, 0, -1), ('copy', 0, 0, -1), ('re', 0, 0, -1), ('operator', 0, 0, -1), ('grp', 0, 0, -1), ('pwd', 0, 0, -1), ('zlib', 1, 1, -1), ('bz2', 1, 1, -1), ('bz2', 1, 0, -1), ('warnings', 1, 0, -1), ('gzip', 1, 0, -1), ('bz2', 1, 0, -1), ('warnings', 1, 1, -1), ('warnings', 1, 0, -1), ('warnings.warnpy3k', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('calendar', 1, 0, -1)] binaries=[] datas=[]>
-distutils: None -> <PkgModule 'distutils' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/__init__.pyc imports=[] binaries=[] datas=[('include/python2.7/pyconfig.h', '/Users/josephferraro/Development/joey2/include/python2.7/pyconfig.h', 'DATA'), ('lib/python2.7/config/Makefile', '/Users/josephferraro/Development/joey2/lib/python2.7/config/Makefile', 'DATA')]>
-distutils.errors: None -> <PyModule 'distutils.errors' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/errors.pyc imports=[] binaries=[] datas=[]>
-distutils.spawn: None -> <PyModule 'distutils.spawn' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/spawn.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('distutils.errors', 0, 0, -1), ('distutils.errors.DistutilsPlatformError', 0, 0, -1), ('distutils.errors.DistutilsExecError', 0, 0, -1), ('distutils', 0, 0, -1), ('distutils.log', 0, 0, -1), ('distutils', 0, 1, -1), ('distutils.sysconfig', 0, 1, -1), ('errno', 1, 1, -1)] binaries=[] datas=[]>
-zipfile: None -> <PyModule 'zipfile' /Users/josephferraro/Development/joey2/lib/python2.7/zipfile.pyc imports=[('struct', 0, 0, -1), ('os', 0, 0, -1), ('time', 0, 0, -1), ('sys', 0, 0, -1), ('shutil', 0, 0, -1), ('binascii', 0, 0, -1), ('cStringIO', 0, 0, -1), ('stat', 0, 0, -1), ('io', 0, 0, -1), ('re', 0, 0, -1), ('zlib', 0, 0, -1), ('py_compile', 1, 1, -1), ('textwrap', 1, 0, -1)] binaries=[] datas=[]>
-gzip: None -> <PyModule 'gzip' /Users/josephferraro/Development/joey2/lib/python2.7/gzip.pyc imports=[('struct', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('os', 0, 0, -1), ('zlib', 0, 0, -1), ('io', 0, 0, -1), ('__builtin__', 0, 0, -1), ('warnings', 1, 0, -1), ('errno', 1, 1, -1), ('errno', 1, 1, -1)] binaries=[] datas=[]>
-io: None -> <PyModule 'io' /Users/josephferraro/Development/joey2/lib/python2.7/io.pyc imports=[('_io', 0, 0, -1), ('abc', 0, 0, -1), ('_io', 0, 0, -1), ('_io.DEFAULT_BUFFER_SIZE', 0, 0, -1), ('_io.BlockingIOError', 0, 0, -1), ('_io.UnsupportedOperation', 0, 0, -1), ('_io.open', 0, 0, -1), ('_io.FileIO', 0, 0, -1), ('_io.BytesIO', 0, 0, -1), ('_io.StringIO', 0, 0, -1), ('_io.BufferedReader', 0, 0, -1), ('_io.BufferedWriter', 0, 0, -1), ('_io.BufferedRWPair', 0, 0, -1), ('_io.BufferedRandom', 0, 0, -1), ('_io.IncrementalNewlineDecoder', 0, 0, -1), ('_io.TextIOWrapper', 0, 0, -1)] binaries=[] datas=[]>
-_io: None -> <ExtensionModule '_io' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_io.so imports=[] binaries=[] datas=[]>
-distutils.sys: None -> None
-distutils.os: None -> None
-distutils.distutils: None -> None
-distutils.log: None -> <PyModule 'distutils.log' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/log.pyc imports=[('sys', 0, 0, -1)] binaries=[] datas=[]>
-distutils.sysconfig: None -> <PyModule 'distutils.sysconfig' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/sysconfig.pyc imports=[('os', 0, 0, -1), ('re', 0, 0, -1), ('string', 0, 0, -1), ('sys', 0, 0, -1), ('distutils.errors', 0, 0, -1), ('distutils.errors.DistutilsPlatformError', 0, 0, -1), ('distutils', 1, 1, -1), ('distutils.log', 1, 1, -1), ('subprocess', 1, 1, -1), ('subprocess.Popen', 1, 1, -1), ('subprocess.PIPE', 1, 1, -1), ('distutils.text_file', 1, 0, -1), ('distutils.text_file.TextFile', 1, 0, -1)] binaries=[] datas=[]>
-distutils.errno: None -> None
-distutils.re: None -> None
-distutils.string: None -> None
-distutils.subprocess: None -> None
-distutils.text_file: None -> <PyModule 'distutils.text_file' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/text_file.pyc imports=[('sys', 0, 0, -1)] binaries=[] datas=[]>
-py_compile: None -> <PyModule 'py_compile' /Users/josephferraro/Development/joey2/lib/python2.7/py_compile.pyc imports=[('__builtin__', 0, 0, -1), ('imp', 0, 0, -1), ('marshal', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('traceback', 0, 0, -1)] binaries=[] datas=[]>
 lib.logging: None -> None
 lib.os: None -> None
 lib.sys: None -> None
-jinja2.jinja2: None -> None
-jinja2.environment: None -> <PyModule 'jinja2.environment' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/environment.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.defaults', 0, 0, -1), ('jinja2.defaults.*', 0, 0, -1), ('jinja2.lexer', 0, 0, -1), ('jinja2.lexer.get_lexer', 0, 0, -1), ('jinja2.lexer.TokenStream', 0, 0, -1), ('jinja2.parser', 0, 0, -1), ('jinja2.parser.Parser', 0, 0, -1), ('jinja2.optimizer', 0, 0, -1), ('jinja2.optimizer.optimize', 0, 0, -1), ('jinja2.compiler', 0, 0, -1), ('jinja2.compiler.generate', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.runtime.new_context', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.exceptions.TemplatesNotFound', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.import_string', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.consume', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('jinja2.utils._encode_filename', 0, 0, -1), ('jinja2.loaders', 1, 0, -1), ('jinja2.loaders.ModuleLoader', 1, 0, -1), ('imp', 1, 1, -1), ('marshal', 1, 1, -1), ('zipfile', 1, 1, -1), ('zipfile.ZipFile', 1, 1, -1), ('zipfile.ZipInfo', 1, 1, -1), ('zipfile.ZIP_DEFLATED', 1, 1, -1), ('zipfile.ZIP_STORED', 1, 1, -1), ('jinja2.debug', 1, 1, -1), ('jinja2.debug.make_traceback', 1, 1, -1)] binaries=[] datas=[]>
-jinja2.loaders: None -> <PyModule 'jinja2.loaders' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/loaders.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('weakref', 0, 0, -1), ('types', 0, 0, -1), ('types.ModuleType', 0, 0, -1), ('os', 0, 0, -1), ('os.path', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.sha1', 0, 0, -1), ('sha', 0, 1, -1), ('sha.new', 0, 1, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.open_if_exists', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('pkg_resources', 1, 0, -1), ('pkg_resources.DefaultProvider', 1, 0, -1), ('pkg_resources.ResourceManager', 1, 0, -1), ('pkg_resources.get_provider', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.bccache: None -> <PyModule 'jinja2.bccache' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/bccache.pyc imports=[('os', 0, 0, -1), ('os.path', 0, 0, -1), ('os.listdir', 0, 0, -1), ('sys', 0, 0, -1), ('marshal', 0, 0, -1), ('tempfile', 0, 0, -1), ('cPickle', 0, 0, -1), ('fnmatch', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.sha1', 0, 0, -1), ('sha', 0, 1, -1), ('sha.new', 0, 1, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.open_if_exists', 0, 0, -1), ('io', 0, 1, -1), ('io.BytesIO', 0, 1, -1), ('cStringIO', 0, 1, -1), ('cStringIO.StringIO', 0, 1, -1), ('os', 1, 0, -1), ('os.remove', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.runtime: None -> <PyModule 'jinja2.runtime' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/runtime.pyc imports=[('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes.EvalContext', 0, 0, -1), ('jinja2.nodes._context_function_types', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.partial', 0, 0, -1), ('jinja2.utils.soft_unicode', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.utils.object_type_repr', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.UndefinedError', 0, 0, -1), ('jinja2.exceptions.TemplateRuntimeError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('collections', 0, 0, -1), ('collections.Mapping', 0, 0, -1)] binaries=[] datas=[]>
-jinja2.exceptions: None -> <PyModule 'jinja2.exceptions' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/exceptions.pyc imports=[] binaries=[] datas=[]>
-jinja2.filters: None -> <PyModule 'jinja2.filters' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/filters.pyc imports=[('re', 0, 0, -1), ('math', 0, 0, -1), ('random', 0, 0, -1), ('random.choice', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('itertools.groupby', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.pformat', 0, 0, -1), ('jinja2.utils.urlize', 0, 0, -1), ('jinja2.utils.soft_unicode', 0, 0, -1), ('jinja2.utils.unicode_urlencode', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.FilterArgumentError', 0, 0, -1), ('textwrap', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.utils: None -> <PyModule 'jinja2.utils' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/utils.pyc imports=[('re', 0, 0, -1), ('sys', 0, 0, -1), ('errno', 0, 0, -1), ('urllib.parse', 0, 0, -1), ('urllib.parse.quote_from_bytes', 0, 0, -1), ('urllib', 0, 1, -1), ('urllib.quote', 0, 1, -1), ('thread', 0, 0, -1), ('thread.allocate_lock', 0, 0, -1), ('dummy_thread', 0, 1, -1), ('dummy_thread.allocate_lock', 0, 1, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('keyword', 0, 0, -1), ('keyword.iskeyword', 0, 0, -1), ('collections', 0, 0, -1), ('collections.MutableMapping', 0, 0, -1), ('markupsafe', 0, 0, -1), ('markupsafe.Markup', 0, 0, -1), ('markupsafe.escape', 0, 0, -1), ('markupsafe.soft_unicode', 0, 0, -1), ('jinja2._markupsafe', 0, 1, -1), ('jinja2._markupsafe.Markup', 0, 1, -1), ('jinja2._markupsafe.escape', 0, 1, -1), ('jinja2._markupsafe.soft_unicode', 0, 1, -1), ('functools', 0, 0, -1), ('functools.partial', 0, 0, -1), ('jinja2.runtime', 1, 0, -1), ('jinja2.runtime.Undefined', 1, 0, -1), ('jinja2.environment', 1, 0, -1), ('jinja2.environment._spontaneous_environments', 1, 0, -1), ('jinja2.lexer', 1, 0, -1), ('jinja2.lexer._lexer_cache', 1, 0, -1), ('pretty', 1, 0, -1), ('pretty.pretty', 1, 0, -1), ('pprint', 1, 1, -1), ('pprint.pformat', 1, 1, -1), ('jinja2.constants', 1, 0, -1), ('jinja2.constants.LOREM_IPSUM_WORDS', 1, 0, -1), ('random', 1, 0, -1), ('random.choice', 1, 0, -1), ('random.randrange', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.os: None -> None
-jinja2.sys: None -> None
-jinja2.nodes: None -> <PyModule 'jinja2.nodes' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/nodes.pyc imports=[('operator', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('itertools.izip', 0, 0, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.MethodType', 0, 0, -1), ('jinja2.utils.FunctionType', 0, 0, -1), ('compiler', 1, 0, -1), ('compiler.has_safe_repr', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.defaults: None -> <PyModule 'jinja2.defaults' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/defaults.pyc imports=[('jinja2.utils', 0, 0, -1), ('jinja2.utils.generate_lorem_ipsum', 0, 0, -1), ('jinja2.utils.Cycler', 0, 0, -1), ('jinja2.utils.Joiner', 0, 0, -1), ('jinja2.filters', 0, 0, -1), ('jinja2.filters.FILTERS', 0, 0, -1), ('jinja2.tests', 0, 0, -1), ('jinja2.tests.TESTS', 0, 0, -1)] binaries=[] datas=[]>
-jinja2.lexer: None -> <PyModule 'jinja2.lexer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/lexer.pyc imports=[('re', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2', 0, 1, -1), ('jinja2._stringdefs', 0, 1, -1)] binaries=[] datas=[]>
-jinja2.parser: None -> <PyModule 'jinja2.parser' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/parser.pyc imports=[('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.lexer', 0, 0, -1), ('jinja2.lexer.describe_token', 0, 0, -1), ('jinja2.lexer.describe_token_expr', 0, 0, -1)] binaries=[] datas=[]>
-jinja2.optimizer: None -> <PyModule 'jinja2.optimizer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/optimizer.pyc imports=[('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.visitor', 0, 0, -1), ('jinja2.visitor.NodeTransformer', 0, 0, -1)] binaries=[] datas=[]>
-jinja2.compiler: None -> <PyModule 'jinja2.compiler' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/compiler.pyc imports=[('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('copy', 0, 0, -1), ('copy.deepcopy', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes.EvalContext', 0, 0, -1), ('jinja2.visitor', 0, 0, -1), ('jinja2.visitor.NodeVisitor', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.is_python_keyword', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.runtime', 1, 0, -1), ('jinja2.runtime.__all__', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.imp: None -> None
-jinja2.marshal: None -> None
-jinja2.zipfile: None -> None
-jinja2.debug: None -> <PyModule 'jinja2.debug' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/debug.pyc imports=[('sys', 0, 0, -1), ('traceback', 0, 0, -1), ('types', 0, 0, -1), ('types.TracebackType', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.CodeType', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.internal_code', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('__pypy__', 0, 0, -1), ('__pypy__.tproxy', 0, 0, -1), ('jinja2._debugsupport', 0, 1, -1), ('jinja2._debugsupport.tb_set_next', 0, 1, -1), ('jinja2.debugrenderer', 1, 0, -1), ('jinja2.debugrenderer.render_traceback', 1, 0, -1), ('ctypes', 1, 0, -1), ('types', 1, 0, -1), ('types.TracebackType', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.operator: None -> None
-jinja2.itertools: None -> None
-jinja2.collections: None -> None
-jinja2.re: None -> None
-jinja2.errno: None -> None
-jinja2.urllib: None -> None
-urllib: None -> <PyModule 'urllib' /Users/josephferraro/Development/joey2/lib/python2.7/urllib.pyc imports=[('string', 0, 0, -1), ('socket', 0, 0, -1), ('os', 0, 0, -1), ('time', 0, 0, -1), ('sys', 0, 0, -1), ('base64', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urljoin', 0, 0, -1), ('nturl2path', 0, 1, -1), ('nturl2path.url2pathname', 0, 1, -1), ('nturl2path.pathname2url', 0, 1, -1), ('rourl2path', 0, 1, -1), ('rourl2path.url2pathname', 0, 1, -1), ('rourl2path.pathname2url', 0, 1, -1), ('ssl', 0, 0, -1), ('_scproxy', 0, 1, -1), ('_scproxy._get_proxy_settings', 0, 1, -1), ('_scproxy._get_proxies', 0, 1, -1), ('warnings', 1, 0, -1), ('warnings.warnpy3k', 1, 0, -1), ('tempfile', 1, 1, -1), ('httplib', 1, 0, -1), ('httplib', 1, 0, -1), ('mimetypes', 1, 0, -1), ('mimetools', 1, 0, -1), ('email.utils', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('mimetypes', 1, 0, -1), ('mimetools', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('ftplib', 1, 1, -1), ('mimetools', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('re', 1, 0, -1), ('re', 1, 0, -1), ('getpass', 1, 0, -1), ('ftplib', 1, 1, -1), ('mimetools', 1, 1, -1), ('cStringIO', 1, 1, -1), ('cStringIO.StringIO', 1, 1, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('ftplib', 1, 0, -1), ('ftplib', 1, 0, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 1, -1), ('re', 1, 0, -1), ('socket', 1, 0, -1), ('fnmatch', 1, 0, -1), ('fnmatch.fnmatch', 1, 0, -1), ('_winreg', 1, 0, -1), ('re', 1, 1, -1), ('_winreg', 1, 0, -1), ('re', 1, 0, -1)] binaries=[] datas=[]>
-jinja2.thread: None -> None
-jinja2.dummy_thread: None -> None
-jinja2.keyword: None -> None
-jinja2.markupsafe: None -> None
-markupsafe: None -> None
-  DEL markupsafe
-markupsafe: None -> None
-  DEL markupsafe
-markupsafe: None -> None
-  DEL markupsafe
-markupsafe: None -> None
-  DEL markupsafe
-jinja2._markupsafe: None -> <PkgModule 'jinja2._markupsafe' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/_markupsafe/__init__.pyc imports=[('re', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('jinja2._markupsafe._speedups', 0, 0, -1), ('jinja2._markupsafe._speedups.escape', 0, 0, -1), ('jinja2._markupsafe._speedups.escape_silent', 0, 0, -1), ('jinja2._markupsafe._speedups.soft_unicode', 0, 0, -1), ('jinja2._markupsafe._native', 0, 1, -1), ('jinja2._markupsafe._native.escape', 0, 1, -1), ('jinja2._markupsafe._native.escape_silent', 0, 1, -1), ('jinja2._markupsafe._native.soft_unicode', 0, 1, -1), ('jinja2._markupsafe._constants', 1, 0, -1), ('jinja2._markupsafe._constants.HTML_ENTITIES', 1, 0, -1)] binaries=[] datas=[]>
-jinja2._markupsafe.Markup: None -> None
-  DEL jinja2._markupsafe.Markup
-jinja2._markupsafe.escape: None -> None
-  DEL jinja2._markupsafe.escape
-jinja2._markupsafe.soft_unicode: None -> None
-  DEL jinja2._markupsafe.soft_unicode
-jinja2.functools: None -> None
-jinja2.pretty: None -> None
-pretty: None -> None
-  DEL pretty
-pretty: None -> None
-  DEL pretty
-jinja2.pprint: None -> None
-jinja2.constants: None -> <PyModule 'jinja2.constants' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/constants.pyc imports=[] binaries=[] datas=[]>
-jinja2.random: None -> None
-nturl2path: None -> <PyModule 'nturl2path' /Users/josephferraro/Development/joey2/lib/python2.7/nturl2path.pyc imports=[('string', 1, 0, -1), ('urllib', 1, 0, -1), ('urllib', 1, 0, -1)] binaries=[] datas=[]>
-rourl2path: None -> None
-  DEL rourl2path
-rourl2path: None -> None
-  DEL rourl2path
-rourl2path: None -> None
-  DEL rourl2path
-_scproxy: None -> <ExtensionModule '_scproxy' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_scproxy.so imports=[] binaries=[] datas=[]>
-httplib: None -> <PyModule 'httplib' /Users/josephferraro/Development/joey2/lib/python2.7/httplib.pyc imports=[('array', 0, 0, -1), ('array.array', 0, 0, -1), ('os', 0, 0, -1), ('socket', 0, 0, -1), ('sys', 0, 0, -1), ('sys.py3kwarning', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urlsplit', 0, 0, -1), ('warnings', 0, 0, -1), ('mimetools', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('ssl', 0, 0, -1)] binaries=[] datas=[]>
-mimetypes: None -> <PyModule 'mimetypes' /Users/josephferraro/Development/joey2/lib/python2.7/mimetypes.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('posixpath', 0, 0, -1), ('urllib', 0, 0, -1), ('_winreg', 0, 0, -1), ('getopt', 0, 1, -1)] binaries=[] datas=[]>
-email: None -> <PkgModule 'email' /Users/josephferraro/Development/joey2/lib/python2.7/email/__init__.pyc imports=[('sys', 0, 0, -1), ('email.mime', 0, 0, -1), ('email.parser', 1, 0, -1), ('email.parser.Parser', 1, 0, -1), ('email.parser', 1, 0, -1), ('email.parser.Parser', 1, 0, -1), ('email.charset', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.feedparser', 0, 0, -1), ('email.generator', 0, 0, -1), ('email.header', 0, 0, -1), ('email.iterators', 0, 0, -1), ('email.message', 0, 0, -1), ('email.parser', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email.mime.audio', 0, 0, -1), ('email.mime.base', 0, 0, -1), ('email.mime.image', 0, 0, -1), ('email.mime.message', 0, 0, -1), ('email.mime.multipart', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.text', 0, 0, -1)] binaries=[] datas=[]>
-email.utils: None -> <PyModule 'email.utils' /Users/josephferraro/Development/joey2/lib/python2.7/email/utils.pyc imports=[('os', 0, 0, -1), ('re', 0, 0, -1), ('time', 0, 0, -1), ('base64', 0, 0, -1), ('random', 0, 0, -1), ('socket', 0, 0, -1), ('urllib', 0, 0, -1), ('warnings', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.quote', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.AddressList', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.mktime_tz', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.parsedate', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.parsedate_tz', 0, 0, -1), ('quopri', 0, 0, -1), ('quopri.decodestring', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.encoders._bencode', 0, 0, -1), ('email.encoders._qencode', 0, 0, -1), ('urllib', 1, 0, -1)] binaries=[] datas=[]>
-ftplib: None -> <PyModule 'ftplib' /Users/josephferraro/Development/joey2/lib/python2.7/ftplib.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('SOCKS', 0, 0, -1), ('socket', 0, 0, -1), ('socket.getfqdn', 0, 0, -1), ('socket', 0, 1, -1), ('socket', 0, 0, -1), ('socket._GLOBAL_DEFAULT_TIMEOUT', 0, 0, -1), ('ssl', 0, 0, -1), ('re', 1, 1, -1), ('re', 1, 1, -1)] binaries=[] datas=[]>
+lib.keyring: None -> None
+keyring: None -> <PkgModule 'keyring' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/__init__.pyc imports=[('logging', 0, 0, -1), ('core', 0, 0, -1), ('core.set_keyring', 0, 0, -1), ('core.get_keyring', 0, 0, -1), ('core.set_password', 0, 0, -1), ('core.get_password', 0, 0, -1), ('core.delete_password', 0, 0, -1), ('keyring.getpassbackend', 0, 0, -1), ('keyring.getpassbackend.get_password', 0, 0, -1)] binaries=[] datas=[]>
+lib.yaml: None -> None
+yaml: None -> <PkgModule 'yaml' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/__init__.pyc imports=[('error', 0, 0, -1), ('error.*', 0, 0, -1), ('tokens', 0, 0, -1), ('tokens.*', 0, 0, -1), ('events', 0, 0, -1), ('events.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1), ('loader', 0, 0, -1), ('loader.*', 0, 0, -1), ('dumper', 0, 0, -1), ('dumper.*', 0, 0, -1), ('cyaml', 0, 0, -1), ('cyaml.*', 0, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('cStringIO', 1, 1, -1), ('cStringIO.StringIO', 1, 1, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('cStringIO', 1, 1, -1), ('cStringIO.StringIO', 1, 1, -1)] binaries=[] datas=[]>
+lib.json: None -> None
+lib.re: None -> None
+lib.shutil: None -> None
+shutil: None -> <PyModule 'shutil' /Users/josephferraro/Development/joey2/lib/python2.7/shutil.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('stat', 0, 0, -1), ('os.path', 0, 0, -1), ('os.path.abspath', 0, 0, -1), ('fnmatch', 0, 0, -1), ('collections', 0, 0, -1), ('errno', 0, 0, -1), ('pwd', 0, 0, -1), ('pwd.getpwnam', 0, 0, -1), ('grp', 0, 0, -1), ('grp.getgrnam', 0, 0, -1), ('tarfile', 1, 0, -1), ('distutils.errors', 1, 0, -1), ('distutils.errors.DistutilsExecError', 1, 0, -1), ('distutils.spawn', 1, 0, -1), ('distutils.spawn.spawn', 1, 0, -1), ('zipfile', 1, 0, -1)] binaries=[] datas=[]>
+lib.tempfile: None -> None
+lib.string: None -> None
+lib.random: None -> None
+lib.base64: None -> None
+lib.zipfile: None -> None
+zipfile: None -> <PyModule 'zipfile' /Users/josephferraro/Development/joey2/lib/python2.7/zipfile.pyc imports=[('struct', 0, 0, -1), ('os', 0, 0, -1), ('time', 0, 0, -1), ('sys', 0, 0, -1), ('shutil', 0, 0, -1), ('binascii', 0, 0, -1), ('cStringIO', 0, 0, -1), ('stat', 0, 0, -1), ('io', 0, 0, -1), ('re', 0, 0, -1), ('zlib', 0, 0, -1), ('py_compile', 1, 1, -1), ('textwrap', 1, 0, -1)] binaries=[] datas=[]>
+lib.time: None -> None
+lib.threading: None -> None
+lib.xmltodict: None -> None
+xmltodict: None -> <PyModule 'xmltodict' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/xmltodict.pyc imports=[('xml.parsers', 0, 0, -1), ('xml.parsers.expat', 0, 0, -1), ('xml.sax.saxutils', 0, 0, -1), ('xml.sax.saxutils.XMLGenerator', 0, 0, -1), ('xml.sax.xmlreader', 0, 0, -1), ('xml.sax.xmlreader.AttributesImpl', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('io', 0, 1, -1), ('io.StringIO', 0, 1, -1), ('collections', 0, 0, -1), ('collections.OrderedDict', 0, 0, -1), ('sys', 0, 1, -1), ('marshal', 0, 1, -1)] binaries=[] datas=[]>
+lib.jinja2: None -> None
+jinja2: None -> <PkgModule 'jinja2' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/__init__.pyc imports=[('jinja2.environment', 0, 0, -1), ('jinja2.environment.Environment', 0, 0, -1), ('jinja2.environment.Template', 0, 0, -1), ('jinja2.loaders', 0, 0, -1), ('jinja2.loaders.BaseLoader', 0, 0, -1), ('jinja2.loaders.FileSystemLoader', 0, 0, -1), ('jinja2.loaders.PackageLoader', 0, 0, -1), ('jinja2.loaders.DictLoader', 0, 0, -1), ('jinja2.loaders.FunctionLoader', 0, 0, -1), ('jinja2.loaders.PrefixLoader', 0, 0, -1), ('jinja2.loaders.ChoiceLoader', 0, 0, -1), ('jinja2.loaders.ModuleLoader', 0, 0, -1), ('jinja2.bccache', 0, 0, -1), ('jinja2.bccache.BytecodeCache', 0, 0, -1), ('jinja2.bccache.FileSystemBytecodeCache', 0, 0, -1), ('jinja2.bccache.MemcachedBytecodeCache', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.runtime.DebugUndefined', 0, 0, -1), ('jinja2.runtime.StrictUndefined', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateError', 0, 0, -1), ('jinja2.exceptions.UndefinedError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.exceptions.TemplatesNotFound', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.filters', 0, 0, -1), ('jinja2.filters.environmentfilter', 0, 0, -1), ('jinja2.filters.contextfilter', 0, 0, -1), ('jinja2.filters.evalcontextfilter', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.clear_caches', 0, 0, -1), ('jinja2.utils.environmentfunction', 0, 0, -1), ('jinja2.utils.evalcontextfunction', 0, 0, -1), ('jinja2.utils.contextfunction', 0, 0, -1), ('jinja2.utils.is_undefined', 0, 0, -1)] binaries=[] datas=[]>
+jinja2.Environment: None -> None
+  DEL jinja2.Environment
+jinja2.FileSystemLoader: None -> None
+  DEL jinja2.FileSystemLoader
+keyring.logging: None -> None
+keyring.core: None -> <PyModule 'keyring.core' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/core.pyc imports=[('os', 0, 0, -1), ('imp', 0, 0, -1), ('sys', 0, 0, -1), ('py27compat', 0, 0, 1), ('py27compat.configparser', 0, 0, 1), ('keyring', 0, 0, -1), ('keyring.logger', 0, 0, -1), ('keyring', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.util', 0, 0, -1), ('keyring.util.platform', 0, 0, -1)] binaries=[] datas=[]>
+keyring.keyring: None -> None
+keyring.getpassbackend: None -> <PyModule 'keyring.getpassbackend' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/getpassbackend.pyc imports=[('os', 0, 0, -1), ('getpass', 0, 0, -1), ('keyring.core', 0, 0, -1)] binaries=[] datas=[]>
+keyring.os: None -> None
+keyring.imp: None -> None
+keyring.sys: None -> None
+keyring.py27compat: None -> <PyModule 'keyring.py27compat' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/py27compat.pyc imports=[('configparser', 0, 0, -1), ('ConfigParser', 0, 1, -1)] binaries=[] datas=[]>
+keyring.logger: None -> None
+  DEL keyring.logger
+keyring.backend: None -> <PyModule 'keyring.backend' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backend.pyc imports=[('sys', 0, 0, -1), ('keyring.py25compat', 0, 0, -1), ('keyring.py25compat.abc', 0, 0, -1), ('keyring', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.util', 0, 0, -1), ('errors', 0, 0, 1), ('errors.PasswordSetError', 0, 0, 1), ('errors.InitError', 0, 0, 1), ('keyring.backends.OS_X', 0, 0, -1), ('keyring.backends.OS_X.Keyring', 0, 0, -1), ('keyring.backends.Gnome', 0, 0, -1), ('keyring.backends.Gnome.Keyring', 0, 0, -1), ('keyring.backends.SecretService', 0, 0, -1), ('keyring.backends.SecretService.Keyring', 0, 0, -1), ('keyring.backends.kwallet', 0, 0, -1), ('keyring.backends.kwallet.Keyring', 0, 0, -1), ('keyring.backends.file', 0, 0, -1), ('keyring.backends.file.BaseKeyring', 0, 0, -1), ('keyring.backends.file', 0, 0, -1), ('keyring.backends.file.PlaintextKeyring', 0, 0, -1), ('keyring.backends.file', 0, 0, -1), ('keyring.backends.file.EncryptedKeyring', 0, 0, -1), ('keyring.backends.Windows', 0, 0, -1), ('keyring.backends.Windows.EncryptedKeyring', 0, 0, -1), ('keyring.backends.Windows', 0, 0, -1), ('keyring.backends.Windows.WinVaultKeyring', 0, 0, -1), ('keyring.backends.Windows', 0, 0, -1), ('keyring.backends.Windows.RegistryKeyring', 0, 0, -1), ('keyring.backends.Windows', 0, 0, -1), ('keyring.backends.Windows.select_windows_backend', 0, 0, -1), ('keyring.backends.Google', 0, 0, -1), ('keyring.backends.Google.DocsKeyring', 0, 0, -1), ('keyring.credentials', 0, 0, -1), ('keyring.credentials.Credential', 0, 0, -1), ('keyring.credentials', 0, 0, -1), ('keyring.credentials.SimpleCredential', 0, 0, -1), ('keyring.credentials', 0, 0, -1), ('keyring.credentials.EnvironCredential', 0, 0, -1), ('keyring.backends.Google', 0, 0, -1), ('keyring.backends.Google.EnvironCredential', 0, 0, -1), ('keyring.backends.keyczar', 0, 0, -1), ('keyring.backends.keyczar.BaseCrypter', 0, 0, -1), ('keyring.backends.keyczar', 0, 0, -1), ('keyring.backends.keyczar.Crypter', 0, 0, -1), ('keyring.backends.keyczar', 0, 0, -1), ('keyring.backends.keyczar.EnvironCrypter', 0, 0, -1), ('keyring.backends.Google', 0, 0, -1), ('keyring.backends.Google.KeyczarDocsKeyring', 0, 0, -1), ('keyring.backends.pyfs', 0, 0, -1), ('keyring.backends.pyfs.BasicKeyring', 0, 0, -1), ('keyring.backends.pyfs', 0, 0, -1), ('keyring.backends.pyfs.PlaintextKeyring', 0, 0, -1), ('keyring.backends.pyfs', 0, 0, -1), ('keyring.backends.pyfs.EncryptedKeyring', 0, 0, -1), ('keyring.backends.pyfs', 0, 0, -1), ('keyring.backends.pyfs.KeyczarKeyring', 0, 0, -1), ('keyring.backends.multi', 0, 0, -1), ('keyring.backends.multi.MultipartKeyringWrapper', 0, 0, -1)] binaries=[] datas=[]>
+keyring.util: None -> <PkgModule 'keyring.util' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/util/__init__.pyc imports=[('functools', 0, 0, -1)] binaries=[] datas=[]>
+keyring.util.platform: None -> <PyModule 'keyring.util.platform' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/util/platform.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1)] binaries=[] datas=[]>
+keyring.configparser: None -> None
+configparser: None -> None
+  DEL configparser
+keyring.ConfigParser: None -> None
+ConfigParser: None -> <PyModule 'ConfigParser' /Users/josephferraro/Development/joey2/lib/python2.7/ConfigParser.pyc imports=[('collections', 0, 0, -1), ('collections.OrderedDict', 0, 0, -1), ('re', 0, 0, -1), ('UserDict', 0, 0, -1)] binaries=[] datas=[]>
+keyring.py25compat: None -> <PyModule 'keyring.py25compat' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/py25compat.pyc imports=[('json', 0, 0, -1), ('simplejson', 0, 1, -1), ('abc', 0, 0, -1), ('io', 0, 0, -1), ('StringIO', 0, 1, -1)] binaries=[] datas=[]>
+keyring.errors: None -> <PyModule 'keyring.errors' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/errors.pyc imports=[] binaries=[] datas=[]>
+keyring.backends: None -> <PkgModule 'keyring.backends' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/__init__.pyc imports=[] binaries=[] datas=[]>
+keyring.backends.OS_X: None -> <PyModule 'keyring.backends.OS_X' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/OS_X.pyc imports=[('sys', 0, 0, -1), ('subprocess', 0, 0, -1), ('re', 0, 0, -1), ('binascii', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordSetError', 0, 0, -1)] binaries=[] datas=[]>
+keyring.backends.Gnome: None -> <PyModule 'keyring.backends.Gnome' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/Gnome.pyc imports=[('os', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordSetError', 0, 0, -1), ('keyring.errors.PasswordDeleteError', 0, 0, -1), ('gnomekeyring', 1, 0, -1), ('gnomekeyring', 1, 0, -1), ('gnomekeyring', 1, 0, -1)] binaries=[] datas=[]>
+keyring.backends.SecretService: None -> <PyModule 'keyring.backends.SecretService' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/SecretService.pyc imports=[('logging', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('dbus', 1, 0, -1), ('dbus', 1, 0, -1), ('dbus', 1, 0, -1), ('dbus', 1, 0, -1)] binaries=[] datas=[]>
+keyring.backends.kwallet: None -> <PyModule 'keyring.backends.kwallet' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/kwallet.pyc imports=[('os', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordDeleteError', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordSetError', 0, 0, -1), ('PyKDE4.kdeui', 0, 0, -1), ('PyKDE4.kdeui.KWallet', 0, 0, -1), ('PyQt4', 0, 0, -1), ('PyQt4.QtGui', 0, 0, -1)] binaries=[] datas=[]>
+keyring.backends.file: None -> <PyModule 'keyring.backends.file' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/file.pyc imports=[('__future__', 0, 0, -1), ('__future__.with_statement', 0, 0, -1), ('os', 0, 0, -1), ('getpass', 0, 0, -1), ('base64', 0, 0, -1), ('sys', 0, 0, -1), ('py25compat', 0, 0, 2), ('py25compat.json', 0, 0, 2), ('py25compat', 0, 0, 2), ('py25compat.abc', 0, 0, 2), ('py27compat', 0, 0, 2), ('py27compat.configparser', 0, 0, 2), ('keyring.util.platform', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordDeleteError', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.util', 0, 0, -1), ('keyring.util.properties', 0, 0, -1), ('keyring.util.escape', 0, 0, -1), ('keyring.util.escape.escape', 0, 0, -1), ('Crypto.Protocol.KDF', 1, 0, -1), ('Crypto.Protocol.KDF.PBKDF2', 1, 0, -1), ('Crypto.Cipher', 1, 0, -1), ('Crypto.Cipher.AES', 1, 0, -1), ('Crypto.Random', 1, 0, -1), ('Crypto.Random.get_random_bytes', 1, 0, -1), ('Crypto.Cipher', 1, 0, -1), ('Crypto.Cipher.AES', 1, 0, -1)] binaries=[] datas=[]>
+keyring.backends.Windows: None -> <PyModule 'keyring.backends.Windows' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/Windows.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('base64', 0, 0, -1), ('keyring.util.escape', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.errors.PasswordDeleteError', 0, 0, -1), ('', 0, 0, 1), ('file', 0, 0, 1), ('', 1, 0, 1), ('_win_crypto', 1, 0, 1), ('pywintypes', 1, 0, -1), ('win32cred', 1, 0, -1), ('backends', 1, 0, -1), ('backends.win32_crypto', 1, 0, -1), ('_winreg', 1, 0, -1), ('_winreg.HKEY_CURRENT_USER', 1, 0, -1), ('_winreg.OpenKey', 1, 0, -1), ('_winreg.QueryValueEx', 1, 0, -1), ('_winreg', 1, 0, -1), ('_winreg.HKEY_CURRENT_USER', 1, 0, -1), ('_winreg.CreateKey', 1, 0, -1), ('_winreg.SetValueEx', 1, 0, -1), ('_winreg.REG_SZ', 1, 0, -1), ('_winreg', 1, 0, -1), ('_winreg.KEY_ALL_ACCESS', 1, 0, -1), ('_winreg.HKEY_CURRENT_USER', 1, 0, -1), ('_winreg.DeleteValue', 1, 0, -1), ('_winreg.OpenKey', 1, 0, -1)] binaries=[] datas=[]>
+keyring.backends.Google: None -> <PyModule 'keyring.backends.Google' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/Google.pyc imports=[('__future__', 0, 0, 0), ('__future__.absolute_import', 0, 0, 0), ('os', 0, 0, 0), ('sys', 0, 0, 0), ('copy', 0, 0, 0), ('codecs', 0, 0, 0), ('cPickle', 0, 0, 0), ('base64', 0, 0, 0), ('', 0, 0, 1), ('keyczar', 0, 0, 1), ('keyring', 0, 0, 0), ('keyring.errors', 0, 0, 0), ('keyring', 0, 0, 0), ('keyring.credentials', 0, 0, 0), ('keyring.py25compat', 0, 0, 0), ('keyring.py27compat', 0, 0, 0), ('keyring.backend', 0, 0, 0), ('keyring.backend.KeyringBackend', 0, 0, 0), ('gdata', 1, 1, 0), ('gdata.docs.service', 1, 0, 0), ('gdata.docs.service.DocumentQuery', 1, 0, 0), ('gdata', 1, 0, 0), ('gdata', 1, 0, 0), ('gdata.docs.service', 1, 1, 0), ('gdata.docs.service.DocumentQuery', 1, 1, 0), ('keyczar', 1, 0, 0), ('keyczar.keyczar', 1, 0, 0)] binaries=[] datas=[]>
+keyring.credentials: None -> <PyModule 'keyring.credentials' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/credentials.pyc imports=[('os', 0, 0, -1), ('keyring.py25compat', 0, 0, -1), ('keyring.py25compat.abc', 0, 0, -1)] binaries=[] datas=[]>
+keyring.backends.keyczar: None -> <PyModule 'keyring.backends.keyczar' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/keyczar.pyc imports=[('__future__', 0, 0, 0), ('__future__.absolute_import', 0, 0, 0), ('os', 0, 0, 0), ('keyczar', 0, 0, 0), ('keyczar.keyczar', 0, 0, 0), ('keyring.py25compat', 0, 0, 0), ('keyring.py25compat.abc', 0, 0, 0), ('keyring.backend', 0, 0, 0), ('keyring.backend.Crypter', 0, 0, 0)] binaries=[] datas=[]>
+keyring.backends.pyfs: None -> <PyModule 'keyring.backends.pyfs' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/pyfs.pyc imports=[('os', 0, 0, -1), ('base64', 0, 0, -1), ('py27compat', 0, 0, 2), ('py27compat.configparser', 0, 0, 2), ('keyring.util.platform', 0, 0, -1), ('keyring', 0, 0, -1), ('keyring.errors', 0, 0, -1), ('keyring.util.escape', 0, 0, -1), ('keyring.util.escape.escape', 0, 0, -1), ('keyring.util', 0, 0, -1), ('keyring.util.properties', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring.backend.NullCrypter', 0, 0, -1), ('', 0, 0, 1), ('keyczar', 0, 0, 1), ('fs.opener', 1, 0, -1), ('fs.errors', 1, 0, -1), ('fs.path', 1, 0, -1), ('fs.remote', 1, 0, -1), ('fs.osfs', 1, 1, -1), ('fs.opener', 1, 0, -1), ('fs.opener.fsopen', 1, 0, -1)] binaries=[] datas=[]>
+keyring.backends.multi: None -> <PyModule 'keyring.backends.multi' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/multi.pyc imports=[('itertools', 0, 0, -1), ('keyring.backend', 0, 0, -1), ('keyring.backend.KeyringBackend', 0, 0, -1), ('keyring', 0, 0, -1), ('keyring.errors', 0, 0, -1)] binaries=[] datas=[]>
+keyring.json: None -> None
+keyring.simplejson: None -> None
+simplejson: None -> None
+  DEL simplejson
+keyring.abc: None -> None
+keyring.io: None -> None
+io: None -> <PyModule 'io' /Users/josephferraro/Development/joey2/lib/python2.7/io.pyc imports=[('_io', 0, 0, -1), ('abc', 0, 0, -1), ('_io', 0, 0, -1), ('_io.DEFAULT_BUFFER_SIZE', 0, 0, -1), ('_io.BlockingIOError', 0, 0, -1), ('_io.UnsupportedOperation', 0, 0, -1), ('_io.open', 0, 0, -1), ('_io.FileIO', 0, 0, -1), ('_io.BytesIO', 0, 0, -1), ('_io.StringIO', 0, 0, -1), ('_io.BufferedReader', 0, 0, -1), ('_io.BufferedWriter', 0, 0, -1), ('_io.BufferedRWPair', 0, 0, -1), ('_io.BufferedRandom', 0, 0, -1), ('_io.IncrementalNewlineDecoder', 0, 0, -1), ('_io.TextIOWrapper', 0, 0, -1)] binaries=[] datas=[]>
+keyring.StringIO: None -> None
+_io: None -> <ExtensionModule '_io' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_io.so imports=[] binaries=[] datas=[]>
+keyring.util.functools: None -> None
+keyring.backends.sys: None -> None
+keyring.backends.subprocess: None -> None
+keyring.backends.re: None -> None
+keyring.backends.binascii: None -> None
+keyring.backends.keyring: None -> None
+keyring.backends.os: None -> None
+keyring.backends.gnomekeyring: None -> None
+gnomekeyring: None -> None
+  DEL gnomekeyring
+gnomekeyring: None -> None
+  DEL gnomekeyring
+gnomekeyring: None -> None
+  DEL gnomekeyring
+keyring.backends.logging: None -> None
+keyring.backends.dbus: None -> None
+dbus: None -> None
+  DEL dbus
+dbus: None -> None
+  DEL dbus
+dbus: None -> None
+  DEL dbus
+dbus: None -> None
+  DEL dbus
+keyring.backends.PyKDE4: None -> None
+PyKDE4: None -> None
+  DEL PyKDE4
+PyKDE4: None -> None
+  DEL PyKDE4
+keyring.backends.PyQt4: None -> None
+PyQt4: None -> None
+  DEL PyQt4
+PyQt4: None -> None
+  DEL PyQt4
+keyring.backends.__future__: None -> None
+keyring.backends.getpass: None -> None
 getpass: None -> <PyModule 'getpass' /Users/josephferraro/Development/joey2/lib/python2.7/getpass.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('warnings', 0, 0, -1), ('termios', 0, 0, -1), ('msvcrt', 0, 1, -1), ('EasyDialogs', 0, 1, -1), ('EasyDialogs.AskPassword', 0, 1, -1), ('msvcrt', 1, 0, -1), ('os', 1, 0, -1), ('pwd', 1, 0, -1)] binaries=[] datas=[]>
-_winreg: None -> None
-  DEL _winreg
-_winreg: None -> None
-  DEL _winreg
-_winreg: None -> None
-  DEL _winreg
-email.sys: None -> None
-email.email: None -> None
-email.mime: None -> <PkgModule 'email.mime' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/__init__.pyc imports=[] binaries=[] datas=[]>
-email.parser: None -> <PyModule 'email.parser' /Users/josephferraro/Development/joey2/lib/python2.7/email/parser.pyc imports=[('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.feedparser', 0, 0, -1), ('email.feedparser.FeedParser', 0, 0, -1), ('email.message', 0, 0, -1), ('email.message.Message', 0, 0, -1)] binaries=[] datas=[]>
-email.charset: None -> <PyModule 'email.charset' /Users/josephferraro/Development/joey2/lib/python2.7/email/charset.pyc imports=[('codecs', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.encoders.encode_7or8bit', 0, 0, -1)] binaries=[] datas=[]>
-email.encoders: None -> <PyModule 'email.encoders' /Users/josephferraro/Development/joey2/lib/python2.7/email/encoders.pyc imports=[('base64', 0, 0, -1), ('quopri', 0, 0, -1), ('quopri.encodestring', 0, 0, -1)] binaries=[] datas=[]>
-email.errors: None -> <PyModule 'email.errors' /Users/josephferraro/Development/joey2/lib/python2.7/email/errors.pyc imports=[] binaries=[] datas=[]>
-email.feedparser: None -> <PyModule 'email.feedparser' /Users/josephferraro/Development/joey2/lib/python2.7/email/feedparser.pyc imports=[('re', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email', 0, 0, -1), ('email.message', 0, 0, -1)] binaries=[] datas=[]>
-email.generator: None -> <PyModule 'email.generator' /Users/josephferraro/Development/joey2/lib/python2.7/email/generator.pyc imports=[('re', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('random', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.header', 0, 0, -1), ('email.header.Header', 0, 0, -1)] binaries=[] datas=[]>
-email.header: None -> <PyModule 'email.header' /Users/josephferraro/Development/joey2/lib/python2.7/email/header.pyc imports=[('re', 0, 0, -1), ('binascii', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.errors.HeaderParseError', 0, 0, -1), ('email.charset', 0, 0, -1), ('email.charset.Charset', 0, 0, -1)] binaries=[] datas=[]>
-email.iterators: None -> <PyModule 'email.iterators' /Users/josephferraro/Development/joey2/lib/python2.7/email/iterators.pyc imports=[('sys', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1)] binaries=[] datas=[]>
-email.message: None -> <PyModule 'email.message' /Users/josephferraro/Development/joey2/lib/python2.7/email/message.pyc imports=[('re', 0, 0, -1), ('uu', 0, 0, -1), ('binascii', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.charset', 0, 0, -1), ('email', 0, 0, -1), ('email.utils', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.iterators', 1, 0, -1), ('email.iterators.walk', 1, 0, -1), ('email.generator', 1, 0, -1), ('email.generator.Generator', 1, 0, -1), ('email.iterators', 0, 0, -1), ('email.generator', 0, 0, -1)] binaries=[] datas=[]>
-email.base64mime: None -> <PyModule 'email.base64mime' /Users/josephferraro/Development/joey2/lib/python2.7/email/base64mime.pyc imports=[('binascii', 0, 0, -1), ('binascii.b2a_base64', 0, 0, -1), ('binascii.a2b_base64', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.utils.fix_eols', 0, 0, -1)] binaries=[] datas=[]>
-email.quoprimime: None -> <PyModule 'email.quoprimime' /Users/josephferraro/Development/joey2/lib/python2.7/email/quoprimime.pyc imports=[('re', 0, 0, -1), ('string', 0, 0, -1), ('string.hexdigits', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.utils.fix_eols', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.audio: None -> <PyModule 'email.mime.audio' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/audio.pyc imports=[('sndhdr', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.base: None -> <PyModule 'email.mime.base' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/base.pyc imports=[('email', 0, 0, -1), ('email.message', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.image: None -> <PyModule 'email.mime.image' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/image.pyc imports=[('imghdr', 0, 0, -1), ('email', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.message: None -> <PyModule 'email.mime.message' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/message.pyc imports=[('email', 0, 0, -1), ('email.message', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.multipart: None -> <PyModule 'email.mime.multipart' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/multipart.pyc imports=[('email.mime.base', 0, 0, -1), ('email.mime.base.MIMEBase', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.nonmultipart: None -> <PyModule 'email.mime.nonmultipart' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/nonmultipart.pyc imports=[('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.mime.base', 0, 0, -1), ('email.mime.base.MIMEBase', 0, 0, -1)] binaries=[] datas=[]>
-email.mime.text: None -> <PyModule 'email.mime.text' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/text.pyc imports=[('email.encoders', 0, 0, -1), ('email.encoders.encode_7or8bit', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
-email.warnings: None -> None
-email.cStringIO: None -> None
-email.re: None -> None
-email.uu: None -> None
-email.binascii: None -> None
-email.codecs: None -> None
-email.os: None -> None
-email.time: None -> None
-email.base64: None -> None
-email.random: None -> None
-email.socket: None -> None
-email.urllib: None -> None
-email._parseaddr: None -> <PyModule 'email._parseaddr' /Users/josephferraro/Development/joey2/lib/python2.7/email/_parseaddr.pyc imports=[('time', 0, 0, -1)] binaries=[] datas=[]>
-email.quopri: None -> None
-email.string: None -> None
-email.mime.sndhdr: None -> None
-sndhdr: None -> <PyModule 'sndhdr' /Users/josephferraro/Development/joey2/lib/python2.7/sndhdr.pyc imports=[('aifc', 1, 0, -1), ('sys', 1, 0, -1), ('sys', 1, 0, -1), ('os', 1, 0, -1), ('glob', 1, 1, -1)] binaries=[] datas=[]>
-email.mime.cStringIO: None -> None
-email.mime.email: None -> None
-aifc: None -> <PyModule 'aifc' /Users/josephferraro/Development/joey2/lib/python2.7/aifc.pyc imports=[('struct', 0, 0, -1), ('__builtin__', 0, 0, -1), ('chunk', 0, 0, -1), ('chunk.Chunk', 0, 0, -1), ('sys', 0, 1, -1), ('math', 1, 0, -1), ('cl', 1, 1, -1), ('cl', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 1, -1), ('cl', 1, 1, -1), ('audioop', 1, 1, -1), ('cl', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 0, -1), ('cl', 1, 0, -1), ('audioop', 1, 1, -1)] binaries=[] datas=[]>
-glob: None -> <PyModule 'glob' /Users/josephferraro/Development/joey2/lib/python2.7/glob.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('re', 0, 0, -1), ('fnmatch', 0, 0, -1)] binaries=[] datas=[]>
-chunk: None -> <PyModule 'chunk' /Users/josephferraro/Development/joey2/lib/python2.7/chunk.pyc imports=[('struct', 1, 0, -1)] binaries=[] datas=[]>
-cl: None -> None
-  DEL cl
-cl: None -> None
-  DEL cl
-audioop: None -> <ExtensionModule 'audioop' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/audioop.so imports=[] binaries=[] datas=[]>
-cl: None -> None
-  DEL cl
-cl: None -> None
-  DEL cl
-cl: None -> None
-  DEL cl
-email.mime.imghdr: None -> None
-imghdr: None -> <PyModule 'imghdr' /Users/josephferraro/Development/joey2/lib/python2.7/imghdr.pyc imports=[('sys', 1, 0, -1), ('sys', 1, 0, -1), ('os', 1, 0, -1), ('glob', 1, 1, -1)] binaries=[] datas=[]>
-SOCKS: None -> None
-  DEL SOCKS
+keyring.backends.base64: None -> None
+keyring.util.properties: None -> <PyModule 'keyring.util.properties' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/util/properties.pyc imports=[] binaries=[] datas=[]>
+keyring.util.escape: None -> <PyModule 'keyring.util.escape' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/util/escape.pyc imports=[('re', 0, 0, -1), ('string', 0, 0, -1), ('sys', 0, 0, -1)] binaries=[] datas=[]>
+keyring.backends.Crypto: None -> None
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
+Crypto: None -> None
+  DEL Crypto
 termios: None -> <ExtensionModule 'termios' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/termios.so imports=[] binaries=[] datas=[]>
 msvcrt: None -> None
   DEL msvcrt
@@ -831,6 +758,348 @@ _builtinSuites.builtin_Suite: None -> <PyModule '_builtinSuites.builtin_Suite' /
 _builtinSuites.warnings: None -> None
 _builtinSuites.aetools: None -> None
 _builtinSuites.MacOS: None -> None
+keyring.util.os: None -> None
+keyring.util.sys: None -> None
+keyring.util.re: None -> None
+keyring.util.string: None -> None
+keyring.backends._win_crypto: None -> <PyModule 'keyring.backends._win_crypto' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/keyring-1.2.2-py2.7.egg/keyring/backends/_win_crypto.pyc imports=[('sys', 0, 0, -1), ('ctypes', 0, 0, -1), ('ctypes.Structure', 0, 0, -1), ('ctypes.wintypes', 0, 0, -1), ('ctypes.POINTER', 0, 0, -1), ('ctypes.windll', 0, 0, -1), ('ctypes.WinDLL', 0, 0, -1), ('ctypes.c_void_p', 0, 0, -1), ('ctypes.WINFUNCTYPE', 0, 0, -1), ('ctypes.cast', 0, 0, -1), ('ctypes.create_string_buffer', 0, 0, -1), ('ctypes.c_char_p', 0, 0, -1), ('ctypes.byref', 0, 0, -1), ('ctypes.memmove', 0, 0, -1), ('keyring.util.escape', 0, 0, -1), ('keyring.util.escape.u', 0, 0, -1)] binaries=[] datas=[]>
+keyring.backends.pywintypes: None -> None
+pywintypes: None -> None
+  DEL pywintypes
+keyring.backends.win32cred: None -> None
+win32cred: None -> None
+  DEL win32cred
+keyring.backends.backends: None -> None
+backends: None -> None
+  DEL backends
+backends: None -> None
+  DEL backends
+keyring.backends._winreg: None -> None
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+keyring.backends.ctypes: None -> None
+ctypes: None -> <PkgModule 'ctypes' /Users/josephferraro/Development/joey2/lib/python2.7/ctypes/__init__.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.Union', 0, 0, -1), ('_ctypes.Structure', 0, 0, -1), ('_ctypes.Array', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._Pointer', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.CFuncPtr', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.__version__', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.RTLD_LOCAL', 0, 0, -1), ('_ctypes.RTLD_GLOBAL', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.ArgumentError', 0, 0, -1), ('struct', 0, 0, -1), ('struct.calcsize', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes.FormatError', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes.FUNCFLAG_CDECL', 0, 0, -1), ('_ctypes.FUNCFLAG_PYTHONAPI', 0, 0, -1), ('_ctypes.FUNCFLAG_USE_ERRNO', 0, 0, -1), ('_ctypes.FUNCFLAG_USE_LASTERROR', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes.LoadLibrary', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.FUNCFLAG_STDCALL', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.dlopen', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes.sizeof', 0, 0, -1), ('_ctypes.byref', 0, 0, -1), ('_ctypes.addressof', 0, 0, -1), ('_ctypes.alignment', 0, 0, -1), ('_ctypes.resize', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.get_errno', 0, 0, -1), ('_ctypes.set_errno', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._SimpleCData', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.POINTER', 0, 0, -1), ('_ctypes.pointer', 0, 0, -1), ('_ctypes._pointer_type_cache', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.set_conversion_mode', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes._check_HRESULT', 0, 1, -1), ('_ctypes._SimpleCData', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.get_last_error', 0, 1, -1), ('_ctypes.set_last_error', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes._memmove_addr', 0, 0, -1), ('_ctypes._memset_addr', 0, 0, -1), ('_ctypes._string_at_addr', 0, 0, -1), ('_ctypes._cast_addr', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._wstring_at_addr', 0, 0, -1), ('ctypes._endian', 0, 0, -1), ('ctypes._endian.BigEndianStructure', 0, 0, -1), ('ctypes._endian.LittleEndianStructure', 0, 0, -1), ('struct', 1, 0, -1), ('struct.calcsize', 1, 0, -1)] binaries=[] datas=[]>
+ctypes.Structure: None -> None
+  DEL ctypes.Structure
+ctypes.wintypes: None -> <PyModule 'ctypes.wintypes' /Users/josephferraro/Development/joey2/lib/python2.7/ctypes/wintypes.pyc imports=[('ctypes', 0, 0, -1), ('ctypes.*', 0, 0, -1), ('ctypes', 0, 0, -1), ('ctypes._SimpleCData', 0, 0, -1)] binaries=[] datas=[]>
+ctypes.POINTER: None -> None
+  DEL ctypes.POINTER
+ctypes.windll: None -> None
+  DEL ctypes.windll
+ctypes.WinDLL: None -> None
+  DEL ctypes.WinDLL
+ctypes.c_void_p: None -> None
+  DEL ctypes.c_void_p
+ctypes.WINFUNCTYPE: None -> None
+  DEL ctypes.WINFUNCTYPE
+ctypes.cast: None -> None
+  DEL ctypes.cast
+ctypes.create_string_buffer: None -> None
+  DEL ctypes.create_string_buffer
+ctypes.c_char_p: None -> None
+  DEL ctypes.c_char_p
+ctypes.byref: None -> None
+  DEL ctypes.byref
+ctypes.memmove: None -> None
+  DEL ctypes.memmove
+ctypes.os: None -> None
+ctypes.sys: None -> None
+ctypes._ctypes: None -> None
+_ctypes: None -> <ExtensionModule '_ctypes' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_ctypes.so imports=[] binaries=[] datas=[]>
+ctypes.struct: None -> None
+ctypes.ctypes: None -> None
+ctypes._endian: None -> <PyModule 'ctypes._endian' /Users/josephferraro/Development/joey2/lib/python2.7/ctypes/_endian.pyc imports=[('sys', 0, 0, -1), ('ctypes', 0, 0, -1), ('ctypes.*', 0, 0, -1)] binaries=[] datas=[]>
+ctypes._SimpleCData: None -> None
+  DEL ctypes._SimpleCData
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+gdata: None -> None
+  DEL gdata
+keyczar: None -> None
+  DEL keyczar
+keyczar: None -> None
+  DEL keyczar
+keyczar: None -> None
+  DEL keyczar
+keyczar: None -> None
+  DEL keyczar
+keyring.backends.fs: None -> None
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+fs: None -> None
+  DEL fs
+keyring.backends.itertools: None -> None
+keyring.getpass: None -> None
+yaml.error: None -> <PyModule 'yaml.error' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/error.pyc imports=[] binaries=[] datas=[]>
+yaml.tokens: None -> <PyModule 'yaml.tokens' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/tokens.pyc imports=[] binaries=[] datas=[]>
+yaml.events: None -> <PyModule 'yaml.events' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/events.pyc imports=[] binaries=[] datas=[]>
+yaml.nodes: None -> <PyModule 'yaml.nodes' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/nodes.pyc imports=[] binaries=[] datas=[]>
+yaml.loader: None -> <PyModule 'yaml.loader' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/loader.pyc imports=[('reader', 0, 0, -1), ('reader.*', 0, 0, -1), ('scanner', 0, 0, -1), ('scanner.*', 0, 0, -1), ('parser', 0, 0, -1), ('parser.*', 0, 0, -1), ('composer', 0, 0, -1), ('composer.*', 0, 0, -1), ('constructor', 0, 0, -1), ('constructor.*', 0, 0, -1), ('resolver', 0, 0, -1), ('resolver.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.dumper: None -> <PyModule 'yaml.dumper' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/dumper.pyc imports=[('emitter', 0, 0, -1), ('emitter.*', 0, 0, -1), ('serializer', 0, 0, -1), ('serializer.*', 0, 0, -1), ('representer', 0, 0, -1), ('representer.*', 0, 0, -1), ('resolver', 0, 0, -1), ('resolver.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.cyaml: None -> <PyModule 'yaml.cyaml' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/cyaml.pyc imports=[('_yaml', 0, 0, -1), ('_yaml.CParser', 0, 0, -1), ('_yaml.CEmitter', 0, 0, -1), ('constructor', 0, 0, -1), ('constructor.*', 0, 0, -1), ('serializer', 0, 0, -1), ('serializer.*', 0, 0, -1), ('representer', 0, 0, -1), ('representer.*', 0, 0, -1), ('resolver', 0, 0, -1), ('resolver.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.StringIO: None -> None
+yaml.cStringIO: None -> None
+yaml.reader: None -> <PyModule 'yaml.reader' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/reader.pyc imports=[('error', 0, 0, -1), ('error.YAMLError', 0, 0, -1), ('error.Mark', 0, 0, -1), ('codecs', 0, 0, -1), ('re', 0, 0, -1)] binaries=[] datas=[]>
+yaml.scanner: None -> <PyModule 'yaml.scanner' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/scanner.pyc imports=[('error', 0, 0, -1), ('error.MarkedYAMLError', 0, 0, -1), ('tokens', 0, 0, -1), ('tokens.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.parser: None -> <PyModule 'yaml.parser' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/parser.pyc imports=[('error', 0, 0, -1), ('error.MarkedYAMLError', 0, 0, -1), ('tokens', 0, 0, -1), ('tokens.*', 0, 0, -1), ('events', 0, 0, -1), ('events.*', 0, 0, -1), ('scanner', 0, 0, -1), ('scanner.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.composer: None -> <PyModule 'yaml.composer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/composer.pyc imports=[('error', 0, 0, -1), ('error.MarkedYAMLError', 0, 0, -1), ('events', 0, 0, -1), ('events.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.constructor: None -> <PyModule 'yaml.constructor' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/constructor.pyc imports=[('error', 0, 0, -1), ('error.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1), ('datetime', 0, 0, -1), ('binascii', 0, 0, -1), ('re', 0, 0, -1), ('sys', 0, 0, -1), ('types', 0, 0, -1)] binaries=[] datas=[]>
+yaml.resolver: None -> <PyModule 'yaml.resolver' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/resolver.pyc imports=[('error', 0, 0, -1), ('error.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1), ('re', 0, 0, -1)] binaries=[] datas=[]>
+yaml.codecs: None -> None
+yaml.re: None -> None
+yaml.datetime: None -> None
+yaml.binascii: None -> None
+yaml.sys: None -> None
+yaml.types: None -> None
+yaml.emitter: None -> <PyModule 'yaml.emitter' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/emitter.pyc imports=[('error', 0, 0, -1), ('error.YAMLError', 0, 0, -1), ('events', 0, 0, -1), ('events.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.serializer: None -> <PyModule 'yaml.serializer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/serializer.pyc imports=[('error', 0, 0, -1), ('error.YAMLError', 0, 0, -1), ('events', 0, 0, -1), ('events.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1)] binaries=[] datas=[]>
+yaml.representer: None -> <PyModule 'yaml.representer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/yaml/representer.pyc imports=[('error', 0, 0, -1), ('error.*', 0, 0, -1), ('nodes', 0, 0, -1), ('nodes.*', 0, 0, -1), ('datetime', 0, 0, -1), ('sys', 0, 0, -1), ('copy_reg', 0, 0, -1), ('types', 0, 0, -1)] binaries=[] datas=[]>
+yaml.copy_reg: None -> None
+yaml._yaml: None -> None
+_yaml: None -> <ExtensionModule '_yaml' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/_yaml.so imports=[] binaries=[] datas=[]>
+grp: None -> <ExtensionModule 'grp' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/grp.so imports=[] binaries=[] datas=[]>
+tarfile: None -> <PyModule 'tarfile' /Users/josephferraro/Development/joey2/lib/python2.7/tarfile.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('shutil', 0, 0, -1), ('stat', 0, 0, -1), ('errno', 0, 0, -1), ('time', 0, 0, -1), ('struct', 0, 0, -1), ('copy', 0, 0, -1), ('re', 0, 0, -1), ('operator', 0, 0, -1), ('grp', 0, 0, -1), ('pwd', 0, 0, -1), ('zlib', 1, 1, -1), ('bz2', 1, 1, -1), ('bz2', 1, 0, -1), ('warnings', 1, 0, -1), ('gzip', 1, 0, -1), ('bz2', 1, 0, -1), ('warnings', 1, 1, -1), ('warnings', 1, 0, -1), ('warnings.warnpy3k', 1, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('calendar', 1, 0, -1)] binaries=[] datas=[]>
+distutils: None -> <PkgModule 'distutils' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/__init__.pyc imports=[] binaries=[] datas=[('include/python2.7/pyconfig.h', '/Users/josephferraro/Development/joey2/include/python2.7/pyconfig.h', 'DATA'), ('lib/python2.7/config/Makefile', '/Users/josephferraro/Development/joey2/lib/python2.7/config/Makefile', 'DATA')]>
+distutils.errors: None -> <PyModule 'distutils.errors' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/errors.pyc imports=[] binaries=[] datas=[]>
+distutils.spawn: None -> <PyModule 'distutils.spawn' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/spawn.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('distutils.errors', 0, 0, -1), ('distutils.errors.DistutilsPlatformError', 0, 0, -1), ('distutils.errors.DistutilsExecError', 0, 0, -1), ('distutils', 0, 0, -1), ('distutils.log', 0, 0, -1), ('distutils', 0, 1, -1), ('distutils.sysconfig', 0, 1, -1), ('errno', 1, 1, -1)] binaries=[] datas=[]>
+gzip: None -> <PyModule 'gzip' /Users/josephferraro/Development/joey2/lib/python2.7/gzip.pyc imports=[('struct', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('os', 0, 0, -1), ('zlib', 0, 0, -1), ('io', 0, 0, -1), ('__builtin__', 0, 0, -1), ('warnings', 1, 0, -1), ('errno', 1, 1, -1), ('errno', 1, 1, -1)] binaries=[] datas=[]>
+distutils.sys: None -> None
+distutils.os: None -> None
+distutils.distutils: None -> None
+distutils.log: None -> <PyModule 'distutils.log' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/log.pyc imports=[('sys', 0, 0, -1)] binaries=[] datas=[]>
+distutils.sysconfig: None -> <PyModule 'distutils.sysconfig' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/sysconfig.pyc imports=[('os', 0, 0, -1), ('re', 0, 0, -1), ('string', 0, 0, -1), ('sys', 0, 0, -1), ('distutils.errors', 0, 0, -1), ('distutils.errors.DistutilsPlatformError', 0, 0, -1), ('distutils', 1, 1, -1), ('distutils.log', 1, 1, -1), ('subprocess', 1, 1, -1), ('subprocess.Popen', 1, 1, -1), ('subprocess.PIPE', 1, 1, -1), ('distutils.text_file', 1, 0, -1), ('distutils.text_file.TextFile', 1, 0, -1)] binaries=[] datas=[]>
+distutils.errno: None -> None
+distutils.re: None -> None
+distutils.string: None -> None
+distutils.subprocess: None -> None
+distutils.text_file: None -> <PyModule 'distutils.text_file' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/text_file.pyc imports=[('sys', 0, 0, -1)] binaries=[] datas=[]>
+py_compile: None -> <PyModule 'py_compile' /Users/josephferraro/Development/joey2/lib/python2.7/py_compile.pyc imports=[('__builtin__', 0, 0, -1), ('imp', 0, 0, -1), ('marshal', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('traceback', 0, 0, -1)] binaries=[] datas=[]>
+xml: None -> <PkgModule 'xml' /Users/josephferraro/Development/joey2/lib/python2.7/xml/__init__.pyc imports=[('_xmlplus', 0, 0, -1), ('sys', 0, 1, -1), ('xml.sax.xmlreader', 0, 0, -1), ('xml.sax.expatreader', 0, 0, -1)] binaries=[] datas=[]>
+xml.parsers: None -> <PkgModule 'xml.parsers' /Users/josephferraro/Development/joey2/lib/python2.7/xml/parsers/__init__.pyc imports=[] binaries=[] datas=[]>
+xml.parsers.expat: None -> <PyModule 'xml.parsers.expat' /Users/josephferraro/Development/joey2/lib/python2.7/xml/parsers/expat.pyc imports=[('pyexpat', 0, 0, -1), ('pyexpat.*', 0, 0, -1)] binaries=[] datas=[]>
+xml.sax: None -> <PkgModule 'xml.sax' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/__init__.pyc imports=[('xmlreader', 0, 0, -1), ('xmlreader.InputSource', 0, 0, -1), ('handler', 0, 0, -1), ('handler.ContentHandler', 0, 0, -1), ('handler.ErrorHandler', 0, 0, -1), ('_exceptions', 0, 0, -1), ('_exceptions.SAXException', 0, 0, -1), ('_exceptions.SAXNotRecognizedException', 0, 0, -1), ('_exceptions.SAXParseException', 0, 0, -1), ('_exceptions.SAXNotSupportedException', 0, 0, -1), ('_exceptions.SAXReaderNotAvailable', 0, 0, -1), ('xml.sax.expatreader', 0, 1, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('sys', 1, 1, -1), ('org.python.core', 1, 0, -1), ('org.python.core.imp', 1, 0, -1)] binaries=[] datas=[]>
+xml.sax.saxutils: None -> <PyModule 'xml.sax.saxutils' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/saxutils.pyc imports=[('os', 0, 0, -1), ('urlparse', 0, 0, -1), ('urllib', 0, 0, -1), ('types', 0, 0, -1), ('handler', 0, 0, -1), ('xmlreader', 0, 0, -1), ('codecs', 0, 0, -1), ('codecs.xmlcharrefreplace_errors', 0, 0, -1), ('sys', 1, 1, -1)] binaries=[] datas=[]>
+xml.sax.xmlreader: None -> <PyModule 'xml.sax.xmlreader' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/xmlreader.pyc imports=[('handler', 0, 0, -1), ('_exceptions', 0, 0, -1), ('_exceptions.SAXNotSupportedException', 0, 0, -1), ('_exceptions.SAXNotRecognizedException', 0, 0, -1), ('saxutils', 1, 0, -1)] binaries=[] datas=[]>
+xml._xmlplus: None -> None
+_xmlplus: None -> None
+  DEL _xmlplus
+xml.sys: None -> None
+xml.xml: None -> None
+xml.sax.expatreader: None -> <PyModule 'xml.sax.expatreader' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/expatreader.pyc imports=[('xml.sax._exceptions', 0, 0, -1), ('xml.sax._exceptions.*', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_validation', 0, 0, -1), ('xml.sax.handler.feature_namespaces', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_namespace_prefixes', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_external_ges', 0, 0, -1), ('xml.sax.handler.feature_external_pes', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_string_interning', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.property_xml_string', 0, 0, -1), ('xml.sax.handler.property_interning_dict', 0, 0, -1), ('sys', 0, 0, -1), ('xml.parsers', 0, 0, -1), ('xml.parsers.expat', 0, 0, -1), ('xml.sax', 0, 0, -1), ('xml.sax.xmlreader', 0, 0, -1), ('xml.sax.saxutils', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('_weakref', 0, 0, -1), ('weakref', 0, 1, -1), ('xml.sax.saxutils', 0, 1, -1)] binaries=[] datas=[]>
+xml.sax.handler: None -> <PyModule 'xml.sax.handler' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/handler.pyc imports=[] binaries=[] datas=[]>
+xml.sax._exceptions: None -> <PyModule 'xml.sax._exceptions' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/_exceptions.pyc imports=[('sys', 0, 0, -1), ('java.lang', 0, 1, -1), ('java.lang.Exception', 0, 1, -1)] binaries=[] datas=[]>
+xml.sax.xml: None -> None
+xml.sax.os: None -> None
+xml.sax.sys: None -> None
+xml.sax.cStringIO: None -> None
+xml.sax.StringIO: None -> None
+xml.sax.org: None -> None
+org: None -> None
+  DEL org
+org: None -> None
+  DEL org
+xml.sax.java: None -> None
+java: None -> None
+  DEL java
+java: None -> None
+  DEL java
+xml.sax.urlparse: None -> None
+urlparse: None -> <PyModule 'urlparse' /Users/josephferraro/Development/joey2/lib/python2.7/urlparse.pyc imports=[('collections', 0, 0, -1), ('collections.namedtuple', 0, 0, -1)] binaries=[] datas=[]>
+xml.sax.urllib: None -> None
+xml.sax.types: None -> None
+xml.sax.codecs: None -> None
+socket: None -> <PyModule 'socket' /Users/josephferraro/Development/joey2/lib/python2.7/socket.pyc imports=[('_socket', 0, 0, -1), ('_socket', 0, 0, -1), ('_socket.*', 0, 0, -1), ('functools', 0, 0, -1), ('functools.partial', 0, 0, -1), ('types', 0, 0, -1), ('types.MethodType', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl', 0, 1, -1), ('_ssl.SSLError', 0, 1, -1), ('_ssl', 0, 1, -1), ('_ssl.RAND_add', 0, 1, -1), ('_ssl.RAND_egd', 0, 1, -1), ('_ssl.RAND_status', 0, 1, -1), ('_ssl.SSL_ERROR_ZERO_RETURN', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_READ', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_WRITE', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_X509_LOOKUP', 0, 1, -1), ('_ssl.SSL_ERROR_SYSCALL', 0, 1, -1), ('_ssl.SSL_ERROR_SSL', 0, 1, -1), ('_ssl.SSL_ERROR_WANT_CONNECT', 0, 1, -1), ('_ssl.SSL_ERROR_EOF', 0, 1, -1), ('_ssl.SSL_ERROR_INVALID_ERROR_CODE', 0, 1, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('errno', 0, 0, -1), ('ssl', 1, 0, -1)] binaries=[] datas=[]>
+nturl2path: None -> <PyModule 'nturl2path' /Users/josephferraro/Development/joey2/lib/python2.7/nturl2path.pyc imports=[('string', 1, 0, -1), ('urllib', 1, 0, -1), ('urllib', 1, 0, -1)] binaries=[] datas=[]>
+rourl2path: None -> None
+  DEL rourl2path
+rourl2path: None -> None
+  DEL rourl2path
+rourl2path: None -> None
+  DEL rourl2path
+ssl: None -> <PyModule 'ssl' /Users/josephferraro/Development/joey2/lib/python2.7/ssl.pyc imports=[('textwrap', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.OPENSSL_VERSION_NUMBER', 0, 0, -1), ('_ssl.OPENSSL_VERSION_INFO', 0, 0, -1), ('_ssl.OPENSSL_VERSION', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.SSLError', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.CERT_NONE', 0, 0, -1), ('_ssl.CERT_OPTIONAL', 0, 0, -1), ('_ssl.CERT_REQUIRED', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.RAND_status', 0, 0, -1), ('_ssl.RAND_egd', 0, 0, -1), ('_ssl.RAND_add', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.SSL_ERROR_ZERO_RETURN', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_READ', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_WRITE', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_X509_LOOKUP', 0, 0, -1), ('_ssl.SSL_ERROR_SYSCALL', 0, 0, -1), ('_ssl.SSL_ERROR_SSL', 0, 0, -1), ('_ssl.SSL_ERROR_WANT_CONNECT', 0, 0, -1), ('_ssl.SSL_ERROR_EOF', 0, 0, -1), ('_ssl.SSL_ERROR_INVALID_ERROR_CODE', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.PROTOCOL_SSLv3', 0, 0, -1), ('_ssl.PROTOCOL_SSLv23', 0, 0, -1), ('_ssl.PROTOCOL_TLSv1', 0, 0, -1), ('_ssl', 0, 0, -1), ('_ssl.PROTOCOL_SSLv2', 0, 0, -1), ('socket', 0, 0, -1), ('socket.socket', 0, 0, -1), ('socket._fileobject', 0, 0, -1), ('socket._delegate_methods', 0, 0, -1), ('socket.error', 0, 0, -1), ('socket', 0, 0, -1), ('socket.getnameinfo', 0, 0, -1), ('base64', 0, 0, -1), ('errno', 0, 0, -1), ('time', 1, 0, -1)] binaries=[] datas=[]>
+_scproxy: None -> <ExtensionModule '_scproxy' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_scproxy.so imports=[] binaries=[] datas=[]>
+httplib: None -> <PyModule 'httplib' /Users/josephferraro/Development/joey2/lib/python2.7/httplib.pyc imports=[('array', 0, 0, -1), ('array.array', 0, 0, -1), ('os', 0, 0, -1), ('socket', 0, 0, -1), ('sys', 0, 0, -1), ('sys.py3kwarning', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urlsplit', 0, 0, -1), ('warnings', 0, 0, -1), ('mimetools', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('ssl', 0, 0, -1)] binaries=[] datas=[]>
+mimetypes: None -> <PyModule 'mimetypes' /Users/josephferraro/Development/joey2/lib/python2.7/mimetypes.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('posixpath', 0, 0, -1), ('urllib', 0, 0, -1), ('_winreg', 0, 0, -1), ('getopt', 0, 1, -1)] binaries=[] datas=[]>
+mimetools: None -> <PyModule 'mimetools' /Users/josephferraro/Development/joey2/lib/python2.7/mimetools.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('tempfile', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.filterwarnings', 0, 0, -1), ('warnings.catch_warnings', 0, 0, -1), ('rfc822', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.warnpy3k', 0, 0, -1), ('thread', 0, 0, -1), ('dummy_thread', 0, 1, -1), ('time', 1, 0, -1), ('socket', 1, 1, -1), ('base64', 1, 1, -1), ('quopri', 1, 1, -1), ('uu', 1, 1, -1), ('base64', 1, 1, -1), ('quopri', 1, 1, -1), ('uu', 1, 1, -1)] binaries=[] datas=[]>
+email: None -> <PkgModule 'email' /Users/josephferraro/Development/joey2/lib/python2.7/email/__init__.pyc imports=[('sys', 0, 0, -1), ('email.mime', 0, 0, -1), ('email.parser', 1, 0, -1), ('email.parser.Parser', 1, 0, -1), ('email.parser', 1, 0, -1), ('email.parser.Parser', 1, 0, -1), ('email.charset', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.feedparser', 0, 0, -1), ('email.generator', 0, 0, -1), ('email.header', 0, 0, -1), ('email.iterators', 0, 0, -1), ('email.message', 0, 0, -1), ('email.parser', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email.mime.audio', 0, 0, -1), ('email.mime.base', 0, 0, -1), ('email.mime.image', 0, 0, -1), ('email.mime.message', 0, 0, -1), ('email.mime.multipart', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.text', 0, 0, -1)] binaries=[] datas=[]>
+email.utils: None -> <PyModule 'email.utils' /Users/josephferraro/Development/joey2/lib/python2.7/email/utils.pyc imports=[('os', 0, 0, -1), ('re', 0, 0, -1), ('time', 0, 0, -1), ('base64', 0, 0, -1), ('random', 0, 0, -1), ('socket', 0, 0, -1), ('urllib', 0, 0, -1), ('warnings', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.quote', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.AddressList', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.mktime_tz', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.parsedate', 0, 0, -1), ('email._parseaddr', 0, 0, -1), ('email._parseaddr.parsedate_tz', 0, 0, -1), ('quopri', 0, 0, -1), ('quopri.decodestring', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.encoders._bencode', 0, 0, -1), ('email.encoders._qencode', 0, 0, -1), ('urllib', 1, 0, -1)] binaries=[] datas=[]>
+ftplib: None -> <PyModule 'ftplib' /Users/josephferraro/Development/joey2/lib/python2.7/ftplib.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('SOCKS', 0, 0, -1), ('socket', 0, 0, -1), ('socket.getfqdn', 0, 0, -1), ('socket', 0, 1, -1), ('socket', 0, 0, -1), ('socket._GLOBAL_DEFAULT_TIMEOUT', 0, 0, -1), ('ssl', 0, 0, -1), ('re', 1, 1, -1), ('re', 1, 1, -1)] binaries=[] datas=[]>
+_winreg: None -> None
+  DEL _winreg
+_winreg: None -> None
+  DEL _winreg
+_socket: None -> <ExtensionModule '_socket' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_socket.so imports=[] binaries=[] datas=[]>
+_ssl: None -> <ExtensionModule '_ssl' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_ssl.so imports=[] binaries=[] datas=[]>
+rfc822: None -> <PyModule 'rfc822' /Users/josephferraro/Development/joey2/lib/python2.7/rfc822.pyc imports=[('time', 0, 0, -1), ('warnings', 0, 0, -1), ('warnings.warnpy3k', 0, 0, -1), ('sys', 0, 1, -1), ('os', 0, 1, -1)] binaries=[] datas=[]>
+uu: None -> <PyModule 'uu' /Users/josephferraro/Development/joey2/lib/python2.7/uu.pyc imports=[('binascii', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('optparse', 1, 0, -1)] binaries=[] datas=[]>
+_winreg: None -> None
+  DEL _winreg
+email.sys: None -> None
+email.email: None -> None
+email.mime: None -> <PkgModule 'email.mime' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/__init__.pyc imports=[] binaries=[] datas=[]>
+email.parser: None -> <PyModule 'email.parser' /Users/josephferraro/Development/joey2/lib/python2.7/email/parser.pyc imports=[('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.feedparser', 0, 0, -1), ('email.feedparser.FeedParser', 0, 0, -1), ('email.message', 0, 0, -1), ('email.message.Message', 0, 0, -1)] binaries=[] datas=[]>
+email.charset: None -> <PyModule 'email.charset' /Users/josephferraro/Development/joey2/lib/python2.7/email/charset.pyc imports=[('codecs', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.encoders.encode_7or8bit', 0, 0, -1)] binaries=[] datas=[]>
+email.encoders: None -> <PyModule 'email.encoders' /Users/josephferraro/Development/joey2/lib/python2.7/email/encoders.pyc imports=[('base64', 0, 0, -1), ('quopri', 0, 0, -1), ('quopri.encodestring', 0, 0, -1)] binaries=[] datas=[]>
+email.errors: None -> <PyModule 'email.errors' /Users/josephferraro/Development/joey2/lib/python2.7/email/errors.pyc imports=[] binaries=[] datas=[]>
+email.feedparser: None -> <PyModule 'email.feedparser' /Users/josephferraro/Development/joey2/lib/python2.7/email/feedparser.pyc imports=[('re', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email', 0, 0, -1), ('email.message', 0, 0, -1)] binaries=[] datas=[]>
+email.generator: None -> <PyModule 'email.generator' /Users/josephferraro/Development/joey2/lib/python2.7/email/generator.pyc imports=[('re', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('random', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.header', 0, 0, -1), ('email.header.Header', 0, 0, -1)] binaries=[] datas=[]>
+email.header: None -> <PyModule 'email.header' /Users/josephferraro/Development/joey2/lib/python2.7/email/header.pyc imports=[('re', 0, 0, -1), ('binascii', 0, 0, -1), ('email.quoprimime', 0, 0, -1), ('email.base64mime', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.errors.HeaderParseError', 0, 0, -1), ('email.charset', 0, 0, -1), ('email.charset.Charset', 0, 0, -1)] binaries=[] datas=[]>
+email.iterators: None -> <PyModule 'email.iterators' /Users/josephferraro/Development/joey2/lib/python2.7/email/iterators.pyc imports=[('sys', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1)] binaries=[] datas=[]>
+email.message: None -> <PyModule 'email.message' /Users/josephferraro/Development/joey2/lib/python2.7/email/message.pyc imports=[('re', 0, 0, -1), ('uu', 0, 0, -1), ('binascii', 0, 0, -1), ('warnings', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email.charset', 0, 0, -1), ('email', 0, 0, -1), ('email.utils', 0, 0, -1), ('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.iterators', 1, 0, -1), ('email.iterators.walk', 1, 0, -1), ('email.generator', 1, 0, -1), ('email.generator.Generator', 1, 0, -1), ('email.iterators', 0, 0, -1), ('email.generator', 0, 0, -1)] binaries=[] datas=[]>
+email.base64mime: None -> <PyModule 'email.base64mime' /Users/josephferraro/Development/joey2/lib/python2.7/email/base64mime.pyc imports=[('binascii', 0, 0, -1), ('binascii.b2a_base64', 0, 0, -1), ('binascii.a2b_base64', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.utils.fix_eols', 0, 0, -1)] binaries=[] datas=[]>
+email.quoprimime: None -> <PyModule 'email.quoprimime' /Users/josephferraro/Development/joey2/lib/python2.7/email/quoprimime.pyc imports=[('re', 0, 0, -1), ('string', 0, 0, -1), ('string.hexdigits', 0, 0, -1), ('email.utils', 0, 0, -1), ('email.utils.fix_eols', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.audio: None -> <PyModule 'email.mime.audio' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/audio.pyc imports=[('sndhdr', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('email', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.base: None -> <PyModule 'email.mime.base' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/base.pyc imports=[('email', 0, 0, -1), ('email.message', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.image: None -> <PyModule 'email.mime.image' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/image.pyc imports=[('imghdr', 0, 0, -1), ('email', 0, 0, -1), ('email.encoders', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.message: None -> <PyModule 'email.mime.message' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/message.pyc imports=[('email', 0, 0, -1), ('email.message', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.multipart: None -> <PyModule 'email.mime.multipart' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/multipart.pyc imports=[('email.mime.base', 0, 0, -1), ('email.mime.base.MIMEBase', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.nonmultipart: None -> <PyModule 'email.mime.nonmultipart' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/nonmultipart.pyc imports=[('email', 0, 0, -1), ('email.errors', 0, 0, -1), ('email.mime.base', 0, 0, -1), ('email.mime.base.MIMEBase', 0, 0, -1)] binaries=[] datas=[]>
+email.mime.text: None -> <PyModule 'email.mime.text' /Users/josephferraro/Development/joey2/lib/python2.7/email/mime/text.pyc imports=[('email.encoders', 0, 0, -1), ('email.encoders.encode_7or8bit', 0, 0, -1), ('email.mime.nonmultipart', 0, 0, -1), ('email.mime.nonmultipart.MIMENonMultipart', 0, 0, -1)] binaries=[] datas=[]>
+email.warnings: None -> None
+email.cStringIO: None -> None
+email.re: None -> None
+email.uu: None -> None
+email.binascii: None -> None
+email.codecs: None -> None
+email.os: None -> None
+email.time: None -> None
+email.base64: None -> None
+email.random: None -> None
+email.socket: None -> None
+email.urllib: None -> None
+email._parseaddr: None -> <PyModule 'email._parseaddr' /Users/josephferraro/Development/joey2/lib/python2.7/email/_parseaddr.pyc imports=[('time', 0, 0, -1)] binaries=[] datas=[]>
+email.quopri: None -> None
+email.string: None -> None
+email.mime.sndhdr: None -> None
+sndhdr: None -> <PyModule 'sndhdr' /Users/josephferraro/Development/joey2/lib/python2.7/sndhdr.pyc imports=[('aifc', 1, 0, -1), ('sys', 1, 0, -1), ('sys', 1, 0, -1), ('os', 1, 0, -1), ('glob', 1, 1, -1)] binaries=[] datas=[]>
+email.mime.cStringIO: None -> None
+email.mime.email: None -> None
+aifc: None -> <PyModule 'aifc' /Users/josephferraro/Development/joey2/lib/python2.7/aifc.pyc imports=[('struct', 0, 0, -1), ('__builtin__', 0, 0, -1), ('chunk', 0, 0, -1), ('chunk.Chunk', 0, 0, -1), ('sys', 0, 1, -1), ('math', 1, 0, -1), ('cl', 1, 1, -1), ('cl', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 1, -1), ('cl', 1, 1, -1), ('audioop', 1, 1, -1), ('cl', 1, 0, -1), ('audioop', 1, 0, -1), ('audioop', 1, 0, -1), ('cl', 1, 0, -1), ('audioop', 1, 1, -1)] binaries=[] datas=[]>
+glob: None -> <PyModule 'glob' /Users/josephferraro/Development/joey2/lib/python2.7/glob.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('re', 0, 0, -1), ('fnmatch', 0, 0, -1)] binaries=[] datas=[]>
+chunk: None -> <PyModule 'chunk' /Users/josephferraro/Development/joey2/lib/python2.7/chunk.pyc imports=[('struct', 1, 0, -1)] binaries=[] datas=[]>
+cl: None -> None
+  DEL cl
+cl: None -> None
+  DEL cl
+audioop: None -> <ExtensionModule 'audioop' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/audioop.so imports=[] binaries=[] datas=[]>
+cl: None -> None
+  DEL cl
+cl: None -> None
+  DEL cl
+cl: None -> None
+  DEL cl
+email.mime.imghdr: None -> None
+imghdr: None -> <PyModule 'imghdr' /Users/josephferraro/Development/joey2/lib/python2.7/imghdr.pyc imports=[('sys', 1, 0, -1), ('sys', 1, 0, -1), ('os', 1, 0, -1), ('glob', 1, 1, -1)] binaries=[] datas=[]>
+SOCKS: None -> None
+  DEL SOCKS
+xml.sax._weakref: None -> None
+xml.sax.weakref: None -> None
+xml.parsers.pyexpat: None -> None
+pyexpat: None -> <ExtensionModule 'pyexpat' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/pyexpat.so imports=[('xmlparse', 0, 0, -1), ('xmltok', 0, 0, -1)] binaries=[] datas=[]>
+xmlparse: None -> None
+  DEL xmlparse
+xmltok: None -> None
+  DEL xmltok
+jinja2.jinja2: None -> None
+jinja2.environment: None -> <PyModule 'jinja2.environment' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/environment.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.defaults', 0, 0, -1), ('jinja2.defaults.*', 0, 0, -1), ('jinja2.lexer', 0, 0, -1), ('jinja2.lexer.get_lexer', 0, 0, -1), ('jinja2.lexer.TokenStream', 0, 0, -1), ('jinja2.parser', 0, 0, -1), ('jinja2.parser.Parser', 0, 0, -1), ('jinja2.optimizer', 0, 0, -1), ('jinja2.optimizer.optimize', 0, 0, -1), ('jinja2.compiler', 0, 0, -1), ('jinja2.compiler.generate', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.runtime.new_context', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.exceptions.TemplatesNotFound', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.import_string', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.consume', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('jinja2.utils._encode_filename', 0, 0, -1), ('jinja2.loaders', 1, 0, -1), ('jinja2.loaders.ModuleLoader', 1, 0, -1), ('imp', 1, 1, -1), ('marshal', 1, 1, -1), ('zipfile', 1, 1, -1), ('zipfile.ZipFile', 1, 1, -1), ('zipfile.ZipInfo', 1, 1, -1), ('zipfile.ZIP_DEFLATED', 1, 1, -1), ('zipfile.ZIP_STORED', 1, 1, -1), ('jinja2.debug', 1, 1, -1), ('jinja2.debug.make_traceback', 1, 1, -1)] binaries=[] datas=[]>
+jinja2.loaders: None -> <PyModule 'jinja2.loaders' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/loaders.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('weakref', 0, 0, -1), ('types', 0, 0, -1), ('types.ModuleType', 0, 0, -1), ('os', 0, 0, -1), ('os.path', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.sha1', 0, 0, -1), ('sha', 0, 1, -1), ('sha.new', 0, 1, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.open_if_exists', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('pkg_resources', 1, 0, -1), ('pkg_resources.DefaultProvider', 1, 0, -1), ('pkg_resources.ResourceManager', 1, 0, -1), ('pkg_resources.get_provider', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.bccache: None -> <PyModule 'jinja2.bccache' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/bccache.pyc imports=[('os', 0, 0, -1), ('os.path', 0, 0, -1), ('os.listdir', 0, 0, -1), ('sys', 0, 0, -1), ('marshal', 0, 0, -1), ('tempfile', 0, 0, -1), ('cPickle', 0, 0, -1), ('fnmatch', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.sha1', 0, 0, -1), ('sha', 0, 1, -1), ('sha.new', 0, 1, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.open_if_exists', 0, 0, -1), ('io', 0, 1, -1), ('io.BytesIO', 0, 1, -1), ('cStringIO', 0, 1, -1), ('cStringIO.StringIO', 0, 1, -1), ('os', 1, 0, -1), ('os.remove', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.runtime: None -> <PyModule 'jinja2.runtime' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/runtime.pyc imports=[('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes.EvalContext', 0, 0, -1), ('jinja2.nodes._context_function_types', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.partial', 0, 0, -1), ('jinja2.utils.soft_unicode', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.internalcode', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.utils.object_type_repr', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.UndefinedError', 0, 0, -1), ('jinja2.exceptions.TemplateRuntimeError', 0, 0, -1), ('jinja2.exceptions.TemplateNotFound', 0, 0, -1), ('collections', 0, 0, -1), ('collections.Mapping', 0, 0, -1)] binaries=[] datas=[]>
+jinja2.exceptions: None -> <PyModule 'jinja2.exceptions' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/exceptions.pyc imports=[] binaries=[] datas=[]>
+jinja2.filters: None -> <PyModule 'jinja2.filters' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/filters.pyc imports=[('re', 0, 0, -1), ('math', 0, 0, -1), ('random', 0, 0, -1), ('random.choice', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('itertools.groupby', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.pformat', 0, 0, -1), ('jinja2.utils.urlize', 0, 0, -1), ('jinja2.utils.soft_unicode', 0, 0, -1), ('jinja2.utils.unicode_urlencode', 0, 0, -1), ('jinja2.runtime', 0, 0, -1), ('jinja2.runtime.Undefined', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.FilterArgumentError', 0, 0, -1), ('textwrap', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.utils: None -> <PyModule 'jinja2.utils' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/utils.pyc imports=[('re', 0, 0, -1), ('sys', 0, 0, -1), ('errno', 0, 0, -1), ('urllib.parse', 0, 0, -1), ('urllib.parse.quote_from_bytes', 0, 0, -1), ('urllib', 0, 1, -1), ('urllib.quote', 0, 1, -1), ('thread', 0, 0, -1), ('thread.allocate_lock', 0, 0, -1), ('dummy_thread', 0, 1, -1), ('dummy_thread.allocate_lock', 0, 1, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('keyword', 0, 0, -1), ('keyword.iskeyword', 0, 0, -1), ('collections', 0, 0, -1), ('collections.MutableMapping', 0, 0, -1), ('markupsafe', 0, 0, -1), ('markupsafe.Markup', 0, 0, -1), ('markupsafe.escape', 0, 0, -1), ('markupsafe.soft_unicode', 0, 0, -1), ('jinja2._markupsafe', 0, 1, -1), ('jinja2._markupsafe.Markup', 0, 1, -1), ('jinja2._markupsafe.escape', 0, 1, -1), ('jinja2._markupsafe.soft_unicode', 0, 1, -1), ('functools', 0, 0, -1), ('functools.partial', 0, 0, -1), ('jinja2.runtime', 1, 0, -1), ('jinja2.runtime.Undefined', 1, 0, -1), ('jinja2.environment', 1, 0, -1), ('jinja2.environment._spontaneous_environments', 1, 0, -1), ('jinja2.lexer', 1, 0, -1), ('jinja2.lexer._lexer_cache', 1, 0, -1), ('pretty', 1, 0, -1), ('pretty.pretty', 1, 0, -1), ('pprint', 1, 1, -1), ('pprint.pformat', 1, 1, -1), ('jinja2.constants', 1, 0, -1), ('jinja2.constants.LOREM_IPSUM_WORDS', 1, 0, -1), ('random', 1, 0, -1), ('random.choice', 1, 0, -1), ('random.randrange', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.os: None -> None
+jinja2.sys: None -> None
+jinja2.nodes: None -> <PyModule 'jinja2.nodes' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/nodes.pyc imports=[('operator', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('itertools.izip', 0, 0, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.MethodType', 0, 0, -1), ('jinja2.utils.FunctionType', 0, 0, -1), ('compiler', 1, 0, -1), ('compiler.has_safe_repr', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.defaults: None -> <PyModule 'jinja2.defaults' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/defaults.pyc imports=[('jinja2.utils', 0, 0, -1), ('jinja2.utils.generate_lorem_ipsum', 0, 0, -1), ('jinja2.utils.Cycler', 0, 0, -1), ('jinja2.utils.Joiner', 0, 0, -1), ('jinja2.filters', 0, 0, -1), ('jinja2.filters.FILTERS', 0, 0, -1), ('jinja2.tests', 0, 0, -1), ('jinja2.tests.TESTS', 0, 0, -1)] binaries=[] datas=[]>
+jinja2.lexer: None -> <PyModule 'jinja2.lexer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/lexer.pyc imports=[('re', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.LRUCache', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2', 0, 1, -1), ('jinja2._stringdefs', 0, 1, -1)] binaries=[] datas=[]>
+jinja2.parser: None -> <PyModule 'jinja2.parser' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/parser.pyc imports=[('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.lexer', 0, 0, -1), ('jinja2.lexer.describe_token', 0, 0, -1), ('jinja2.lexer.describe_token_expr', 0, 0, -1)] binaries=[] datas=[]>
+jinja2.optimizer: None -> <PyModule 'jinja2.optimizer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/optimizer.pyc imports=[('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.visitor', 0, 0, -1), ('jinja2.visitor.NodeTransformer', 0, 0, -1)] binaries=[] datas=[]>
+jinja2.compiler: None -> <PyModule 'jinja2.compiler' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/compiler.pyc imports=[('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.chain', 0, 0, -1), ('copy', 0, 0, -1), ('copy.deepcopy', 0, 0, -1), ('jinja2', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes', 0, 0, -1), ('jinja2.nodes.EvalContext', 0, 0, -1), ('jinja2.visitor', 0, 0, -1), ('jinja2.visitor.NodeVisitor', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateAssertionError', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.Markup', 0, 0, -1), ('jinja2.utils.concat', 0, 0, -1), ('jinja2.utils.escape', 0, 0, -1), ('jinja2.utils.is_python_keyword', 0, 0, -1), ('jinja2.utils.next', 0, 0, -1), ('jinja2.runtime', 1, 0, -1), ('jinja2.runtime.__all__', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.imp: None -> None
+jinja2.marshal: None -> None
+jinja2.zipfile: None -> None
+jinja2.debug: None -> <PyModule 'jinja2.debug' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/debug.pyc imports=[('sys', 0, 0, -1), ('traceback', 0, 0, -1), ('types', 0, 0, -1), ('types.TracebackType', 0, 0, -1), ('jinja2.utils', 0, 0, -1), ('jinja2.utils.CodeType', 0, 0, -1), ('jinja2.utils.missing', 0, 0, -1), ('jinja2.utils.internal_code', 0, 0, -1), ('jinja2.exceptions', 0, 0, -1), ('jinja2.exceptions.TemplateSyntaxError', 0, 0, -1), ('__pypy__', 0, 0, -1), ('__pypy__.tproxy', 0, 0, -1), ('jinja2._debugsupport', 0, 1, -1), ('jinja2._debugsupport.tb_set_next', 0, 1, -1), ('jinja2.debugrenderer', 1, 0, -1), ('jinja2.debugrenderer.render_traceback', 1, 0, -1), ('ctypes', 1, 0, -1), ('types', 1, 0, -1), ('types.TracebackType', 1, 0, -1)] binaries=[] datas=[]>
+jinja2.operator: None -> None
+jinja2.itertools: None -> None
+jinja2.collections: None -> None
+jinja2.re: None -> None
+jinja2.errno: None -> None
+jinja2.urllib: None -> None
+jinja2.thread: None -> None
+jinja2.dummy_thread: None -> None
+jinja2.keyword: None -> None
+jinja2.markupsafe: None -> None
+markupsafe: None -> None
+  DEL markupsafe
+markupsafe: None -> None
+  DEL markupsafe
+markupsafe: None -> None
+  DEL markupsafe
+markupsafe: None -> None
+  DEL markupsafe
+jinja2._markupsafe: None -> <PkgModule 'jinja2._markupsafe' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/_markupsafe/__init__.pyc imports=[('re', 0, 0, -1), ('itertools', 0, 0, -1), ('itertools.imap', 0, 0, -1), ('jinja2._markupsafe._speedups', 0, 0, -1), ('jinja2._markupsafe._speedups.escape', 0, 0, -1), ('jinja2._markupsafe._speedups.escape_silent', 0, 0, -1), ('jinja2._markupsafe._speedups.soft_unicode', 0, 0, -1), ('jinja2._markupsafe._native', 0, 1, -1), ('jinja2._markupsafe._native.escape', 0, 1, -1), ('jinja2._markupsafe._native.escape_silent', 0, 1, -1), ('jinja2._markupsafe._native.soft_unicode', 0, 1, -1), ('jinja2._markupsafe._constants', 1, 0, -1), ('jinja2._markupsafe._constants.HTML_ENTITIES', 1, 0, -1)] binaries=[] datas=[]>
+jinja2._markupsafe.Markup: None -> None
+  DEL jinja2._markupsafe.Markup
+jinja2._markupsafe.escape: None -> None
+  DEL jinja2._markupsafe.escape
+jinja2._markupsafe.soft_unicode: None -> None
+  DEL jinja2._markupsafe.soft_unicode
+jinja2.functools: None -> None
+jinja2.pretty: None -> None
+pretty: None -> None
+  DEL pretty
+pretty: None -> None
+  DEL pretty
+jinja2.pprint: None -> None
+jinja2.constants: None -> <PyModule 'jinja2.constants' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/Jinja2-2.7_devdev_20130202-py2.7.egg/jinja2/constants.pyc imports=[] binaries=[] datas=[]>
+jinja2.random: None -> None
 jinja2._markupsafe.re: None -> None
 jinja2._markupsafe.itertools: None -> None
 jinja2._markupsafe.jinja2: None -> None
@@ -908,47 +1177,6 @@ java: None -> None
   DEL java
 vms_lib: None -> None
   DEL vms_lib
-xml: None -> <PkgModule 'xml' /Users/josephferraro/Development/joey2/lib/python2.7/xml/__init__.pyc imports=[('_xmlplus', 0, 0, -1), ('sys', 0, 1, -1), ('xml.sax.xmlreader', 0, 0, -1), ('xml.sax.expatreader', 0, 0, -1)] binaries=[] datas=[]>
-xml.parsers: None -> <PkgModule 'xml.parsers' /Users/josephferraro/Development/joey2/lib/python2.7/xml/parsers/__init__.pyc imports=[] binaries=[] datas=[]>
-xml.parsers.expat: None -> <PyModule 'xml.parsers.expat' /Users/josephferraro/Development/joey2/lib/python2.7/xml/parsers/expat.pyc imports=[('pyexpat', 0, 0, -1), ('pyexpat.*', 0, 0, -1)] binaries=[] datas=[]>
-xml._xmlplus: None -> None
-_xmlplus: None -> None
-  DEL _xmlplus
-xml.sys: None -> None
-xml.xml: None -> None
-xml.sax: None -> <PkgModule 'xml.sax' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/__init__.pyc imports=[('xmlreader', 0, 0, -1), ('xmlreader.InputSource', 0, 0, -1), ('handler', 0, 0, -1), ('handler.ContentHandler', 0, 0, -1), ('handler.ErrorHandler', 0, 0, -1), ('_exceptions', 0, 0, -1), ('_exceptions.SAXException', 0, 0, -1), ('_exceptions.SAXNotRecognizedException', 0, 0, -1), ('_exceptions.SAXParseException', 0, 0, -1), ('_exceptions.SAXNotSupportedException', 0, 0, -1), ('_exceptions.SAXReaderNotAvailable', 0, 0, -1), ('xml.sax.expatreader', 0, 1, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('cStringIO', 1, 0, -1), ('cStringIO.StringIO', 1, 0, -1), ('StringIO', 1, 1, -1), ('StringIO.StringIO', 1, 1, -1), ('sys', 1, 1, -1), ('org.python.core', 1, 0, -1), ('org.python.core.imp', 1, 0, -1)] binaries=[] datas=[]>
-xml.sax.xmlreader: None -> <PyModule 'xml.sax.xmlreader' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/xmlreader.pyc imports=[('handler', 0, 0, -1), ('_exceptions', 0, 0, -1), ('_exceptions.SAXNotSupportedException', 0, 0, -1), ('_exceptions.SAXNotRecognizedException', 0, 0, -1), ('saxutils', 1, 0, -1)] binaries=[] datas=[]>
-xml.sax.expatreader: None -> <PyModule 'xml.sax.expatreader' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/expatreader.pyc imports=[('xml.sax._exceptions', 0, 0, -1), ('xml.sax._exceptions.*', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_validation', 0, 0, -1), ('xml.sax.handler.feature_namespaces', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_namespace_prefixes', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_external_ges', 0, 0, -1), ('xml.sax.handler.feature_external_pes', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_string_interning', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.property_xml_string', 0, 0, -1), ('xml.sax.handler.property_interning_dict', 0, 0, -1), ('sys', 0, 0, -1), ('xml.parsers', 0, 0, -1), ('xml.parsers.expat', 0, 0, -1), ('xml.sax', 0, 0, -1), ('xml.sax.xmlreader', 0, 0, -1), ('xml.sax.saxutils', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('_weakref', 0, 0, -1), ('weakref', 0, 1, -1), ('xml.sax.saxutils', 0, 1, -1)] binaries=[] datas=[]>
-xml.sax.handler: None -> <PyModule 'xml.sax.handler' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/handler.pyc imports=[] binaries=[] datas=[]>
-xml.sax._exceptions: None -> <PyModule 'xml.sax._exceptions' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/_exceptions.pyc imports=[('sys', 0, 0, -1), ('java.lang', 0, 1, -1), ('java.lang.Exception', 0, 1, -1)] binaries=[] datas=[]>
-xml.sax.xml: None -> None
-xml.sax.os: None -> None
-xml.sax.sys: None -> None
-xml.sax.cStringIO: None -> None
-xml.sax.StringIO: None -> None
-xml.sax.org: None -> None
-org: None -> None
-  DEL org
-org: None -> None
-  DEL org
-xml.sax.saxutils: None -> <PyModule 'xml.sax.saxutils' /Users/josephferraro/Development/joey2/lib/python2.7/xml/sax/saxutils.pyc imports=[('os', 0, 0, -1), ('urlparse', 0, 0, -1), ('urllib', 0, 0, -1), ('types', 0, 0, -1), ('handler', 0, 0, -1), ('xmlreader', 0, 0, -1), ('codecs', 0, 0, -1), ('codecs.xmlcharrefreplace_errors', 0, 0, -1), ('sys', 1, 1, -1)] binaries=[] datas=[]>
-xml.sax.java: None -> None
-java: None -> None
-  DEL java
-java: None -> None
-  DEL java
-xml.sax.urlparse: None -> None
-xml.sax.urllib: None -> None
-xml.sax.types: None -> None
-xml.sax.codecs: None -> None
-xml.sax._weakref: None -> None
-xml.sax.weakref: None -> None
-xml.parsers.pyexpat: None -> None
-pyexpat: None -> <ExtensionModule 'pyexpat' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/pyexpat.so imports=[('xmlparse', 0, 0, -1), ('xmltok', 0, 0, -1)] binaries=[] datas=[]>
-xmlparse: None -> None
-  DEL xmlparse
-xmltok: None -> None
-  DEL xmltok
 distutils.dep_util: None -> <PyModule 'distutils.dep_util' /Users/josephferraro/Development/joey2/lib/python2.7/distutils/dep_util.pyc imports=[('os', 0, 0, -1), ('stat', 0, 0, -1), ('stat.ST_MTIME', 0, 0, -1), ('distutils.errors', 0, 0, -1), ('distutils.errors.DistutilsFileError', 0, 0, -1)] binaries=[] datas=[]>
 distutils.pwd: None -> None
 distutils.tempfile: None -> None
@@ -969,120 +1197,301 @@ jinja2.debugrenderer: None -> None
 jinja2.debugrenderer: None -> None
   DEL jinja2.debugrenderer
 jinja2.ctypes: None -> None
-ctypes: None -> <PkgModule 'ctypes' /Users/josephferraro/Development/joey2/lib/python2.7/ctypes/__init__.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.Union', 0, 0, -1), ('_ctypes.Structure', 0, 0, -1), ('_ctypes.Array', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._Pointer', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.CFuncPtr', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.__version__', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.RTLD_LOCAL', 0, 0, -1), ('_ctypes.RTLD_GLOBAL', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.ArgumentError', 0, 0, -1), ('struct', 0, 0, -1), ('struct.calcsize', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes.FormatError', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes.FUNCFLAG_CDECL', 0, 0, -1), ('_ctypes.FUNCFLAG_PYTHONAPI', 0, 0, -1), ('_ctypes.FUNCFLAG_USE_ERRNO', 0, 0, -1), ('_ctypes.FUNCFLAG_USE_LASTERROR', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes.LoadLibrary', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.FUNCFLAG_STDCALL', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.dlopen', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes.sizeof', 0, 0, -1), ('_ctypes.byref', 0, 0, -1), ('_ctypes.addressof', 0, 0, -1), ('_ctypes.alignment', 0, 0, -1), ('_ctypes.resize', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.get_errno', 0, 0, -1), ('_ctypes.set_errno', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._SimpleCData', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.POINTER', 0, 0, -1), ('_ctypes.pointer', 0, 0, -1), ('_ctypes._pointer_type_cache', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes.set_conversion_mode', 0, 0, -1), ('_ctypes', 0, 1, -1), ('_ctypes._check_HRESULT', 0, 1, -1), ('_ctypes._SimpleCData', 0, 1, -1), ('_ctypes', 0, 1, -1), ('_ctypes.get_last_error', 0, 1, -1), ('_ctypes.set_last_error', 0, 1, -1), ('_ctypes', 0, 0, -1), ('_ctypes._memmove_addr', 0, 0, -1), ('_ctypes._memset_addr', 0, 0, -1), ('_ctypes._string_at_addr', 0, 0, -1), ('_ctypes._cast_addr', 0, 0, -1), ('_ctypes', 0, 0, -1), ('_ctypes._wstring_at_addr', 0, 0, -1), ('ctypes._endian', 0, 0, -1), ('ctypes._endian.BigEndianStructure', 0, 0, -1), ('ctypes._endian.LittleEndianStructure', 0, 0, -1), ('struct', 1, 0, -1), ('struct.calcsize', 1, 0, -1)] binaries=[] datas=[]>
-ctypes.os: None -> None
-ctypes.sys: None -> None
-ctypes._ctypes: None -> None
-_ctypes: None -> <ExtensionModule '_ctypes' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_ctypes.so imports=[] binaries=[] datas=[]>
-ctypes.struct: None -> None
-ctypes.ctypes: None -> None
-ctypes._endian: None -> <PyModule 'ctypes._endian' /Users/josephferraro/Development/joey2/lib/python2.7/ctypes/_endian.pyc imports=[('sys', 0, 0, -1), ('ctypes', 0, 0, -1), ('ctypes.*', 0, 0, -1)] binaries=[] datas=[]>
 jinja2.tempfile: None -> None
 jinja2.cPickle: None -> None
 jinja2.fnmatch: None -> None
 jinja2.io: None -> None
-multiprocessing.os: None -> None
-multiprocessing.sys: None -> None
-multiprocessing.multiprocessing: None -> None
-multiprocessing.process: None -> <PyModule 'multiprocessing.process' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/process.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('signal', 0, 0, -1), ('itertools', 0, 0, -1), ('forking', 1, 1, 1), ('forking.Popen', 1, 1, 1), ('', 1, 0, 1), ('util', 1, 0, 1), ('traceback', 1, 1, -1), ('forking', 1, 0, 1), ('forking.Popen', 1, 0, 1)] binaries=[] datas=[]>
-multiprocessing.util: None -> <PyModule 'multiprocessing.util' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/util.pyc imports=[('itertools', 0, 0, -1), ('weakref', 0, 0, -1), ('atexit', 0, 0, -1), ('threading', 0, 0, -1), ('multiprocessing.process', 0, 0, -1), ('multiprocessing.process.current_process', 0, 0, -1), ('multiprocessing.process.active_children', 0, 0, -1), ('logging', 1, 0, -1), ('atexit', 1, 0, -1), ('logging', 1, 0, -1), ('shutil', 1, 1, -1), ('tempfile', 1, 1, -1), ('traceback', 1, 1, -1)] binaries=[] datas=[]>
-multiprocessing._multiprocessing: None -> None
-_multiprocessing: None -> <ExtensionModule '_multiprocessing' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/_multiprocessing.so imports=[] binaries=[] datas=[]>
-multiprocessing.managers: None -> <PyModule 'multiprocessing.managers' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/managers.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('weakref', 0, 0, -1), ('threading', 0, 0, -1), ('array', 0, 0, -1), ('Queue', 0, 0, -1), ('traceback', 0, 0, -1), ('traceback.format_exc', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.Process', 0, 0, -1), ('multiprocessing.current_process', 0, 0, -1), ('multiprocessing.active_children', 0, 0, -1), ('multiprocessing.Pool', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.connection', 0, 0, -1), ('multiprocessing.process', 0, 0, -1), ('multiprocessing.process.AuthenticationString', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.exit', 0, 0, -1), ('multiprocessing.forking.Popen', 0, 0, -1), ('multiprocessing.forking.assert_spawning', 0, 0, -1), ('multiprocessing.forking.ForkingPickler', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.info', 0, 0, -1), ('cPickle', 0, 0, -1), ('cPickle.PicklingError', 0, 0, -1), ('pickle', 0, 1, -1), ('pickle.PicklingError', 0, 1, -1), ('traceback', 1, 0, -1)] binaries=[] datas=[]>
-multiprocessing.connection: None -> <PyModule 'multiprocessing.connection' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/connection.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('socket', 0, 0, -1), ('errno', 0, 0, -1), ('time', 0, 0, -1), ('tempfile', 0, 0, -1), ('itertools', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.current_process', 0, 0, -1), ('multiprocessing.AuthenticationError', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.get_temp_dir', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.sub_debug', 0, 0, -1), ('multiprocessing.util.debug', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.duplicate', 0, 0, -1), ('multiprocessing.forking.close', 0, 0, -1), ('_multiprocessing', 0, 1, -1), ('_multiprocessing.win32', 0, 1, -1), ('hmac', 1, 0, -1), ('hmac', 1, 0, -1), ('xmlrpclib', 1, 0, -1), ('xmlrpclib', 1, 0, -1)] binaries=[] datas=[]>
-multiprocessing.forking: None -> <PyModule 'multiprocessing.forking' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/forking.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('signal', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.process', 0, 0, -1), ('pickle', 0, 0, -1), ('pickle.Pickler', 0, 0, -1), ('functools', 0, 0, -1), ('functools.partial', 0, 0, -1), ('time', 0, 1, -1), ('thread', 0, 1, -1), ('msvcrt', 0, 1, -1), ('_subprocess', 0, 1, -1), ('time', 0, 1, -1), ('_multiprocessing', 0, 1, -1), ('_multiprocessing.win32', 0, 1, -1), ('_multiprocessing.Connection', 0, 1, -1), ('_multiprocessing.PipeConnection', 0, 1, -1), ('util', 0, 1, 1), ('util.Finalize', 0, 1, 1), ('pickle', 0, 1, -1), ('pickle.load', 0, 1, -1), ('pickle.HIGHEST_PROTOCOL', 0, 1, -1), ('random', 1, 1, -1), ('util', 1, 0, 1), ('util._logger', 1, 0, 1), ('util._log_to_stderr', 1, 0, 1), ('imp', 1, 1, -1)] binaries=[] datas=[]>
-multiprocessing.reduction: None -> <PyModule 'multiprocessing.reduction' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/reduction.pyc imports=[('os', 0, 0, -1), ('sys', 0, 0, -1), ('socket', 0, 0, -1), ('threading', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.current_process', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.Popen', 0, 0, -1), ('multiprocessing.forking.duplicate', 0, 0, -1), ('multiprocessing.forking.close', 0, 0, -1), ('multiprocessing.forking.ForkingPickler', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.register_after_fork', 0, 0, -1), ('multiprocessing.util.debug', 0, 0, -1), ('multiprocessing.util.sub_debug', 0, 0, -1), ('multiprocessing.connection', 0, 0, -1), ('multiprocessing.connection.Client', 0, 0, -1), ('multiprocessing.connection.Listener', 0, 0, -1), ('_subprocess', 0, 1, -1), ('_multiprocessing', 0, 1, -1), ('_multiprocessing.win32', 0, 1, -1), ('util', 1, 0, 1), ('util.is_exiting', 1, 0, 1), ('util.sub_warning', 1, 0, 1), ('traceback', 1, 1, -1)] binaries=[] datas=[]>
-multiprocessing.synchronize: None -> <PyModule 'multiprocessing.synchronize' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/synchronize.pyc imports=[('threading', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('time.time', 0, 0, -1), ('time.sleep', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing.process', 0, 0, -1), ('multiprocessing.process.current_process', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.register_after_fork', 0, 0, -1), ('multiprocessing.util.debug', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.assert_spawning', 0, 0, -1), ('multiprocessing.forking.Popen', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('_multiprocessing.SemLock', 0, 0, -1)] binaries=[] datas=[]>
-multiprocessing.queues: None -> <PyModule 'multiprocessing.queues' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/queues.pyc imports=[('sys', 0, 0, -1), ('os', 0, 0, -1), ('threading', 0, 0, -1), ('collections', 0, 0, -1), ('time', 0, 0, -1), ('atexit', 0, 0, -1), ('weakref', 0, 0, -1), ('Queue', 0, 0, -1), ('Queue.Empty', 0, 0, -1), ('Queue.Full', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.Pipe', 0, 0, -1), ('multiprocessing.synchronize', 0, 0, -1), ('multiprocessing.synchronize.Lock', 0, 0, -1), ('multiprocessing.synchronize.BoundedSemaphore', 0, 0, -1), ('multiprocessing.synchronize.Semaphore', 0, 0, -1), ('multiprocessing.synchronize.Condition', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.debug', 0, 0, -1), ('multiprocessing.util.info', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.register_after_fork', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.assert_spawning', 0, 0, -1), ('util', 1, 0, 1), ('util.is_exiting', 1, 0, 1), ('traceback', 1, 1, -1)] binaries=[] datas=[]>
-multiprocessing.pool: None -> <PyModule 'multiprocessing.pool' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/pool.pyc imports=[('threading', 0, 0, -1), ('Queue', 0, 0, -1), ('itertools', 0, 0, -1), ('collections', 0, 0, -1), ('time', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.Process', 0, 0, -1), ('multiprocessing.cpu_count', 0, 0, -1), ('multiprocessing.TimeoutError', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.debug', 0, 0, -1), ('queues', 1, 0, 1), ('queues.SimpleQueue', 1, 0, 1), ('dummy', 1, 0, 1), ('dummy.Process', 1, 0, 1)] binaries=[] datas=[]>
-multiprocessing.sharedctypes: None -> <PyModule 'multiprocessing.sharedctypes' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/sharedctypes.pyc imports=[('sys', 0, 0, -1), ('ctypes', 0, 0, -1), ('weakref', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.heap', 0, 0, -1), ('multiprocessing.RLock', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.assert_spawning', 0, 0, -1), ('multiprocessing.forking.ForkingPickler', 0, 0, -1)] binaries=[] datas=[]>
-multiprocessing.signal: None -> None
-multiprocessing.itertools: None -> None
-multiprocessing.traceback: None -> None
-multiprocessing.pickle: None -> None
-multiprocessing.functools: None -> None
-multiprocessing.time: None -> None
-multiprocessing.thread: None -> None
-multiprocessing.msvcrt: None -> None
-msvcrt: None -> None
-  DEL msvcrt
-multiprocessing._subprocess: None -> None
-_subprocess: None -> None
-  DEL _subprocess
-multiprocessing.random: None -> None
-multiprocessing.imp: None -> None
-multiprocessing.weakref: None -> None
-multiprocessing.atexit: None -> None
-multiprocessing.threading: None -> None
-multiprocessing.logging: None -> None
-multiprocessing.shutil: None -> None
-multiprocessing.tempfile: None -> None
-multiprocessing.array: None -> None
-multiprocessing.Queue: None -> None
-Queue: None -> <PyModule 'Queue' /Users/josephferraro/Development/joey2/lib/python2.7/Queue.pyc imports=[('time', 0, 0, -1), ('time.time', 0, 0, -1), ('threading', 0, 0, -1), ('dummy_threading', 0, 1, -1), ('collections', 0, 0, -1), ('collections.deque', 0, 0, -1), ('heapq', 0, 0, -1)] binaries=[] datas=[]>
-multiprocessing.Process: None -> None
-  DEL multiprocessing.Process
-multiprocessing.current_process: None -> None
-  DEL multiprocessing.current_process
-multiprocessing.active_children: None -> None
-  DEL multiprocessing.active_children
-multiprocessing.Pool: None -> None
-  DEL multiprocessing.Pool
-multiprocessing.cPickle: None -> None
-multiprocessing.socket: None -> None
-multiprocessing.errno: None -> None
-multiprocessing.current_process: None -> None
-  DEL multiprocessing.current_process
-multiprocessing.AuthenticationError: None -> None
-  DEL multiprocessing.AuthenticationError
-multiprocessing.hmac: None -> None
-hmac: None -> <PyModule 'hmac' /Users/josephferraro/Development/joey2/lib/python2.7/hmac.pyc imports=[('warnings', 0, 0, -1), ('hashlib', 1, 1, -1)] binaries=[] datas=[]>
-multiprocessing.xmlrpclib: None -> None
-xmlrpclib: None -> <PyModule 'xmlrpclib' /Users/josephferraro/Development/joey2/lib/python2.7/xmlrpclib.pyc imports=[('re', 0, 0, -1), ('string', 0, 0, -1), ('time', 0, 0, -1), ('operator', 0, 0, -1), ('types', 0, 0, -1), ('types.*', 0, 0, -1), ('socket', 0, 0, -1), ('errno', 0, 0, -1), ('httplib', 0, 0, -1), ('gzip', 0, 0, -1), ('datetime', 0, 0, -1), ('sys', 0, 0, -1), ('sys.modules', 0, 0, -1), ('base64', 0, 0, -1), ('cStringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('_xmlrpclib', 0, 0, -1), ('_xmlrpclib', 0, 0, -1), ('xml.parsers', 0, 0, -1), ('xml.parsers.expat', 0, 0, -1), ('xmllib', 1, 0, -1), ('urllib', 1, 0, -1), ('base64', 1, 1, -1), ('urllib', 1, 0, -1)] binaries=[] datas=[]>
-_xmlrpclib: None -> None
-  DEL _xmlrpclib
-_xmlrpclib: None -> None
-  DEL _xmlrpclib
-xmllib: None -> <PyModule 'xmllib' /Users/josephferraro/Development/joey2/lib/python2.7/xmllib.pyc imports=[('re', 0, 0, -1), ('string', 0, 0, -1), ('warnings', 0, 0, -1), ('sys', 1, 0, -1), ('getopt', 1, 0, -1), ('time', 1, 0, -1), ('time.time', 1, 0, -1)] binaries=[] datas=[]>
-multiprocessing.current_process: None -> None
-  DEL multiprocessing.current_process
-_subprocess: None -> None
-  DEL _subprocess
-multiprocessing.collections: None -> None
-multiprocessing.Pipe: None -> None
-  DEL multiprocessing.Pipe
-multiprocessing.Process: None -> None
-  DEL multiprocessing.Process
-multiprocessing.cpu_count: None -> None
-  DEL multiprocessing.cpu_count
-multiprocessing.TimeoutError: None -> None
-  DEL multiprocessing.TimeoutError
-multiprocessing.dummy: None -> <PkgModule 'multiprocessing.dummy' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/dummy/__init__.pyc imports=[('threading', 0, 0, -1), ('sys', 0, 0, -1), ('weakref', 0, 0, -1), ('array', 0, 0, -1), ('itertools', 0, 0, -1), ('multiprocessing', 0, 0, -1), ('multiprocessing.TimeoutError', 0, 0, -1), ('multiprocessing.cpu_count', 0, 0, -1), ('multiprocessing.dummy.connection', 0, 0, -1), ('multiprocessing.dummy.connection.Pipe', 0, 0, -1), ('threading', 0, 0, -1), ('threading.Lock', 0, 0, -1), ('threading.RLock', 0, 0, -1), ('threading.Semaphore', 0, 0, -1), ('threading.BoundedSemaphore', 0, 0, -1), ('threading', 0, 0, -1), ('threading.Event', 0, 0, -1), ('Queue', 0, 0, -1), ('Queue.Queue', 0, 0, -1), ('multiprocessing.pool', 1, 0, -1), ('multiprocessing.pool.ThreadPool', 1, 0, -1)] binaries=[] datas=[]>
-multiprocessing.dummy.Process: None -> None
-  DEL multiprocessing.dummy.Process
-multiprocessing.dummy.threading: None -> None
-multiprocessing.dummy.sys: None -> None
-multiprocessing.dummy.weakref: None -> None
-multiprocessing.dummy.array: None -> None
-multiprocessing.dummy.itertools: None -> None
-multiprocessing.dummy.multiprocessing: None -> None
-multiprocessing.TimeoutError: None -> None
-  DEL multiprocessing.TimeoutError
-multiprocessing.cpu_count: None -> None
-  DEL multiprocessing.cpu_count
-multiprocessing.dummy.connection: None -> <PyModule 'multiprocessing.dummy.connection' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/dummy/connection.pyc imports=[('Queue', 0, 0, -1), ('Queue.Queue', 0, 0, -1)] binaries=[] datas=[]>
-multiprocessing.dummy.Queue: None -> None
-multiprocessing.ctypes: None -> None
-multiprocessing.heap: None -> <PyModule 'multiprocessing.heap' /Users/josephferraro/Development/joey2/lib/python2.7/multiprocessing/heap.pyc imports=[('bisect', 0, 0, -1), ('mmap', 0, 0, -1), ('tempfile', 0, 0, -1), ('os', 0, 0, -1), ('sys', 0, 0, -1), ('threading', 0, 0, -1), ('itertools', 0, 0, -1), ('_multiprocessing', 0, 0, -1), ('multiprocessing.util', 0, 0, -1), ('multiprocessing.util.Finalize', 0, 0, -1), ('multiprocessing.util.info', 0, 0, -1), ('multiprocessing.forking', 0, 0, -1), ('multiprocessing.forking.assert_spawning', 0, 0, -1), ('_multiprocessing', 0, 1, -1), ('_multiprocessing.win32', 0, 1, -1)] binaries=[] datas=[]>
-multiprocessing.RLock: None -> None
-  DEL multiprocessing.RLock
-multiprocessing.bisect: None -> None
-multiprocessing.mmap: None -> None
-mmap: None -> <ExtensionModule 'mmap' /Users/josephferraro/Development/joey2/lib/python2.7/lib-dynload/mmap.so imports=[] binaries=[] datas=[]>
-lib.server.atexit: None -> None
-lib.server.time: None -> None
-lib.server.signal: None -> None
-__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mmserver/mmserver.py imports=[('argparse', 0, 0, -1), ('lib.server.server', 0, 0, -1), ('lib.server.daemon', 0, 0, -1), ('lib.server.daemon.Daemon', 0, 0, -1), ('lib.config', 0, 0, -1), ('threading', 0, 0, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mmserver/mmserver.spec imports=[('os', 0, 0, -1), ('tools.packaging.pyinstaller_hooks', 0, 0, -1)] binaries=[] datas=[]>
+suds.os: None -> None
+suds.sys: None -> None
+suds.suds: None -> None
+suds.metrics: None -> <PyModule 'suds.metrics' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/metrics.pyc imports=[('time', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('math', 0, 0, -1), ('math.modf', 0, 0, -1)] binaries=[] datas=[]>
+suds.cookielib: None -> None
+cookielib: None -> <PyModule 'cookielib' /Users/josephferraro/Development/joey2/lib/python2.7/cookielib.pyc imports=[('re', 0, 0, -1), ('urlparse', 0, 0, -1), ('copy', 0, 0, -1), ('time', 0, 0, -1), ('urllib', 0, 0, -1), ('threading', 0, 0, -1), ('dummy_threading', 0, 1, -1), ('httplib', 0, 0, -1), ('calendar', 0, 0, -1), ('calendar.timegm', 0, 0, -1), ('_LWPCookieJar', 0, 0, -1), ('_LWPCookieJar.LWPCookieJar', 0, 0, -1), ('_LWPCookieJar.lwp_cookie_str', 0, 0, -1), ('_MozillaCookieJar', 0, 0, -1), ('_MozillaCookieJar.MozillaCookieJar', 0, 0, -1), ('logging', 1, 1, -1), ('warnings', 1, 0, -1), ('traceback', 1, 0, -1), ('StringIO', 1, 0, -1)] binaries=[] datas=[]>
+suds.reader: None -> <PyModule 'suds.reader' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/reader.pyc imports=[('suds.sax.parser', 0, 0, -1), ('suds.sax.parser.Parser', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.Request', 0, 0, -1), ('suds.cache', 0, 0, -1), ('suds.cache.Cache', 0, 0, -1), ('suds.cache.NoCache', 0, 0, -1), ('suds.store', 0, 0, -1), ('suds.store.DocumentStore', 0, 0, -1), ('suds.plugin', 0, 0, -1), ('suds.plugin.PluginContainer', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+suds.transport: None -> <PkgModule 'suds.transport' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/transport/__init__.pyc imports=[('suds.transport.options', 1, 0, -1), ('suds.transport.options.Options', 1, 0, -1)] binaries=[] datas=[]>
+suds.transport.TransportError: None -> None
+  DEL suds.transport.TransportError
+suds.transport.Request: None -> None
+  DEL suds.transport.Request
+suds.transport.https: None -> <PyModule 'suds.transport.https' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/transport/https.pyc imports=[('urllib2', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.*', 0, 0, -1), ('suds.transport.http', 0, 0, -1), ('suds.transport.http.HttpTransport', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('ntlm', 1, 0, -1), ('ntlm.HTTPNtlmAuthHandler', 1, 0, -1)] binaries=[] datas=[]>
+suds.servicedefinition: None -> <PyModule 'suds.servicedefinition' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/servicedefinition.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.metrics', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1)] binaries=[] datas=[]>
+suds.sudsobject: None -> <PyModule 'suds.sudsobject' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sudsobject.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('new', 0, 0, -1), ('new.classobj', 0, 0, -1)] binaries=[] datas=[]>
+suds.resolver: None -> <PyModule 'suds.resolver' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/resolver.pyc imports=[('re', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.xsd.query', 0, 0, -1), ('suds.xsd.query.BlindQuery', 0, 0, -1), ('suds.xsd.query.TypeQuery', 0, 0, -1), ('suds.xsd.query.qualify', 0, 0, -1)] binaries=[] datas=[]>
+suds.builder: None -> <PyModule 'suds.builder' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/builder.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1)] binaries=[] datas=[]>
+suds.wsdl: None -> <PyModule 'suds.wsdl' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/wsdl.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.bindings.document', 0, 0, -1), ('suds.bindings.document.Document', 0, 0, -1), ('suds.bindings.rpc', 0, 0, -1), ('suds.bindings.rpc.RPC', 0, 0, -1), ('suds.bindings.rpc.Encoded', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.qualify', 0, 0, -1), ('suds.xsd.Namespace', 0, 0, -1), ('suds.xsd.schema', 0, 0, -1), ('suds.xsd.schema.Schema', 0, 0, -1), ('suds.xsd.schema.SchemaCollection', 0, 0, -1), ('suds.xsd.query', 0, 0, -1), ('suds.xsd.query.ElementQuery', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.sudsobject.Facade', 0, 0, -1), ('suds.sudsobject.Metadata', 0, 0, -1), ('suds.reader', 0, 0, -1), ('suds.reader.DocumentReader', 0, 0, -1), ('suds.reader.DefinitionsReader', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urljoin', 0, 0, -1), ('re', 0, 0, -1), ('soaparray', 0, 0, -1)] binaries=[] datas=[]>
+suds.cache: None -> <PyModule 'suds.cache' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/cache.pyc imports=[('os', 0, 0, -1), ('suds', 0, 0, -1), ('tempfile', 0, 0, -1), ('tempfile.gettempdir', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.*', 0, 0, -1), ('suds.sax.parser', 0, 0, -1), ('suds.sax.parser.Parser', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('datetime', 0, 0, -1), ('datetime.datetime', 0, 0, -1), ('datetime', 0, 0, -1), ('datetime.timedelta', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('cPickle', 0, 0, -1), ('pickle', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax: None -> <PkgModule 'suds.sax' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/__init__.pyc imports=[('suds.sax.enc', 0, 0, -1), ('suds.sax.enc.Encoder', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.document: None -> <PyModule 'suds.sax.document' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/document.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.*', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.parser: None -> <PyModule 'suds.sax.parser' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/parser.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds.metrics', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.*', 0, 0, -1), ('suds.sax.document', 0, 0, -1), ('suds.sax.document.Document', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1), ('suds.sax.attribute', 0, 0, -1), ('suds.sax.attribute.Attribute', 0, 0, -1), ('xml.sax', 0, 0, -1), ('xml.sax.make_parser', 0, 0, -1), ('xml.sax.InputSource', 0, 0, -1), ('xml.sax.ContentHandler', 0, 0, -1), ('xml.sax.handler', 0, 0, -1), ('xml.sax.handler.feature_external_ges', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1)] binaries=[] datas=[]>
+suds.options: None -> <PyModule 'suds.options' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/options.pyc imports=[('suds.properties', 0, 0, -1), ('suds.properties.*', 0, 0, -1), ('suds.wsse', 0, 0, -1), ('suds.wsse.Security', 0, 0, -1), ('suds.xsd.doctor', 0, 0, -1), ('suds.xsd.doctor.Doctor', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.Transport', 0, 0, -1), ('suds.cache', 0, 0, -1), ('suds.cache.Cache', 0, 0, -1), ('suds.cache.NoCache', 0, 0, -1)] binaries=[] datas=[]>
+suds.properties: None -> <PyModule 'suds.properties' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/properties.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+suds.urlparse: None -> None
+suds.copy: None -> None
+suds.plugin: None -> <PyModule 'suds.plugin' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/plugin.pyc imports=[('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+suds.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.time: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.math: None -> None
+dummy_threading: None -> <PyModule 'dummy_threading' /Users/josephferraro/Development/joey2/lib/python2.7/dummy_threading.pyc imports=[('sys', 0, 0, -1), ('sys.modules', 0, 0, -1), ('dummy_thread', 0, 0, -1), ('threading', 0, 0, -1), ('_dummy_threading', 0, 0, -1), ('_dummy_threading.*', 0, 0, -1), ('_dummy_threading', 0, 0, -1), ('_dummy_threading.__all__', 0, 0, -1)] binaries=[] datas=[]>
+_LWPCookieJar: None -> <PyModule '_LWPCookieJar' /Users/josephferraro/Development/joey2/lib/python2.7/_LWPCookieJar.pyc imports=[('time', 0, 0, -1), ('re', 0, 0, -1), ('cookielib', 0, 0, -1), ('cookielib._warn_unhandled_exception', 0, 0, -1), ('cookielib.FileCookieJar', 0, 0, -1), ('cookielib.LoadError', 0, 0, -1), ('cookielib.Cookie', 0, 0, -1), ('cookielib.MISSING_FILENAME_TEXT', 0, 0, -1), ('cookielib.join_header_words', 0, 0, -1), ('cookielib.split_header_words', 0, 0, -1), ('cookielib.iso2time', 0, 0, -1), ('cookielib.time2isoz', 0, 0, -1)] binaries=[] datas=[]>
+_MozillaCookieJar: None -> <PyModule '_MozillaCookieJar' /Users/josephferraro/Development/joey2/lib/python2.7/_MozillaCookieJar.pyc imports=[('re', 0, 0, -1), ('time', 0, 0, -1), ('cookielib', 0, 0, -1), ('cookielib._warn_unhandled_exception', 0, 0, -1), ('cookielib.FileCookieJar', 0, 0, -1), ('cookielib.LoadError', 0, 0, -1), ('cookielib.Cookie', 0, 0, -1), ('cookielib.MISSING_FILENAME_TEXT', 0, 0, -1)] binaries=[] datas=[]>
+_dummy_threading: None -> None
+  DEL _dummy_threading
+_dummy_threading: None -> None
+  DEL _dummy_threading
+_dummy_threading: None -> None
+  DEL _dummy_threading
+_dummy_threading: None -> None
+  DEL _dummy_threading
+suds.transport.Request: None -> None
+  DEL suds.transport.Request
+suds.store: None -> <PyModule 'suds.store' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/store.pyc imports=[('StringIO', 0, 0, -1), ('StringIO.StringIO', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.suds: None -> None
+suds.sax.enc: None -> <PyModule 'suds.sax.enc' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/enc.pyc imports=[('re', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.re: None -> None
+suds.sax.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.element: None -> <PyModule 'suds.sax.element' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/element.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.*', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1), ('suds.sax.attribute', 0, 0, -1), ('suds.sax.attribute.Attribute', 0, 0, -1), ('sys', 0, 0, -1), ('sets', 0, 1, -1), ('sets.Set', 0, 1, -1)] binaries=[] datas=[]>
+suds.sax.text: None -> <PyModule 'suds.sax.text' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/text.pyc imports=[('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.*', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.attribute: None -> <PyModule 'suds.sax.attribute' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/attribute.pyc imports=[('suds.sax', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.*', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.xml: None -> None
+xml.sax.make_parser: None -> None
+xml.sax.InputSource: None -> None
+xml.sax.ContentHandler: None -> None
+suds.sax.cStringIO: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.sys: None -> None
+suds.sax.sets: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.transport.suds: None -> None
+suds.transport.options: None -> <PyModule 'suds.transport.options' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/transport/options.pyc imports=[('suds.transport', 0, 0, -1), ('suds.transport.*', 0, 0, -1), ('suds.properties', 0, 0, -1), ('suds.properties.*', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.tempfile: None -> None
+suds.datetime: None -> None
+suds.cStringIO: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.cPickle: None -> None
+suds.pickle: None -> None
+suds.StringIO: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.transport.urllib2: None -> None
+urllib2: None -> <PyModule 'urllib2' /Users/josephferraro/Development/joey2/lib/python2.7/urllib2.pyc imports=[('base64', 0, 0, -1), ('hashlib', 0, 0, -1), ('httplib', 0, 0, -1), ('mimetools', 0, 0, -1), ('os', 0, 0, -1), ('posixpath', 0, 0, -1), ('random', 0, 0, -1), ('re', 0, 0, -1), ('socket', 0, 0, -1), ('sys', 0, 0, -1), ('time', 0, 0, -1), ('urlparse', 0, 0, -1), ('bisect', 0, 0, -1), ('cStringIO', 0, 0, -1), ('cStringIO.StringIO', 0, 0, -1), ('StringIO', 0, 1, -1), ('StringIO.StringIO', 0, 1, -1), ('urllib', 0, 0, -1), ('urllib.unwrap', 0, 0, -1), ('urllib.unquote', 0, 0, -1), ('urllib.splittype', 0, 0, -1), ('urllib.splithost', 0, 0, -1), ('urllib.quote', 0, 0, -1), ('urllib.addinfourl', 0, 0, -1), ('urllib.splitport', 0, 0, -1), ('urllib.splittag', 0, 0, -1), ('urllib.splitattr', 0, 0, -1), ('urllib.ftpwrapper', 0, 0, -1), ('urllib.splituser', 0, 0, -1), ('urllib.splitpasswd', 0, 0, -1), ('urllib.splitvalue', 0, 0, -1), ('urllib', 0, 0, -1), ('urllib.localhost', 0, 0, -1), ('urllib.url2pathname', 0, 0, -1), ('urllib.getproxies', 0, 0, -1), ('urllib.proxy_bypass', 0, 0, -1), ('types', 1, 0, -1), ('cookielib', 1, 0, -1), ('email.utils', 1, 0, -1), ('mimetypes', 1, 0, -1), ('ftplib', 1, 0, -1), ('mimetypes', 1, 0, -1)] binaries=[] datas=[]>
+suds.transport.http: None -> <PyModule 'suds.transport.http' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/transport/http.pyc imports=[('urllib2', 0, 0, -1), ('base64', 0, 0, -1), ('socket', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.*', 0, 0, -1), ('suds.properties', 0, 0, -1), ('suds.properties.Unskin', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urlparse', 0, 0, -1), ('cookielib', 0, 0, -1), ('cookielib.CookieJar', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+suds.transport.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.transport.ntlm: None -> None
+ntlm: None -> None
+  DEL ntlm
+ntlm: None -> None
+  DEL ntlm
+suds.transport.base64: None -> None
+suds.transport.socket: None -> None
+suds.transport.urlparse: None -> None
+suds.transport.cookielib: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.new: None -> None
+new: None -> <PyModule 'new' /Users/josephferraro/Development/joey2/lib/python2.7/new.pyc imports=[('warnings', 0, 0, -1), ('warnings.warnpy3k', 0, 0, -1), ('types', 0, 0, -1), ('types.ClassType', 0, 0, -1), ('types', 0, 0, -1), ('types.FunctionType', 0, 0, -1), ('types', 0, 0, -1), ('types.InstanceType', 0, 0, -1), ('types', 0, 0, -1), ('types.MethodType', 0, 0, -1), ('types', 0, 0, -1), ('types.ModuleType', 0, 0, -1), ('types', 0, 0, -1), ('types.CodeType', 0, 0, -1)] binaries=[] datas=[]>
+suds.re: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.xsd: None -> <PkgModule 'suds.xsd' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/__init__.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1)] binaries=[] datas=[]>
+suds.xsd.query: None -> <PyModule 'suds.xsd.query' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/query.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.qualify', 0, 0, -1), ('suds.xsd.isqref', 0, 0, -1), ('suds.xsd.sxbuiltin', 0, 0, -1), ('suds.xsd.sxbuiltin.Factory', 0, 0, -1), ('suds.xsd.sxbasic', 1, 0, -1), ('suds.xsd.sxbasic.Attribute', 1, 0, -1), ('suds.xsd.sxbasic', 1, 0, -1), ('suds.xsd.sxbasic.Element', 1, 0, -1)] binaries=[] datas=[]>
+suds.xsd.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.xsd.suds: None -> None
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.xsd.qualify: None -> None
+  DEL suds.xsd.qualify
+suds.xsd.isqref: None -> None
+  DEL suds.xsd.isqref
+suds.xsd.sxbuiltin: None -> <PyModule 'suds.xsd.sxbuiltin' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/sxbuiltin.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.*', 0, 0, -1), ('suds.sax.date', 0, 0, -1), ('suds.sax.date.*', 0, 0, -1), ('suds.xsd.sxbase', 0, 0, -1), ('suds.xsd.sxbase.XBuiltin', 0, 0, -1), ('datetime', 0, 0, -1)] binaries=[] datas=[]>
+suds.xsd.sxbasic: None -> <PyModule 'suds.xsd.sxbasic' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/sxbasic.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.*', 0, 0, -1), ('suds.xsd.sxbase', 0, 0, -1), ('suds.xsd.sxbase.*', 0, 0, -1), ('suds.xsd.query', 0, 0, -1), ('suds.xsd.query.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.transport', 0, 0, -1), ('suds.transport.TransportError', 0, 0, -1), ('suds.reader', 0, 0, -1), ('suds.reader.DocumentReader', 0, 0, -1), ('urlparse', 0, 0, -1), ('urlparse.urljoin', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.date: None -> <PyModule 'suds.sax.date' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/sax/date.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.*', 0, 0, -1), ('time', 0, 0, -1), ('datetime', 0, 0, -1), ('re', 0, 0, -1)] binaries=[] datas=[]>
+suds.xsd.sxbase: None -> <PyModule 'suds.xsd.sxbase' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/sxbase.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.*', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1)] binaries=[] datas=[]>
+suds.xsd.datetime: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.time: None -> None
+suds.sax.datetime: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.transport.TransportError: None -> None
+  DEL suds.transport.TransportError
+suds.xsd.urlparse: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.bindings: None -> <PkgModule 'suds.bindings' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/bindings/__init__.pyc imports=[] binaries=[] datas=[]>
+suds.bindings.document: None -> <PyModule 'suds.bindings.document' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/bindings/document.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.bindings.binding', 0, 0, -1), ('suds.bindings.binding.Binding', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1)] binaries=[] datas=[]>
+suds.bindings.rpc: None -> <PyModule 'suds.bindings.rpc' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/bindings/rpc.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx.encoded', 0, 0, -1), ('suds.mx.encoded.Encoded', 0, 0, -1), ('suds.umx.encoded', 0, 0, -1), ('suds.umx.encoded.Encoded', 0, 0, -1), ('suds.bindings.binding', 0, 0, -1), ('suds.bindings.binding.Binding', 0, 0, -1), ('suds.bindings.binding.envns', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1)] binaries=[] datas=[]>
+suds.xsd.qualify: None -> None
+  DEL suds.xsd.qualify
+suds.xsd.Namespace: None -> None
+  DEL suds.xsd.Namespace
+suds.xsd.schema: None -> <PyModule 'suds.xsd.schema' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/schema.pyc imports=[('suds.metrics', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.xsd', 0, 0, -1), ('suds.xsd.*', 0, 0, -1), ('suds.xsd.sxbuiltin', 0, 0, -1), ('suds.xsd.sxbuiltin.*', 0, 0, -1), ('suds.xsd.sxbasic', 0, 0, -1), ('suds.xsd.sxbasic.Factory', 0, 0, -1), ('suds.xsd.sxbuiltin', 0, 0, -1), ('suds.xsd.sxbuiltin.Factory', 0, 0, -1), ('suds.xsd.sxbase', 0, 0, -1), ('suds.xsd.sxbase.SchemaObject', 0, 0, -1), ('suds.xsd.deplist', 0, 0, -1), ('suds.xsd.deplist.DepList', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1)] binaries=[] datas=[]>
+suds.soaparray: None -> <PyModule 'suds.soaparray' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/soaparray.pyc imports=[('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds.xsd.sxbasic', 0, 0, -1), ('suds.xsd.sxbasic.Factory', 0, 0, -1), ('suds.xsd.sxbasic', 0, 0, -1), ('suds.xsd.sxbasic.Attribute', 0, 0, -1)] binaries=[] datas=[]>
+suds.bindings.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.bindings.suds: None -> None
+suds.bindings.binding: None -> <PyModule 'suds.bindings.binding' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/bindings/binding.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.sax.parser', 0, 0, -1), ('suds.sax.parser.Parser', 0, 0, -1), ('suds.sax.document', 0, 0, -1), ('suds.sax.document.Document', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.Content', 0, 0, -1), ('suds.mx.literal', 0, 0, -1), ('suds.mx.literal.Literal', 0, 0, -1), ('suds.umx.basic', 0, 0, -1), ('suds.umx.basic.Basic', 0, 0, -1), ('suds.umx.typed', 0, 0, -1), ('suds.umx.typed.Typed', 0, 0, -1), ('suds.bindings.multiref', 0, 0, -1), ('suds.bindings.multiref.MultiRef', 0, 0, -1), ('suds.xsd.query', 0, 0, -1), ('suds.xsd.query.TypeQuery', 0, 0, -1), ('suds.xsd.query.ElementQuery', 0, 0, -1), ('suds.xsd.sxbasic', 0, 0, -1), ('suds.xsd.sxbasic.Element', 0, 0, -1), ('suds.options', 0, 0, -1), ('suds.options.Options', 0, 0, -1), ('suds.plugin', 0, 0, -1), ('suds.plugin.PluginContainer', 0, 0, -1), ('copy', 0, 0, -1), ('copy.deepcopy', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.mx: None -> <PkgModule 'suds.mx' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/__init__.pyc imports=[('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1)] binaries=[] datas=[]>
+suds.mx.Content: None -> None
+  DEL suds.mx.Content
+suds.mx.literal: None -> <PyModule 'suds.mx.literal' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/literal.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.*', 0, 0, -1), ('suds.mx.core', 0, 0, -1), ('suds.mx.core.Core', 0, 0, -1), ('suds.mx.typer', 0, 0, -1), ('suds.mx.typer.Typer', 0, 0, -1), ('suds.resolver', 0, 0, -1), ('suds.resolver.GraphResolver', 0, 0, -1), ('suds.resolver.Frame', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1)] binaries=[] datas=[]>
+suds.umx: None -> <PkgModule 'suds.umx' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/__init__.pyc imports=[('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1)] binaries=[] datas=[]>
+suds.umx.basic: None -> <PyModule 'suds.umx.basic' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/basic.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.umx', 0, 0, -1), ('suds.umx.*', 0, 0, -1), ('suds.umx.core', 0, 0, -1), ('suds.umx.core.Core', 0, 0, -1)] binaries=[] datas=[]>
+suds.umx.typed: None -> <PyModule 'suds.umx.typed' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/typed.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.umx', 0, 0, -1), ('suds.umx.*', 0, 0, -1), ('suds.umx.core', 0, 0, -1), ('suds.umx.core.Core', 0, 0, -1), ('suds.resolver', 0, 0, -1), ('suds.resolver.NodeResolver', 0, 0, -1), ('suds.resolver.Frame', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1)] binaries=[] datas=[]>
+suds.bindings.multiref: None -> <PyModule 'suds.bindings.multiref' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/bindings/multiref.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1)] binaries=[] datas=[]>
+suds.bindings.copy: None -> None
+suds.mx.suds: None -> None
+suds.mx.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.mx.core: None -> <PyModule 'suds.mx.core' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/core.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.*', 0, 0, -1), ('suds.mx.appender', 0, 0, -1), ('suds.mx.appender.ContentAppender', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax.document', 0, 0, -1), ('suds.sax.document.Document', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Property', 0, 0, -1)] binaries=[] datas=[]>
+suds.mx.typer: None -> <PyModule 'suds.mx.typer' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/typer.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.mx.appender: None -> <PyModule 'suds.mx.appender' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/appender.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.*', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.footprint', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.sudsobject.Property', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1), ('copy', 0, 0, -1), ('copy.deepcopy', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.mx.copy: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.umx.suds: None -> None
+suds.umx.logging: None -> None
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.umx.core: None -> <PyModule 'suds.umx.core' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/core.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.umx', 0, 0, -1), ('suds.umx.*', 0, 0, -1), ('suds.umx.attrlist', 0, 0, -1), ('suds.umx.attrlist.AttrList', 0, 0, -1), ('suds.sax.text', 0, 0, -1), ('suds.sax.text.Text', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1), ('suds.sudsobject.merge', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.umx.attrlist: None -> <PyModule 'suds.umx.attrlist' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/attrlist.pyc imports=[('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.umx', 0, 0, -1), ('suds.umx.*', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.wsse: None -> <PyModule 'suds.wsse' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/wsse.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.sax.date', 0, 0, -1), ('suds.sax.date.UTC', 0, 0, -1), ('datetime', 0, 0, -1), ('datetime.datetime', 0, 0, -1), ('datetime.timedelta', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.md5', 0, 0, -1), ('md5', 0, 1, -1), ('md5.md5', 0, 1, -1)] binaries=[] datas=[]>
+suds.xsd.doctor: None -> <PyModule 'suds.xsd.doctor' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/doctor.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1), ('suds.plugin', 0, 0, -1), ('suds.plugin.DocumentPlugin', 0, 0, -1), ('suds.plugin.DocumentContext', 0, 0, -1)] binaries=[] datas=[]>
+suds.transport.Transport: None -> None
+  DEL suds.transport.Transport
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.hashlib: None -> None
+suds.md5: None -> None
+md5: None -> <PyModule 'md5' /Users/josephferraro/Development/joey2/lib/python2.7/md5.pyc imports=[('warnings', 0, 0, -1), ('hashlib', 0, 0, -1), ('hashlib.md5', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.mx.encoded: None -> <PyModule 'suds.mx.encoded' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/mx/encoded.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.mx', 0, 0, -1), ('suds.mx.*', 0, 0, -1), ('suds.mx.literal', 0, 0, -1), ('suds.mx.literal.Literal', 0, 0, -1), ('suds.mx.typer', 0, 0, -1), ('suds.mx.typer.Typer', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sudsobject.Factory', 0, 0, -1), ('suds.sudsobject.Object', 0, 0, -1), ('suds.xsd.query', 0, 0, -1), ('suds.xsd.query.TypeQuery', 0, 0, -1)] binaries=[] datas=[]>
+suds.umx.encoded: None -> <PyModule 'suds.umx.encoded' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/umx/encoded.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1), ('suds.umx', 0, 0, -1), ('suds.umx.*', 0, 0, -1), ('suds.umx.typed', 0, 0, -1), ('suds.umx.typed.Typed', 0, 0, -1), ('suds.sax', 0, 0, -1), ('suds.sax.splitPrefix', 0, 0, -1), ('suds.sax.Namespace', 0, 0, -1)] binaries=[] datas=[]>
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+suds.xsd.deplist: None -> <PyModule 'suds.xsd.deplist' /Users/josephferraro/Development/joey2/lib/python2.7/site-packages/suds-0.4-py2.7.egg/suds/xsd/deplist.pyc imports=[('logging', 0, 0, -1), ('logging.getLogger', 0, 0, -1), ('suds', 0, 0, -1), ('suds.*', 0, 0, -1)] binaries=[] datas=[]>
+suds.sax.splitPrefix: None -> None
+  DEL suds.sax.splitPrefix
+suds.sax.Namespace: None -> None
+  DEL suds.sax.Namespace
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+logging.getLogger: None -> None
+  DEL logging.getLogger
+lib.enum: None -> <PyModule 'lib.enum' /Users/josephferraro/Development/Python/mavensmate/mm/lib/enum.pyc imports=[] binaries=[] datas=[]>
+lib.mm_project: None -> <PyModule 'lib.mm_project' /Users/josephferraro/Development/Python/mavensmate/mm/lib/mm_project.pyc imports=[('datetime', 0, 0, -1), ('re', 0, 0, -1), ('string', 0, 0, -1), ('sys', 0, 0, -1), ('unittest', 0, 0, -1), ('traceback', 0, 0, -1), ('json', 0, 0, -1), ('os', 0, 0, -1), ('yaml', 0, 0, -1), ('logging', 0, 0, -1), ('mm_util', 0, 0, -1), ('config', 0, 0, -1), ('shutil', 0, 0, -1), ('distutils', 0, 0, -1), ('xmltodict', 0, 0, -1), ('threading', 0, 0, -1), ('time', 0, 0, -1), ('operator', 0, 0, -1), ('operator.itemgetter', 0, 0, -1), ('mm_client', 0, 0, -1), ('mm_client.MavensMateClient', 0, 0, -1)] binaries=[] datas=[]>
+lib.datetime: None -> None
+lib.unittest: None -> None
+lib.traceback: None -> None
+lib.distutils: None -> None
+lib.operator: None -> None
+lib.sforce: None -> <PkgModule 'lib.sforce' /Users/josephferraro/Development/Python/mavensmate/mm/lib/sforce/__init__.pyc imports=[('string', 0, 0, -1), ('sys', 0, 0, -1)] binaries=[] datas=[]>
+lib.sforce.base: None -> <PyModule 'lib.sforce.base' /Users/josephferraro/Development/Python/mavensmate/mm/lib/sforce/base.pyc imports=[('string', 0, 0, -1), ('sys', 0, 0, -1), ('os.path', 0, 0, -1), ('re', 0, 0, -1), ('lib.config', 0, 0, -1), ('suds.plugin', 0, 0, -1), ('suds.plugin.MessagePlugin', 0, 0, -1), ('suds.client', 0, 0, -1), ('suds.client.Client', 0, 0, -1), ('suds.xsd.doctor', 0, 0, -1), ('suds.xsd.doctor.Import', 0, 0, -1), ('suds.xsd.doctor.ImportDoctor', 0, 0, -1), ('suds.transport.cache', 0, 0, -1), ('suds.transport.cache.FileCache', 0, 0, -1), ('suds.cache', 0, 0, -1), ('suds.cache.FileCache', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('suds.sax.element', 0, 0, -1), ('suds.sax.element.Element', 0, 0, -1)] binaries=[] datas=[]>
+lib.suds: None -> None
+suds.WebFault: None -> None
+  DEL suds.WebFault
+lib.sforce.partner: None -> <PyModule 'lib.sforce.partner' /Users/josephferraro/Development/Python/mavensmate/mm/lib/sforce/partner.pyc imports=[('base', 0, 0, -1), ('base.SforceBaseClient', 0, 0, -1), ('string', 0, 0, -1), ('suds.sudsobject', 0, 0, -1)] binaries=[] datas=[]>
+lib.sforce.metadata: None -> <PyModule 'lib.sforce.metadata' /Users/josephferraro/Development/Python/mavensmate/mm/lib/sforce/metadata.pyc imports=[('base', 0, 0, -1), ('base.SforceBaseClient', 0, 0, -1), ('xmltodict', 0, 0, -1), ('string', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('time', 0, 0, -1), ('lib.mm_util', 0, 0, -1), ('lib.config', 0, 0, -1), ('pprint', 0, 0, -1), ('json', 0, 0, -1), ('os.path', 0, 0, -1), ('xmltodict', 0, 0, -1)] binaries=[] datas=[]>
+lib.sforce.apex: None -> <PyModule 'lib.sforce.apex' /Users/josephferraro/Development/Python/mavensmate/mm/lib/sforce/apex.pyc imports=[('base', 0, 0, -1), ('base.SforceBaseClient', 0, 0, -1), ('re', 0, 0, -1), ('string', 0, 0, -1), ('suds.sudsobject', 0, 0, -1), ('xmltodict', 0, 0, -1), ('lib.mm_util', 0, 0, -1)] binaries=[] datas=[]>
+lib.sforce.string: None -> None
+lib.sforce.sys: None -> None
+lib.sforce.os: None -> None
+lib.sforce.re: None -> None
+lib.sforce.lib: None -> None
+lib.sforce.suds: None -> None
+suds.transport.cache: None -> None
+  DEL suds.transport.cache
+suds.transport.cache: None -> None
+  DEL suds.transport.cache
+lib.sforce.xmltodict: None -> None
+lib.sforce.time: None -> None
+lib.sforce.pprint: None -> None
+lib.sforce.json: None -> None
+__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mm/mm.py imports=[('os.path', 0, 0, -1), ('sys', 0, 0, -1), ('argparse', 0, 0, -1), ('traceback', 0, 0, -1), ('json', 0, 0, -1), ('lib.config', 0, 0, -1), ('lib.mm_util', 0, 0, -1), ('time', 0, 0, -1), ('urllib', 0, 0, -1), ('suds.client', 0, 0, -1), ('suds.client.Client', 0, 0, -1), ('lib.mm_connection', 0, 0, -1), ('lib.mm_connection.MavensMatePluginConnection', 0, 0, -1), ('lib.mm_client', 0, 0, -1), ('lib.mm_client.MavensMateClient', 0, 0, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mm/mm.spec imports=[('os', 0, 0, -1), ('tools.packaging.pyinstaller_hooks', 0, 0, -1)] binaries=[] datas=[]>
 tools: None -> None
   DEL tools
 _emx_link: None -> None
@@ -1135,7 +1544,7 @@ org: None -> None
   DEL org
 org: None -> None
   DEL org
-__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mmserver/mmserver.spec imports=[('os', 0, 0, -1), ('tools.packaging.pyinstaller_hooks', 0, 0, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/support/rthooks/pyi_rth_encodings.py imports=[('encodings', 0, 0, -1)] binaries=[] datas=[]>
+__main__: <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/mm/mm.spec imports=[('os', 0, 0, -1), ('tools.packaging.pyinstaller_hooks', 0, 0, -1)] binaries=[] datas=[]> -> <PyScript '__main__' /Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/support/rthooks/pyi_rth_encodings.py imports=[('encodings', 0, 0, -1)] binaries=[] datas=[]>
 _emx_link: None -> None
   DEL _emx_link
 _emx_link: None -> None
