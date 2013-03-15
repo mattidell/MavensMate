@@ -7,7 +7,7 @@ mm is an executable that powers MavensMate IDEs. You can use mm to perform every
 $ mm -o compile_project
 ```
 
-You can also use mm to provide a default UI for tasks like creating a new projec, editing a project, running unit tests & anonymous apex, & deploying metadata to servers. Just use the --ui flag:
+You can also use mm to provide a default UI for tasks like creating a new project, editing a project, running unit tests & anonymous apex, & deploying metadata to servers. Just use the --ui flag:
 
 ```
 $ mm -o new_project --ui
