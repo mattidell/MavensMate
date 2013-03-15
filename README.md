@@ -26,6 +26,8 @@ $ echo "{ "project_name" : "myproject" }"; mm -o compile_project
 }
 ```
 
+For more information on mm's capabilities, head over to the [README][mmreadme]
+
 ### What is mmserver?
 
 `mmserver` is a local http server that the out of box MavensMate UI uses to interact with the `mm` tool. The OOB MavensMate UI is written in HTML/CSS/JS, so to maintain a solid user experience, it makes Ajax calls to a local web server which in turns makes all the terminal calls to `mm`. If you're writing a MavensMate plugin, your UI can use `mmserver` or you can simply call `mm` directly from your plugin's UI.
@@ -37,3 +39,4 @@ Pick your favorite text editor with extension capability and utilize the `mm` an
 
 
 [MMST2]: https://github.com/joeferraro/MavensMate-SublimeText
+[mmreadme]: https://github.com/joeferraro/MavensMate/tree/master/mm#mm
