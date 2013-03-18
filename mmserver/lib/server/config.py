@@ -5,6 +5,7 @@ import json
 import cgi
 import multiprocessing
 from multiprocessing import Queue
+from multiprocessing import Manager
 sys.path.append('../')
 from util import BackgroundWorker
 from urlparse import urlparse, parse_qs
@@ -187,7 +188,13 @@ def metadata_list_request(request_handler):
 def run_async_operation(request_handler, operation_name):
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    q = Queue()
+    
+    #q = Queue() #on larger object puts, process would hang
+    #using manager based on this recommendation:
+    #http://stackoverflow.com/questions/11442892/python-multiprocessing-queue-failure
+    manager = Manager()
+    q = manager.Queue()
+
     worker = BackgroundWorker(operation_name, params, True, request_id, raw_post_body, q)
     p = multiprocessing.Process(target=process_request_in_background,args=(worker,))
     p.start()
@@ -221,9 +228,11 @@ def status_request(request_handler):
         queue = async_job['queue']
         if process.is_alive():
             gc.logger.debug('>>> request is not ready')
+            print '>>>> NOT READY....'
             respond_with_async_request_id(request_handler, request_id)
         elif process.is_alive() == False:
             gc.logger.debug('>>> request is probably ready, returning response!!')
+            print '>>>> DONE!!!'
             async_request_queue.pop(request_id, None)
             respond(request_handler, queue.get(), 'text/json')
 
