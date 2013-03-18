@@ -1,6 +1,7 @@
 import logging
 import os.path
 import sys
+import tempfile 
 
 def __get_base_path():
     if hasattr(sys, 'frozen'):
@@ -23,7 +24,7 @@ mm_path = None
 frozen = __get_is_frozen()
 base_path = __get_base_path()
 
-handler = logging.FileHandler('/Users/josephferraro/Desktop/mmserver.log')
+handler = logging.FileHandler(tempfile.gettempdir()+"/mmserver.log")
 #handler = logging.NullHandler()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('mmserver')
