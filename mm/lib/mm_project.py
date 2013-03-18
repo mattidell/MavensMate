@@ -76,6 +76,16 @@ class MavensMateProject(object):
             #print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
 
+    #updates the salesforce.com credentials associated with the project
+    def update_credentials(self):
+        self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type}, override_session=True)              
+        self.id = self.settings['id']
+        self.username = self.username
+        self.environment = self.org_type
+        mm_util.put_password_by_key(self.id, self.password)
+        self.__put_base_config()
+        self.__set_sfdc_session()
+
     #upgrades project from the legacy format to 2.0+format
     def upgrade(self):
         try:
@@ -652,13 +662,6 @@ class MavensMateProject(object):
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
             #print traceback.print_exc()
-
-    #updates the salesforce.com credentials associated with the project
-    def update_credentials(self):
-        self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type}, override_session=True)              
-        mm_util.put_password(self.project_name, self.password)
-        self.__put_base_config()
-        self.__set_sfdc_session()
 
     def __get_package(self):
         return mm_util.parse_xml_from_file(self.location+"/src/package.xml")

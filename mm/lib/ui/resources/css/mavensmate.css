@@ -16,9 +16,9 @@ input {
 }
 
 #logo {
-	background-image: url("../images/logo_hires.png"); 
+	background-image: url("../images/logo_hires_new.png"); 
 	background-repeat:no-repeat;
-	background-position:0px 3px;
+	background-position:0px 7px;
 	background-size: 100% Auto;
 	width:155px;
 	height:21px;
