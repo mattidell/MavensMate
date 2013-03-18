@@ -14,7 +14,7 @@ OK, it *WAS*. But now, we've rewritten MavensMate to be a platform agnostic & te
 ##### Request
 
 ```
-$ echo "{ "project_name" : "myproject" }"; mm -o compile_project
+$ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 ```
 
 ##### Response
