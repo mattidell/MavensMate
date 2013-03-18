@@ -373,7 +373,6 @@ def generate_html_response(operation, obj, params):
     env.globals['get_file_lines'] = get_file_lines
     env.globals['htmlize'] = htmlize
     env.globals['does_file_exist'] = does_file_exist
-    #temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'unit_test' or operation == 'test':
         template = env.get_template('/unit_test/result.html')
         config.logger.debug(json.dumps(obj, sort_keys=True,indent=4))
