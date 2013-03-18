@@ -9,7 +9,7 @@ OK, it *WAS*. But now, we've rewritten MavensMate to be a cross-platform, text e
 
 ### What is mm?
 
-`mm` is the executable that is responsible for all the magic of MavensMate. It can create a new project, compile code, move code between orgs, run apex tests, etc...and it's all JSON-based. Simply feed it JSON to provide context to your request, and it will respond in JSON. Here's an example:
+`mm` is the executable that performs the heavy lifting. It can create new projects, compile code, move code between orgs, run apex tests, etc...and it's all JSON-based. Simply feed it JSON to provide context to your request, and it will respond in JSON. Here's an example:
 
 ##### Request
 
