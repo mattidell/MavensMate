@@ -1,19 +1,19 @@
 mm
 ==========
 
-mm is an executable that powers MavensMate IDEs. You can use mm to perform every important task relative to developing on the Force.com platform. For example, to compile a project:
+`mm` is an executable that powers MavensMate IDEs. You can use mm to perform every important task relative to developing on the Force.com platform. For example, to compile a project:
 
 ```
 $ mm -o compile_project
 ```
 
-You can also use mm to provide a default UI for tasks like creating a new project, editing a project, running unit tests & anonymous apex, & deploying metadata to servers. Just use the --ui flag:
+You can also use `mm` to provide a default UI for tasks like creating a new project, editing a project, running unit tests & anonymous apex, & deploying metadata to servers. Just use the --ui flag:
 
 ```
 $ mm -o new_project --ui
 ```
 
-In order to provide context to your operation, simply pipe json to mm via STDIN. For example:
+In order to provide context to your operation, simply pipe json to `mm` via STDIN. For example:
 
 ```
 $ mm -o compile_project <<< '{ "project_name" : "myproject" }'
