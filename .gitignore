@@ -1,9 +1,10 @@
 .DS_Store
 *.DS_Store
 *.pyc
+dist/
 mm/dist
 mmserver/dist
 tools/pyinstaller/mmserver
 tools/pyinstaller/mm
 platforms/osx/MavensMate/dist
-dist/
+*.log
