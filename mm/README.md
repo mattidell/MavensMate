@@ -129,7 +129,7 @@ $ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 {
 	"username"		: "username@domain.com",
 	"password" 		: "password123",
-	"org_type" 		: "Developer"
+	"org_type" 		: "developer"
 }		
 ```
 
@@ -151,7 +151,7 @@ $ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 	"project_name"	: "myproject",
 	"username"		: "username@domain.com",
 	"password" 		: "password123",
-	"org_type" 		: "Developer"
+	"org_type" 		: "developer"
 }		
 ```
 
