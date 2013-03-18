@@ -305,11 +305,13 @@
 				})
 			</script>
 			<div id="filter">
-					<input type="text" id="txtFilter" style="width:165px" />
+					<input type="text" placeholder="Search for metadata" id="txtFilter" style="width:300px" />
 					<a href="#" id="btnClearFilter" onclick="clearFilter();" class="btn small error" style="visibility:invisible;opacity:0;font-weight:bold;position:relative;top:1px;right:30px;padding:4px 7px 4px;">X</a>
-					<a href="#" id="btnSelectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">All</a>
-					<a href="#" id="btnDeselectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">None</a>
-					<a href="javascript:void(0)" id="btnRefresh" style="font-weight:normal;padding:4px 7px 4px;" class="btn success small" onclick="refresh_index()">Refresh</a>
+					<div class="select-wrapper" style="position:absolute;top:10px;right:5px;width:165px;text-align:right;">
+						<a href="#" id="btnSelectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">All</a>
+						<a href="#" id="btnDeselectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">None</a>
+						<a href="javascript:void(0)" id="btnRefresh" style="font-weight:normal;padding:4px 7px 4px;" class="btn success small" onclick="refresh_index()">Refresh</a>
+					</div>
 				</div>
 			<div id="project_wrapper">
 								
@@ -357,7 +359,7 @@
 			&nbsp;
 			<button type="reset" class="btn" onclick="window.close();">Cancel</button>
 		</div>
-		<img src="{{ base_path }}/lib/ui/resources/images/big_loading.gif" style="position:absolute;top:13px;right:25px;width:36px;display:none;" id="deployment_indicator"/>
+		<img src="{{ base_path }}/lib/ui/resources/images/big_loading.gif" style="position:absolute;top:15px;right:35px;width:36px;display:block;" id="deployment_indicator"/>
 	</fieldset>
 </form> 
 

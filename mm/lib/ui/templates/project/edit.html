@@ -147,7 +147,7 @@
 		function handle_response(response) {
 			if (operation == "index") {
 				if (response["success"] == false) {
-					$("#error_message").html(response["message"])
+					$("#error_message").html(response["body"])
 					$(".alert-message.error").show()
 				} else {
 					$("#tree").dynatree("destroy")
