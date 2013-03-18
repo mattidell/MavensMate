@@ -16,7 +16,7 @@ $ mm -o new_project --ui
 In order to provide context to your operation, simply pipe json to mm via STDIN. For example:
 
 ```
-$ echo "{ "project_name" : "myproject" }"; mm -o compile_project
+$ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 ```
 
 ### Command Line Arguments
