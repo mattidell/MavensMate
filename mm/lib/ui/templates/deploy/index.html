@@ -7,7 +7,7 @@
 	}
 
 	.bordered-table {
-		border-bottom:2px solid #ccc !important;
+		border-bottom:1px solid #ccc !important;
 	}
 
 	.chzn-choices {
@@ -225,16 +225,9 @@
 			<form class="form-stacked">
 					<fieldset>	
 				    <div id="connections_wrapper">
-					  	{% if connections|length == 0 %}
-							<span id="no-connections">
-								<div class="alert-message block-message info">
-						        	<p><strong>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.</strong></p>
-						      	</div>
-								<div class="alert-message block-message warning">
-						        	<p><strong>You do not have any deployment connections set up </strong></p> 
-						      	</div>
-					      	</span>
-						{% else %}
+							<div class="alert-message block-message info">
+					        	<p><strong>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.</strong></p>
+					      	</div>
 							<div class="alert-message block-message-custom" style="margin-bottom:0px;padding: 5px;-webkit-border-radius: 4px 4px 0px 0px;">
 									<p style="float:left;"><strong>Deployment Connections</strong></p>
 								<div style="clear:both;"></div>	
@@ -257,8 +250,6 @@
 									{% endfor %}
 								</tbody>
 							</table>
-						
-						{% endif %}
 					</div>
 				</fieldset>
 			</form>
@@ -359,7 +350,7 @@
 			&nbsp;
 			<button type="reset" class="btn" onclick="window.close();">Cancel</button>
 		</div>
-		<img src="{{ base_path }}/lib/ui/resources/images/big_loading.gif" style="position:absolute;top:15px;right:35px;width:36px;display:block;" id="deployment_indicator"/>
+		<img src="{{ base_path }}/lib/ui/resources/images/big_loading.gif" style="position:absolute;top:15px;right:35px;width:36px;display:none;" id="deployment_indicator"/>
 	</fieldset>
 </form> 
 
@@ -492,7 +483,7 @@
 			connHtml += conns[c]['username']
 			connHtml += '</option>'
 		}
-		$("#no-connections").hide()
+		//$("#no-connections").hide()
 		console.log(connHtml)
 		$("#un_list").html(connHtml)
 		$('#un_list').trigger("liszt:updated");
