@@ -24,7 +24,8 @@ class MavensMateProject(object):
 
     def __init__(self, params={}, **kwargs):
         params = dict(params.items() + kwargs.items())
-        self.sfdc_session = None
+
+        self.sfdc_session   = None
         self.id             = params.get('id', None)
         self.project_name   = params.get('project_name', None)
         self.username       = params.get('username', None)
@@ -39,6 +40,7 @@ class MavensMateProject(object):
         self.package        = params.get('package', None)
         self.ui             = params.get('ui', False)
         self.sfdc_client    = None
+        self.defer_connection   = params.get('defer_connection', False)
 
         if 'location' in params and os.path.exists(params['location']): #=> existing project on the disk
             self.location               = params.get('location', None)
@@ -47,8 +49,10 @@ class MavensMateProject(object):
             self.sfdc_session           = self.__get_sfdc_session()
             self.package                = self.location + "/src/package.xml"
             self.is_metadata_indexed    = self.get_is_metadata_indexed()
-            if self.ui == False:
+
+            if self.ui == False and self.defer_connection == False:
                 self.sfdc_client        = MavensMateClient(credentials=self.get_creds())
+
             if self.sfdc_session == None:
                 self.__set_sfdc_session()
 
@@ -69,6 +73,25 @@ class MavensMateProject(object):
             self.sfdc_session = self.__get_sfdc_session() #hacky...need to fix
             return mm_util.generate_success_response("Project Retrieved and Created Successfully")
         except BaseException, e:
+            #print traceback.print_exc()
+            return mm_util.generate_error_response(e.message)
+
+    #upgrades project from the legacy format to 2.0+format
+    def upgrade(self):
+        try:
+            self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type})             
+            self.id = mm_util.new_mavensmate_id()
+            self.__put_project_file()
+            self.__put_base_config()
+            self.__set_sfdc_session()
+            mm_util.put_password_by_key(self.id, self.password)
+            self.sfdc_session = self.__get_sfdc_session() #hacky...need to fix
+            if os.path.exists(self.location+"/config/settings.yaml"):
+                os.remove(self.location+"/config/settings.yaml")
+            if os.path.exists(self.location+"/config/.org_metadata"):
+                os.remove(self.location+"/config/.org_metadata")
+            return mm_util.generate_success_response("Project Upgraded Successfully")
+        except Exception, e:
             #print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
 
@@ -759,21 +782,19 @@ class MavensMateProject(object):
 
     #writes session information to the local cache
     def __set_sfdc_session(self):
-        session = {
-            "user_id"               : self.sfdc_client.user_id,
-            "sid"                   : self.sfdc_client.sid,
-            "metadata_server_url"   : self.sfdc_client.metadata_server_url,
-            "endpoint"              : self.sfdc_client.endpoint
-        }
-        file_body = json.dumps(session)
-        src = open(self.location+"/config/.session", "w")
-        src.write(file_body)
-        src.close()
-        # src.write("user_id: "               + self.sfdc_client.user_id)
-        # src.write("\nsid: "                 + self.sfdc_client.sid)
-        # src.write("\nmetadata_server_url: " + self.sfdc_client.metadata_server_url)
-        # src.write("\nendpoint: "            + self.sfdc_client.endpoint)
-        # src.close()
+        try:
+            session = {
+                "user_id"               : self.sfdc_client.user_id,
+                "sid"                   : self.sfdc_client.sid,
+                "metadata_server_url"   : self.sfdc_client.metadata_server_url,
+                "endpoint"              : self.sfdc_client.endpoint
+            }
+            file_body = json.dumps(session)
+            src = open(self.location+"/config/.session", "w")
+            src.write(file_body)
+            src.close()
+        except:
+            pass
 
 
 class DeploymentHandler(threading.Thread):

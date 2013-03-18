@@ -40,8 +40,10 @@ def main():
     else:        
         if operation == 'new_project':
             new_project()
-        if operation == 'edit_project':
+        elif operation == 'edit_project':
             edit_project()    
+        elif operation == 'upgrade_project':
+            upgrade_project()     
         elif operation == 'checkout_project':
             checkout_project()
         elif operation == 'compile_project':
@@ -85,16 +87,15 @@ def main():
 # and establishes a project object
 def setup_connection(args):
     if 'project_name' in request_payload or 'project_directory' in request_payload:
-        project_name        = request_payload.get('project_name', args.projectname)
-        project_directory   = request_payload.get('project_directory', args.projectdirectory)
+        #project_name        = request_payload.get('project_name', args.projectname)
+        #project_directory   = request_payload.get('project_directory', args.projectdirectory)
         config.connection = MavensMatePluginConnection(
-            client=args.client or 'Sublime Text', 
-            project_directory=project_directory,
-            project_name=project_name,
-            ui=args.ui_switch
+            client=args.client or 'Sublime Text',
+            ui=args.ui_switch,
+            params=request_payload
         )
     else:
-        config.connection = MavensMatePluginConnection(client=args.client or 'Sublime Text')
+        config.connection = MavensMatePluginConnection(client=args.client or 'Sublime Text',params=request_payload)
 
 # echo '{ "username" : "joeferraro4@force.com", "password" : "352198", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():
@@ -121,7 +122,7 @@ def delete_selected_metadata():
 
 def index_metadata(args):
     index_result = config.connection.project.index_metadata()
-    if args.respond_with_html ==  True:
+    if args.respond_with_html == True:
         html = util.generate_html_response(args.operation, index_result, request_payload)
         print util.generate_success_response(html, "html")
     else:
@@ -133,6 +134,9 @@ def new_project():
 def edit_project():
     print config.connection.project.edit(request_payload)
 
+def upgrade_project():
+    print config.connection.project.upgrade()
+    
 def checkout_project():
     print config.connection.new_project(request_payload,action='checkout')
 

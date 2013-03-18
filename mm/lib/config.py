@@ -9,9 +9,9 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.INFO)
 logging.getLogger('suds.client').propagate = False
 logging.getLogger('suds.client').addHandler(handler) 
-logger = logging.getLogger('mavensmate')
-logging.getLogger('mavensmate').propagate = False 
-logging.getLogger('mavensmate').addHandler(handler)
+logger = logging.getLogger('mm')
+logging.getLogger('mm').propagate = False 
+logging.getLogger('mm').addHandler(handler)
 logger.setLevel(logging.DEBUG)
 # logging.getLogger('suds.transport.http').propagate = False
 # logging.getLogger('suds.client').setLevel(logging.DEBUG)

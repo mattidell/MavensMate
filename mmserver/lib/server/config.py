@@ -4,201 +4,231 @@ import util
 import json
 import cgi
 import multiprocessing
+from multiprocessing import Queue
 sys.path.append('../')
 from util import BackgroundWorker
 from urlparse import urlparse, parse_qs
-import lib.config as global_config
+import lib.config as gc
 
-# TO IMPLEMENT:
-#     X ExecuteApexServlet
-#     ApexUnitTestServlet
-#     MetadataIndexServlet
-#     X DeployServlet
-#     ExistingProjectServlet
-#     OrgConnectionServlet
-#     MetadataListServlet
-#     VersionControlServlet
+# async_request_queue holds list of active async requests
+async_request_queue = {}
 
-# POST /project
-# {
-#     "project_name"  : "my project name"
-#     "username"      : "mm@force.com",
-#     "password"      : "force",
-#     "org_type"      : "developer",
-#     "vc_username"   : "",
-#     "vc_password"   : "",
-#     "vc_url"        : "",
-#     "vc_type"       : "",
-#     "vc_branch"     : "",
-#     "package"       : {
-#         "ApexClass"     : "*",
-#         "ApexTrigger"   : ["Trigger1", "Trigger2"]
-#     }
-# }
+####################
+## ASYNC REQUESTS ##
+####################
+
 def project_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('new_project', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
-    return respond_with_async_request_id(request_handler, request_id)
+    '''
+        POST /project
+        {
+            "project_name"  : "my project name"
+            "username"      : "mm@force.com",
+            "password"      : "force",
+            "org_type"      : "developer",
+            "package"       : {
+                "ApexClass"     : "*",
+                "ApexTrigger"   : ["Trigger1", "Trigger2"]
+            }
+        }
+    '''
+    run_async_operation(request_handler, 'new_project')
 
-# POST /project/edit
-# body same as project_request
 def project_edit_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('edit_project', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
-    return respond_with_async_request_id(request_handler, request_id)
+    '''
+        POST /project/edit
+        (body same as project_request)
+    '''
+    run_async_operation(request_handler, 'edit_project')
 
-# GET /session?username=mm@force.com&password=force&org_type=developer
-def get_active_session_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, json_body = get_request_params(request_handler)
-    worker = BackgroundWorker('get_active_session', params, False, request_id, tmp_directory, json_body)
-    response = worker.run()
-    respond(request_handler, response)
+def project_upgrade_request(request_handler):
+    '''
+        POST /project/upgrade
+        {
+            "project_name"  : "my project name"
+            "username"      : "mm@force.com",
+            "password"      : "force",
+            "org_type"      : "developer"
+        }
+    '''
+    run_async_operation(request_handler, 'upgrade_project')
 
-# POST /project/creds
-# {
-#     "project_name"  : "my project name"
-#     "username"      : "mm@force.com",
-#     "password"      : "force",
-#     "org_type"      : "developer",
-# }
-# NOTE: project name should not be updated, as it is used to find the project in question
-# TODO: maybe we assign a unique ID to each project which will give users the flexibility
-#       to change the project name??
-# TODO: we may need to implement a "clean" flag which will clean the project after creds
-#       have been updated
-def update_credentials_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('update_credentials', params, False, request_id, tmp_directory, raw_post_body)
-    response = worker.run()
-    respond(request_handler, response)
-
-# POST /apex/execute
-# {
-#     "project_name"    : "my project name"
-#     "log_level"       : "DEBUG",
-#     "log_category"    : "APEX_CODE",
-#     "body"            : "String foo = 'bar';",
-# }
 def execute_apex_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('execute_apex', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
-    return respond_with_async_request_id(request_handler, request_id)
+    '''
+        POST /apex/execute
+        {
+            "project_name"    : "my project name"
+            "log_level"       : "DEBUG",
+            "log_category"    : "APEX_CODE",
+            "body"            : "String foo = 'bar';",
+        }
+    '''
+    run_async_operation(request_handler, 'execute_apex')
 
-# POST /project/deploy
-# call to deploy metadata to a server
-# {
-#     "check_only"            : true,
-#     "rollback_on_error"     : true,
-#     "destinations"          : [
-#         {
-#             "username"              : "username1@force.com",
-#             "org_type"              : "developer"
-#         }
-#     ],
-#     "package"               : {
-#         "ApexClass" : "*"
-#     }
-# }
+
 def deploy_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('deploy', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
-    return respond_with_async_request_id(request_handler, request_id)
+    '''
+        POST /project/deploy
+        call to deploy metadata to a server
+        {
+            "check_only"            : true,
+            "rollback_on_error"     : true,
+            "destinations"          : [
+                {
+                    "username"              : "username1@force.com",
+                    "org_type"              : "developer"
+                }
+            ],
+            "package"               : {
+                "ApexClass" : "*"
+            }
+        }
+    '''
+    run_async_operation(request_handler, 'deploy')
 
-# POST /project/unit_test
-# {
-#     "classes" : [
-#         "UnitTestClass1", "UnitTestClass2"
-#     ],
-#     "run_all_tests" : false
-# }
 def unit_test_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+    '''
+        POST /project/unit_test
+        {
+            "classes" : [
+                "UnitTestClass1", "UnitTestClass2"
+            ],
+            "run_all_tests" : false
+        }
+    '''
+    run_async_operation(request_handler, 'unit_test')
+    
+def metadata_index_request(request_handler):
+    '''
+        call to update the project .metadata index
+    '''
+    run_async_operation(request_handler, 'index_metadata')
+
+
+
+##########################
+## SYNCHRONOUS REQUESTS ##
+##########################
+
+def get_active_session_request(request_handler):
+    '''
+        GET /session?username=mm@force.com&password=force&org_type=developer
+    '''
+    request_id = util.generate_request_id()
+    params, json_body = get_request_params(request_handler)
+    worker = BackgroundWorker('get_active_session', params, False, request_id, json_body)
+    response = worker.run()
+    respond(request_handler, response)
+
+def update_credentials_request(request_handler):
+    '''
+        POST /project/creds
+        {
+            "project_name"  : "my project name"
+            "username"      : "mm@force.com",
+            "password"      : "force",
+            "org_type"      : "developer",
+        }
+        NOTE: project name should not be updated, as it is used to find the project in question
+        TODO: maybe we assign a unique ID to each project which will give users the flexibility
+              to change the project name??
+        TODO: we may need to implement a "clean" flag which will clean the project after creds
+              have been updated
+    '''
+    request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('unit_test', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
-    return respond_with_async_request_id(request_handler, request_id)
+    worker = BackgroundWorker('update_credentials', params, False, request_id, raw_post_body)
+    response = worker.run()
+    respond(request_handler, response)
 
 def connections_list_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+    request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('list_connections', params, False, request_id, tmp_directory, raw_post_body)
+    worker = BackgroundWorker('list_connections', params, False, request_id, raw_post_body)
     response = worker.run()
     respond(request_handler, response)
 
 def connections_new_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+    request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('new_connection', params, False, request_id, tmp_directory, raw_post_body)
+    worker = BackgroundWorker('new_connection', params, False, request_id, raw_post_body)
     response = worker.run()
     respond(request_handler, response)
 
 def connections_delete_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+    request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('delete_connection', params, False, request_id, tmp_directory, raw_post_body)
+    worker = BackgroundWorker('delete_connection', params, False, request_id, raw_post_body)
     response = worker.run()
     respond(request_handler, response)
 
-def auth_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
-    params = get_request_params(request_handler)
-    return respond_with_async_request_id(request_handler, request_id)
-
-#call to get information about a particular SVN or Git repository
-def version_control_request():
-    params = get_request_params(request_handler)
-
-# GET /metadata/list
-# {
-#     "sid"             : "",
-#     "metadata_type"   : "",
-#     "murl"            : ""
-# }
-#call to get a list of metadata of a certain type
 def metadata_list_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+    '''
+        GET /metadata/list
+        {
+            "sid"             : "",
+            "metadata_type"   : "",
+            "murl"            : ""
+        }
+        call to get a list of metadata of a certain type
+    '''
+    request_id = util.generate_request_id()
     params, json_body = get_request_params(request_handler)
-    worker = BackgroundWorker('list_metadata', params, False, request_id, tmp_directory, json_body)
+    worker = BackgroundWorker('list_metadata', params, False, request_id, json_body)
     response = worker.run()
     respond(request_handler, response)
 
-#call to update the project .metadata index
-def metadata_index_request(request_handler):
-    request_id, tmp_directory = util.get_request_id_and_put_tmp_directory()
+##########################
+## END REQUEST HANDLERS ##
+##########################
+
+
+
+
+def run_async_operation(request_handler, operation_name):
+    request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker = BackgroundWorker('index_metadata', params, True, request_id, tmp_directory, raw_post_body)
-    p = multiprocessing.Process(target=process_request_in_background,args=(worker,)).start()
+    q = Queue()
+    worker = BackgroundWorker(operation_name, params, True, request_id, raw_post_body, q)
+    p = multiprocessing.Process(target=process_request_in_background,args=(worker,))
+    p.start()
+    add_to_request_queue(request_id, p, q)
     return respond_with_async_request_id(request_handler, request_id)
 
 #client polls this servlet to determine whether the request is done
 #if the request IS done, it will respond with the body of the request
 def status_request(request_handler):
+    gc.logger.debug('>>> status request')
     params, json_string = get_request_params(request_handler)
+    gc.logger.debug('>>> params: ')
+    gc.logger.debug(params)
     try:
         request_id = params['id']
     except:
         request_id = params['id'][0]
-    print '>>>>>> checking on request id ', request_id
-    if util.response_ready(request_id) == True:
-        response_body = util.get_request_response(request_id)
-        print '>>>>>> response body: ', response_body
+    gc.logger.debug('>>> request id: ' + request_id)
+    gc.logger.debug('>>> async queue: ')
+    gc.logger.debug(async_request_queue)
+
+    if request_id not in async_request_queue:
+        response = { 'status' : 'error', 'id' : request_id, 'body' : 'Request ID was not found' }
+        response_body = json.dumps(response)
         respond(request_handler, response_body, 'text/json')
     else:
-        print '>>>>>> request is not ready'
-        respond_with_async_request_id(request_handler, request_id)
+        async_job = async_request_queue[request_id]
+        gc.logger.debug('found async job')
+        gc.logger.debug(async_job)
+        process = async_job['process']
+        queue = async_job['queue']
+        if process.is_alive():
+            gc.logger.debug('>>> request is not ready')
+            respond_with_async_request_id(request_handler, request_id)
+        elif process.is_alive() == False:
+            gc.logger.debug('>>> request is probably ready, returning response!!')
+            async_request_queue.pop(request_id, None)
+            respond(request_handler, queue.get(), 'text/json')
 
-def get_raw_post_body(request_handler):
-    return request_handler.rfile.read(int(request_handler.headers['Content-Length']))
+def add_to_request_queue(request_id, p, q):
+    async_request_queue[request_id] = { 'process' : p, 'queue' : q }
 
 def get_request_params(request_handler):
     print '>>>>>> ', request_handler.path
@@ -218,12 +248,25 @@ def get_request_params(request_handler):
         json_string = json.dumps(params)
         return params, json_string
 
+def process_request_in_background(worker):
+    worker.run()
+
+
+
+
+######################
+## RESPONSE METHODS ##
+######################
+
+#this returns the request id after an initial async request
 def respond_with_async_request_id(request_handler, request_id):
     response = { 'status' : 'pending', 'id' : request_id }
     json_response_body = json.dumps(response)
     respond(request_handler, json_response_body, 'text/json')
 
 def respond(request_handler, body, type='text/json'):
+    gc.logger.debug('responding!')
+    gc.logger.debug(body)
     #print '>>>>>>>> responding with, ' body
     request_handler.send_response(200)
     request_handler.send_header('Content-type', type)
@@ -232,8 +275,11 @@ def respond(request_handler, body, type='text/json'):
     request_handler.wfile.write(body)
     return
 
-def process_request_in_background(worker):
-    worker.run()
+
+
+##################
+## PATH MAPPING ##
+##################
 
 mappings = {
     '/status'               : { 'GET'   : status_request },     
@@ -246,9 +292,8 @@ mappings = {
     '/project/conns/list'   : { 'GET'   : connections_list_request },
     '/project/conns/new'    : { 'POST'  : connections_new_request },
     '/project/conns/delete' : { 'POST'  : connections_delete_request },
+    '/project/upgrade'      : { 'POST'  : project_upgrade_request },
     '/session'              : { 'GET'   : get_active_session_request },
     '/apex/execute'         : { 'POST'  : execute_apex_request },
     '/metadata/list'        : { 'GET'   : metadata_list_request }
-    # '/project/existing'  : { 'GET'  : project_request }, 
-    # '/vc'                : { 'GET'  : version_control_request }
 }

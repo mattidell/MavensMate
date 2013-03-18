@@ -6,8 +6,9 @@ import json
 import shutil
 import threading
 import subprocess
+import pipes
 import lib.config as global_config
-from jinja2 import Environment, FileSystemLoader
+#from jinja2 import Environment, FileSystemLoader
 tmp_dir = tempfile.gettempdir()
 
 #this function is only used on async requests
@@ -15,6 +16,10 @@ def get_request_id_and_put_tmp_directory():
     request_id = get_random_string()
     tmp_directory_location = put_tmp_directory_on_disk(request_id)
     return request_id, tmp_directory_location
+
+#this function is only used on async requests
+def generate_request_id():
+    return get_random_string()
 
 #this function is only used on async requests
 def put_tmp_directory_on_disk(request_id=None):
@@ -33,41 +38,55 @@ def get_request_response(request_id, convert_to_string=True, remove_request_dire
         # response_body.close()
         #if convert_to_string == True:
         #    response = json.dumps(response) 
-        response = open(location+"/.response", "r").read()
-    except ValueError:
-        response = open(location+"/.response", "r").read()
-    if remove_request_directory == True:
-        shutil.rmtree(location)
+        response_file = open(location+"/.response", "r")
+        response = response_file.read()
+        response_file.close()
+    except:
+        response = "error reading response file"
+    #if remove_request_directory == True:
+    #    shutil.rmtree(location)
     return response
 
 def get_random_string(size=8, chars=string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 #if the worker has placed the .response file in the tmp directory, we're ready to respond
-def response_ready(request_id):
-    if os.path.isfile("{0}/.org.mavens.mavensmate.{1}/.response".format(tmp_dir, request_id)):
-        return True
+def get_request_status(request_id):
+    if os.path.exists("{0}/.org.mavens.mavensmate.{1}".format(tmp_dir, request_id)):
+        if os.path.isfile("{0}/.org.mavens.mavensmate.{1}/.response".format(tmp_dir, request_id)):
+            response = {
+                "status" : "complete",
+                "ready"  : True
+            }
+            return response
+        else:
+            response = {
+                "status" : "pending",
+                "ready"  : False  
+            }
+            return response
     else:
-        return False
+        response = {
+            "status" : "error",
+            "body"   : "path does not exist"
+        }
+        return response
 
 #the main job of the backgroundworker is to submit a request for work to be done by mm
 class BackgroundWorker(object):
-    def __init__(self, operation, params, async, request_id=None, tmp_request_directory=None, payload=None):
+    def __init__(self, operation, params, async, request_id=None, payload=None, queue=None):
         self.operation  = operation
         self.params     = params
         self.request_id = request_id
-        self.directory  = tmp_request_directory
         self.async      = async
         self.payload    = payload
         self.response   = None
-        self.template_path = global_config.base_path + "/lib/templates"
-        self.env = Environment(loader=FileSystemLoader(self.template_path),trim_blocks=True)
+        self.queue      = queue
 
     def run(self):
         mm_response = None
         args = self.get_arguments()
-        #p = subprocess.Popen("'/Users/josephferraro/Development/joey2/bin/python' '/Users/josephferraro/Development/Python/mavensmate/mavensmate.py' {0}".format(args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        p = subprocess.Popen("'{0}' {1}".format(global_config.mm_path, args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        p = subprocess.Popen("{0} {1}".format(pipes.quote(global_config.mm_path), args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         p.stdin.write(self.payload)
         p.stdin.close()
         if p.stdout is not None: 
@@ -78,11 +97,8 @@ class BackgroundWorker(object):
         self.response = response_body
         self.finish()
         if self.async == True:
-            request_file = open(self.directory+"/.response", "w")
-            request_file.write(response_body)
-            request_file.close()
+            self.queue.put(response_body)
         else:
-            shutil.rmtree(self.directory)
             return response_body
 
     def finish(self):

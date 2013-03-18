@@ -4,6 +4,7 @@ import argparse
 import shutil
 import os
 import subprocess
+import pipes
 sys.path.append('../')
 import lib.mm_util as mm_util
 
@@ -24,10 +25,10 @@ def main():
 
     #run pyinstaller on mm.py
     os.chdir(pyinstaller_path)
-    pyinstaller_command = "'{0}' pyinstaller.py '{1}/mm.py' --onedir '{2}/mm.spec'".format(
-        build_settings['python_location'], 
-        mm_path, 
-        mm_path)
+    pyinstaller_command = "{0} pyinstaller.py {1} --onedir {2}".format(
+        pipes.quote(build_settings['python_location']), 
+        pipes.quote(mm_path+"/mm.py"), 
+        pipes.quote(mm_path+"/mm.spec"))
 
     print '>>>> ', pyinstaller_command
     p = subprocess.Popen(pyinstaller_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)

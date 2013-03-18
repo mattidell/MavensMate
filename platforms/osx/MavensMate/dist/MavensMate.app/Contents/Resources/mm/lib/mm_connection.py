@@ -12,24 +12,29 @@ class MavensMatePluginConnection(object):
 
     PluginClients = enum(SUBLIME_TEXT='Sublime Text', NOTEPAD_PLUS_PLUS='Notepad++', TEXTMATE='TextMate')
 
-    def __init__(self, **kwargs):
+    def __init__(self, params={}, **kwargs):
+        params = dict(params.items() + kwargs.items())
         self.platform               = sys.platform
-        self.plugin_client          = kwargs.get('client', 'Sublime Text') #=> "Sublime Text", "Notepad++", "TextMate"
-        self.plugin_client_version  = kwargs.get('client_version', '2.0.1') #=> "1.0", "1.1.1", "v1"
+        self.plugin_client          = params.get('client', 'Sublime Text') #=> "Sublime Text", "Notepad++", "TextMate"
+        self.plugin_client_version  = params.get('client_version', '2.0.1') #=> "1.0", "1.1.1", "v1"
         self.plugin_client_settings = self.get_plugin_client_settings()
         self.workspace              = self.get_workspace()
-        self.project_directory      = kwargs.get('project_directory', None)
-        self.project_name           = kwargs.get('project_name', None)
+        self.project_directory      = params.get('project_directory', None)
+        self.project_name           = params.get('project_name', None)
         self.project                = None
         self.sfdc_api_version       = self.get_sfdc_api_version()
-        self.ui                     = kwargs.get('ui', False) #=> whether this connection was created for the purposes of generating a UI
+        self.ui                     = params.get('ui', False) #=> whether this connection was created for the purposes of generating a UI
         #TODO: i think 27/28 is bad logic
         if mm_util.SFDC_API_VERSION == "":
             mm_util.SFDC_API_VERSION = self.sfdc_api_version
         if self.project_directory != None and os.path.exists(self.project_directory):
-            self.project = MavensMateProject(location=self.project_directory,ui=self.ui)
+            params['location'] = self.project_directory
+            params['ui'] = self.ui
+            self.project = MavensMateProject(params)
         elif self.project_name != None and self.project_name != '' and os.path.exists(self.workspace+"/"+self.project_name):
-            self.project = MavensMateProject(location=self.workspace+"/"+self.project_name,project_name=self.project_name,ui=self.ui)
+            params['location'] = self.workspace+"/"+self.project_name
+            params['ui'] = self.ui
+            self.project = MavensMateProject(params)
 
     #returns the workspace for the current connection (/Users/username/Workspaces/MavensMate)
     def get_workspace(self):

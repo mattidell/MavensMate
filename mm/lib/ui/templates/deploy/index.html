@@ -226,12 +226,14 @@
 					<fieldset>	
 				    <div id="connections_wrapper">
 					  	{% if connections|length == 0 %}
-							<div class="alert-message block-message info">
-					        	<p><strong>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.</strong></p>
-					      	</div>
-							<div class="alert-message block-message warning">
-					        	<p><strong>You do not have any deployment connections set up </strong></p> 
-					      	</div>
+							<span id="no-connections">
+								<div class="alert-message block-message info">
+						        	<p><strong>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.</strong></p>
+						      	</div>
+								<div class="alert-message block-message warning">
+						        	<p><strong>You do not have any deployment connections set up </strong></p> 
+						      	</div>
+					      	</span>
 						{% else %}
 							<div class="alert-message block-message-custom" style="margin-bottom:0px;padding: 5px;-webkit-border-radius: 4px 4px 0px 0px;">
 									<p style="float:left;"><strong>Deployment Connections</strong></p>
@@ -488,6 +490,7 @@
 			connHtml += conns[c]['username']
 			connHtml += '</option>'
 		}
+		$("#no-connections").hide()
 		console.log(connHtml)
 		$("#un_list").html(connHtml)
 		$('#un_list').trigger("liszt:updated");

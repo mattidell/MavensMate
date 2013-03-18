@@ -22,3 +22,11 @@ def __get_is_frozen():
 mm_path = None
 frozen = __get_is_frozen()
 base_path = __get_base_path()
+
+handler = logging.FileHandler('/Users/josephferraro/Desktop/mmserver.log')
+#handler = logging.NullHandler()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('mmserver')
+logging.getLogger('mmserver').propagate = False 
+logging.getLogger('mmserver').addHandler(handler)
+logger.setLevel(logging.DEBUG)

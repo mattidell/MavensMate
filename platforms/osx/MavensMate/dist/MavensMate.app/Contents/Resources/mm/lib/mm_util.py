@@ -17,6 +17,7 @@ import re
 import xmltodict
 
 from jinja2 import Environment, FileSystemLoader
+import jinja2.ext
 
 SFDC_API_VERSION = "26.0"
 
@@ -295,6 +296,13 @@ def generate_ui(operation):
     elif operation == 'checkout_project':
         template = env.get_template('/project/new.html')
         file_body = template.render(user_action='checkout',base_path=config.base_path,workspace=config.connection.workspace)
+    elif operation == 'upgrade_project':
+        template = env.get_template('/project/upgrade.html')
+        file_body = template.render(
+            base_path=config.base_path,
+            name=config.connection.project.project_name,
+            project_location=config.connection.project.location
+        )
     elif operation == 'edit_project':
         tree_body = ''
         if config.connection.project.is_metadata_indexed == True:
@@ -502,9 +510,10 @@ def process_unit_test_result(result):
     if 'codeCoverageWarnings' in result and type(result['codeCoverageWarnings']) is not list:
         result['codeCoverageWarnings'] = [result['codeCoverageWarnings']]
 
-    for warning in result['codeCoverageWarnings']:
-        if 'name' in warning and type(warning['name']) is not str and type(warning['name']) is not unicode:
-           warning['name'] = None 
+    if 'codeCoverageWarnings' in result:
+        for warning in result['codeCoverageWarnings']:
+            if 'name' in warning and type(warning['name']) is not str and type(warning['name']) is not unicode:
+               warning['name'] = None 
 
     results_normal = {}
     #{"foo"=>[{:name = "foobar"}{:name = "something else"}], "bar"=>[]}

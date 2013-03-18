@@ -88,15 +88,15 @@
 			console.log('updating project creds')
 			operation = "update_creds"
 			$.ajax({
-				type: "GET",
-				url: "http://127.0.0.1:9000/auth", 
+				type: "POST",
+				url: "http://127.0.0.1:9000/project/creds", 
 				data: JSON.stringify({
-					un: $("#un").val(),
-			    	pw: $("#pw").val(),
-			    	org_type: $("#org_type").val(),
-			    	override_session: true,
-			    	update_creds: true,
-			    	pd: mm_cpd 
+					username 			: $("#un").val(),
+			    	password 			: $("#pw").val(),
+			    	org_type 			: $("#org_type").val(),
+			    	override_session 	: true,
+			    	defer_connection 	: true,
+			    	project_name 		: '{{ name }}' 
 				}),
 				beforeSend: function() { showLoading('Updating project credentials'); },
 				complete: function(data){

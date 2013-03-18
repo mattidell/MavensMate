@@ -271,61 +271,7 @@
 			$("#cred_alert").show();
 			window.resizeTo(325, document.getElementById('wrapper').offsetHeight+30);
 		} 
-		
-		function do_tree() {
-			//instantiate and populate metadata tree   			
-			try {
-		    	var root_node = $("#vc_tree").dynatree("getRoot")
-				root_node.removeChildren()
-				for (var i=0; i < tree_children.length; i++) {
-					root_node.addChild(tree_children[i])
-				}
-			} catch(exception) {
-				console.log(exception)
-				$("#vc_tree").dynatree({
-				 	dataType: "jsonp",
-				 	onLazyRead: function(node) {
-						node.appendAjax({url: "http://127.0.0.1:9000/vc",
-				  			data: {
-								"vc_url": encodeURI(node.data.url),
-								"vc_type": $('#vc_type').val(),   
-								"svn_un": $('#svn_un').val(),
-								"svn_pw": $('#svn_pw').val(),
-							},
-							dataFilter: function (data, type) {
-								console.log(data)
-								if (data.indexOf('[') != -1) {
-									data = data.substring(data.indexOf('['));
-								} else {
-									data = []
-								}
-								nodes = eval(data)
-								node_array = []
-								for (var i=0; i < nodes.length; i++) {
-									node_array.push({
-										title:nodes[i].title,
-										url:nodes[i].url,
-										isFolder:true,
-										isLazy:true
-									})
-								}
-								node_array = JSON.stringify(node_array)
-								console.log(node_array)
-								return node_array;
-							}
-						});
-				 	},
-	         		persist: false,
-				 	checkbox: true,
-				 	selectMode: 1,
-					children: tree_children
-	      		});
-			}
-	
-			
-		}
-		
-		
+				
 		var tree_children = ""
 		
 		function instantiate_metadata_tree(metadata) {

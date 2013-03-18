@@ -1,4 +1,5 @@
 import BaseHTTPServer
+import lib.config as config
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
   # set mappings - dict of dicts - ex: {'/' : {'GET' : test}}
@@ -7,6 +8,9 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def main_handler(self, method='GET'):
         # get request url (without url params) and remove trailing /
+        config.logger.debug('>>> handling request')
+        config.logger.debug(self.path)
+
         request_url = self.path.split('?')[0]
         if request_url is not '/':
             request_url = request_url.rstrip('/')

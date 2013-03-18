@@ -3,12 +3,12 @@ import os
 import BaseHTTPServer
 import handler
 import config
-import lib.config as global_config
+import lib.config as gc
 
 server = None
 
 def run(context_path='', port=9000):
-    print 'starting local server!'
+    gc.logger.debug('>>> starting local MavensMate server!')
     # set current working dir on python path
     base_dir = os.path.normpath(os.path.abspath(os.path.curdir))
     sys.path.insert(0, base_dir)
@@ -17,5 +17,5 @@ def run(context_path='', port=9000):
     server.serve_forever()
 
 def stop():
-    print 'shutting down server'
+    print '>>> shutting down local MavensMate server'
     server.shutdown()
