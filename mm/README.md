@@ -101,7 +101,7 @@ $ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 
 #### compile
 
-> Compiles one or more files from the server
+> Compiles one or more files to the server
 
 ```
 {

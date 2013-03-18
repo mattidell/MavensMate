@@ -14,7 +14,7 @@
             ]]>
             </description>
             <pubDate>Sun, 10 March 2013 19:20:11 +0000</pubDate>
-            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.1" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC0CFQCrQZ410uZfG02kTBtfRDz0F1QIYQIUNXKoElLfU761vg8zwVuyvkgdn6s=" />
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.1" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC4CFQCwITkHkYgCuJs7TB6Qah6WYOhGkAIVAKImm2IakHmNNFDfhkFIT34gcn80" />
          </item>
    </channel>
 </rss>
