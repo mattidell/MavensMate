@@ -1,7 +1,7 @@
 mm
 ==========
 
-`mm` is an executable that powers MavensMate IDEs. You can use mm to perform every important task relative to developing on the Force.com platform. For example, to compile a project:
+`mm` is an executable that powers MavensMate Force.com IDEs. You can use `mm` to perform every important task relative to developing on the Force.com platform. For example, to compile a project:
 
 ```
 $ mm -o compile_project
