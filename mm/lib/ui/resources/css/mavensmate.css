@@ -40,6 +40,14 @@ input {
 	border:1px solid #f2f2f2;
 }
 
+#global_message_wrapper {
+	display: none;
+}
+
+#global_message_wrapper > div {
+	border-radius: 0px 0px 0px 0px !important;
+}
+
 .container {
 	width: 100%;
 	margin-left: 10px;

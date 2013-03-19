@@ -78,10 +78,8 @@
 			    	project_name 		: '{{ name }}' 
 				}),
 				beforeSend: function() { showLoading('Updating project credentials'); },
-				complete: function(data){
-					console.log(data)
-					var response = JSON.parse(data.responseText)
-					check_status(response["id"])				
+				complete: function(data){	
+					global_init_handler(data)			
 				} 
 			});
 		}

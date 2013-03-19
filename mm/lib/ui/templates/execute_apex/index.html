@@ -332,10 +332,8 @@ function execute_apex() {
 			 debug_categories 	: get_log_levels_json()
 		}),
 		beforeSend: function() { showLoading('Executing Apex'); $("#btnExecuteApex").hide(); editor.getSession().clearAnnotations(); editor.setReadOnly(true); },
-		complete: function(data){
-			console.log(data)
-			var response = JSON.parse(data.responseText)
-			check_status(response["id"])			
+		complete: function(data){	
+			global_init_handler(data)		
 		} 
 	});
 }

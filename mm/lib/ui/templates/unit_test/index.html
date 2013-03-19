@@ -409,9 +409,7 @@
 			}),
 			beforeSend: function() { showElement("running_tests_indicator"); $("#btnRunTests").hide() },
 			complete: function(data){
-				console.log(data)
-				var response = JSON.parse(data.responseText)
-				check_status(response["id"])				
+				global_init_handler(data)				
 			} 
 		});
 }

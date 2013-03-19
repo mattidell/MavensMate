@@ -323,6 +323,27 @@ function resize_games() {
 
 var CHECK_STATUS_INTERVAL = 3000
 
+function global_init_handler(data) {
+	console.log(data)
+	try {
+		var response = JSON.parse(data.responseText)
+		check_status(response["id"])
+	} catch(e) {
+		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
+		hideLoading()
+	}
+}
+
+function show_global_error(message) {
+	$("#global_message").html(message)
+	$("#global_message_wrapper").show()
+}
+
+function hide_global_error() {
+	$("#global_message_wrapper").hide()
+	$("#global_message").html('')
+}
+
 function check_status(request_id) {
 	$.ajax({
 		type: "GET",
@@ -345,7 +366,7 @@ function check_status(request_id) {
 			} catch(e) {
 				console.log(e)
 				console.log('caught an error, polling again...')
-				setTimeout(function() { check_status(request_id); }, 1000);
+				setTimeout(function() { check_status(request_id); }, 500);
 			}
 						
 		} 

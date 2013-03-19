@@ -78,6 +78,14 @@ def main():
             new_connection()
         elif operation == 'delete_connection':
             delete_connection()
+        elif operation == 'index_apex_overlays':
+            index_apex_overlays()
+        elif operation == 'new_apex_overlay':
+            new_apex_overlay()
+        elif operation == 'delete_apex_overlay':
+            delete_apex_overlay()
+        elif operation == 'fetch_logs':
+            fetch_logs()
 
     if args.callback != None:
         os.system(args.callback)
@@ -155,6 +163,9 @@ def new_metadata():
 def execute_apex():
     print config.connection.project.execute_apex(request_payload)
 
+def fetch_logs():
+    print config.connection.project.fetch_logs(request_payload)
+
 # echo '{ "project_name" : "bloat", "classes" : [ "MyTester" ] }' | joey2 mavensmate.py -o 'test'
 def run_unit_tests(args):
     test_result = config.connection.project.run_unit_tests(request_payload)
@@ -191,6 +202,15 @@ def get_active_session():
         print util.generate_response(response)
     except BaseException, e:
         print util.generate_error_response(e.message)
+
+def index_apex_overlays():
+    print config.connection.project.index_apex_overlays(request_payload)
+
+def new_apex_overlay():
+    print config.connection.project.new_apex_overlay(request_payload)
+
+def delete_apex_overlay():
+    print config.connection.project.delete_apex_overlay(request_payload)
 
 def update_credentials():
     try:

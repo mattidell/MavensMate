@@ -13,6 +13,8 @@ logger = logging.getLogger('mm')
 logging.getLogger('mm').propagate = False 
 logging.getLogger('mm').addHandler(handler)
 logger.setLevel(logging.DEBUG)
+requests_log = logging.getLogger("requests")
+requests_log.setLevel(logging.ERROR)
 # logging.getLogger('suds.transport.http').propagate = False
 # logging.getLogger('suds.client').setLevel(logging.DEBUG)
 # logging.getLogger('suds.transport').setLevel(logging.DEBUG)

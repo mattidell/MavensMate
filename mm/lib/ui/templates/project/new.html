@@ -155,9 +155,7 @@
 				}),
 				beforeSend: function() { showLoading('Creating new MavensMate project'); },
 				complete: function(data){
-					console.log(data)
-					var response = JSON.parse(data.responseText)
-					check_status(response["id"])
+					global_init_handler(data)
 				} 
 		 	});
 		}
@@ -245,19 +243,24 @@
 						beforeSend: function() { showLoading('Attempting to authenticate to Salesforce using the provided credentials'); },
 						complete: function(data){
 							console.log(data)
-							var response = JSON.parse(data.responseText)
-							console.log(response)
-							if (response["success"] == false) {
-								$("#project_details_tab").click();
-								$("#error_message").html(response["body"])
-								$("#result_output").show()
-							} else {
-								instantiate_metadata_tree(response["metadata"])
-								$('#sid').val(response["sid"])	
-								$('#murl').val(response["metadata_server_url"])
-								$("#result_output").hide()
+							try {
+								var response = JSON.parse(data.responseText)
+								if (response["success"] == false) {
+									$("#project_details_tab").click();
+									$("#error_message").html(response["body"])
+									$("#result_output").show()
+								} else {
+									instantiate_metadata_tree(response["metadata"])
+									$('#sid').val(response["sid"])	
+									$('#murl').val(response["metadata_server_url"])
+									$("#result_output").hide()
+								}
+								hideLoading();
+							} catch(e) {
+								show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
+								hideLoading();
 							}
-							hideLoading();
+							
 						}
 				 	});
 				}

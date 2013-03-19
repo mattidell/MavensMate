@@ -28,7 +28,12 @@
     </div>
 	<div id='debug'></div>
   	<div id='wrapper'>
-		{% block yield %}{% endblock %}
+		<div id="global_message_wrapper">
+            <div style="margin:5px 0px 15px 0px;" class="alert-message error">
+                <p><strong id="global_message"></strong></p>
+            </div>
+        </div>
+        {% block yield %}{% endblock %}
         <div class="loading">
             <div class="twipsy"></div> 
             <div class="loading_message_wrapper">

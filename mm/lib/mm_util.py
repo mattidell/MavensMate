@@ -116,6 +116,10 @@ def get_file_as_string(file_path):
     f.close()
     return file_body
 
+def parse_rest_response(body):
+    rjson = json.loads(body)
+    return rjson
+
 def zip_directory(directory_to_zip, where_to_put_zip_file=tempfile.gettempdir(), base64_encode=True):
     shutil.make_archive(where_to_put_zip_file+'/mm', 'zip', directory_to_zip+"/")
     if base64_encode == True:
@@ -551,6 +555,14 @@ def process_unit_test_result(result):
         "classes" : classes
     }
     return result
+
+def get_file_extension_no_period(path):
+    name, ext = os.path.splitext(path)
+    return ext.replace(".", "")
+
+def get_file_name_no_extension(path):
+    name, ext = os.path.splitext(path)
+    return name.split("/")[-1]
 
 #returns metadata hash of selected files  #=> {"ApexClass" => ["aclass", "anotherclass"], "ApexTrigger" => ["atrigger", "anothertrigger"]}
 def get_metadata_hash(selected_files=[]):

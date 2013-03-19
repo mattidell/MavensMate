@@ -99,10 +99,8 @@
 			    	project_name 		: '{{ name }}' 
 				}),
 				beforeSend: function() { showLoading('Updating project credentials'); },
-				complete: function(data){
-					console.log(data)
-					var response = JSON.parse(data.responseText)
-					check_status(response["id"])				
+				complete: function(data){	
+					global_init_handler(data)			
 				} 
 			});
 		}
@@ -119,9 +117,7 @@
 				}),
 				beforeSend: function() { showLoading('Updating project'); },
 				complete: function(data){
-					console.log(data)
-					var response = JSON.parse(data.responseText)
-					check_status(response["id"])
+					global_init_handler(data)
 				} 
 			});
 		}
@@ -137,9 +133,7 @@
 				}),
 				beforeSend: function() { showLoading('Indexing your Salesforce.com metadata.  This operation could take a while depending on the size of your org.<br/><br/>Thanks for being patient! :)'); },
 				complete: function(data, status, xhr){
-					console.log(data)
-					var response = JSON.parse(data.responseText)
-					check_status(response["id"])				
+					global_init_handler(data)				
 				} 
 			});
 		}

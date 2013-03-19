@@ -11,6 +11,7 @@ import mm_util
 import shutil
 import config
 import xmltodict
+import requests
 from operator import itemgetter
 sys.path.append('../')
 
@@ -19,6 +20,7 @@ from suds import WebFault
 from sforce.partner import SforcePartnerClient
 from sforce.metadata import SforceMetadataClient
 from sforce.apex import SforceApexClient
+from sforce.tooling import SforceToolingClient
 
 wsdl_path = config.base_path + "/lib/wsdl"
 #if config.frozen:
@@ -36,11 +38,13 @@ class MavensMateClient(object):
         self.user_id                = None
         self.metadata_server_url    = None
         self.endpoint               = None
+        self.pod                    = None
 
         #salesforce connection bindings
         self.pclient                = None
         self.mclient                = None
         self.aclient                = None
+        self.tclient                = None
 
         #print self.credentials
 
@@ -76,6 +80,7 @@ class MavensMateClient(object):
             result = self.pclient.login(self.username, self.password, '')
         except WebFault, e:
             raise e
+        #print result
         self.metadata_server_url    = result.metadataServerUrl
         self.sid                    = result.sessionId
         self.user_id                = result.userId
@@ -155,6 +160,12 @@ class MavensMateClient(object):
             self.pclient = self.__get_partner_client()
         query_result = self.pclient.query('select count() From '+kwargs['object_type']+' Where Name = \''+kwargs['name']+'\' AND NamespacePrefix = \''+self.get_org_namespace()+'\'')
         return True if query_result.size > 0 else False
+
+    def execute_query(self, soql):
+        if self.pclient == None:
+            self.pclient = self.__get_partner_client()
+        query_result = self.pclient.query(soql)
+        return query_result
 
     def get_apex_entity_id_by_name(self, **kwargs):
         if self.pclient == None:
@@ -319,6 +330,77 @@ class MavensMateClient(object):
                 #print traceback.print_exc()
                 raise e
 
+    def get_overlay_actions(self, **kwargs):        
+        if 'file_path' in kwargs:
+            id = kwargs.get('id', None)
+            file_path = kwargs.get('file_path', None)
+            if id == None:
+                ext = mm_util.get_file_extension_no_period(file_path)
+                api_name = mm_util.get_file_name_no_extension(file_path)
+                mtype = mm_util.get_meta_type_by_suffix(ext)
+                id = self.get_apex_entity_id_by_name(object_type=mtype['xmlName'], name=api_name)
+            query_string = "Select Id, Line, Iteration, ExpirationDate, IsDumpingHeap from ApexExecutionOverlayAction Where ExecutableEntityId = '{0}'".format(id)
+            payload = { 'q' : query_string }
+            r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
+            return mm_util.parse_rest_response(r.text)
+        else:
+            query_string = "Select Id, ScopeId, ExecutableEntityId, Line, Iteration, ExpirationDate, IsDumpingHeap from ApexExecutionOverlayAction limit 5000"
+            payload = { 'q' : query_string }
+            r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
+            return mm_util.parse_rest_response(r.text)
+
+    def create_overlay_action(self, payload):
+        if 'ScopeId' not in payload:
+            payload['ScopeId'] = self.user_id
+        if 'API_Name' in payload:
+            payload['ExecutableEntityId'] = self.get_apex_entity_id_by_name(object_type=payload['Object_Type'], name=payload['API_Name'])
+            payload.pop('Object_Type', None)
+            payload.pop('API_Name', None)
+
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/ApexExecutionOverlayAction", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
+    def remove_overlay_action(self, **kwargs):
+        if 'overlay_id' in kwargs:
+            r = requests.delete(self.get_tooling_url()+"/sobjects/ApexExecutionOverlayAction/{0}".format(kwargs['overlay_id']), headers=self.get_rest_headers(), verify=False)
+            r.raise_for_status()
+            return mm_util.generate_success_response('OK')
+        else:
+            id = kwargs.get('id', None)
+            file_path = kwargs.get('file_path', None)
+            line_number = kwargs.get('line_number', None)
+            if id == None:
+                ext = mm_util.get_file_extension_no_period(file_path)
+                api_name = mm_util.get_file_name_no_extension(file_path)
+                mtype = mm_util.get_meta_type_by_suffix(ext)
+                id = self.get_apex_entity_id_by_name(object_type=mtype['xmlName'], name=api_name)
+            
+            query_string = "Select Id from ApexExecutionOverlayAction Where ExecutableEntityId = '{0}' AND Line = {1}".format(id, line_number)
+            r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+            r.raise_for_status()
+            query_result = mm_util.parse_rest_response(r.text)
+            overlay_id = query_result['records'][0]['Id']
+            r = requests.delete(self.get_tooling_url()+"/sobjects/ApexExecutionOverlayAction/{0}".format(overlay_id), headers=self.get_rest_headers(), verify=False)
+            r.raise_for_status()
+            return mm_util.generate_success_response('OK')
+
+    def download_log(self, id):
+        pod = self.metadata_server_url.replace("https://", "").split("-")[0]
+        log_endpoint = "https://{0}.salesforce.com/apexdebug/traceDownload.apexp".format(pod)
+        r = requests.get(log_endpoint, params={"id":id}, headers=self.get_rest_headers(), verify=False)
+        return r.text
+
+    def get_rest_headers(self, method='GET'):
+        headers = {}
+        headers['Authorization'] = 'Bearer '+self.sid
+        if method == 'POST':
+            headers['Content-Type'] = 'application/json'
+        return headers
+
+    def get_tooling_url(self):
+        pod = self.metadata_server_url.replace("https://", "").split("-")[0]
+        return "https://{0}.salesforce.com/services/data/v{1}/tooling".format(pod, mm_util.SFDC_API_VERSION)
 
     def __get_partner_client(self):
         return SforcePartnerClient(
@@ -346,4 +428,14 @@ class MavensMateClient(object):
             sid=self.sid, 
             metadata_server_url=self.metadata_server_url, 
             server_url=self.endpoint)
+
+    def __get_tooling_client(self):
+        return SforceToolingClient(
+            wsdl_path+'/tooling.xml', 
+            apiVersion=mm_util.SFDC_API_VERSION, 
+            environment=self.org_type, 
+            sid=self.sid, 
+            metadata_server_url=self.metadata_server_url, 
+            server_url=self.endpoint)
+
 

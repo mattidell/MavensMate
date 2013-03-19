@@ -663,6 +663,107 @@ class MavensMateProject(object):
             return mm_util.generate_error_response(e.message)
             #print traceback.print_exc()
 
+    def index_apex_overlays(self, payload):
+        try:
+            result = self.sfdc_client.get_overlay_actions()
+            if 'records' not in result:
+                return mm_util.generate_success_response('Could Not Find Any Apex Execution Overlays')
+            else:
+                id_to_name_map = {}
+                class_ids = []
+                trigger_ids = []
+
+                for r in result['records']:
+                    entity_id = r["ExecutableEntityId"]
+                    if entity_id.startswith('01q'):
+                        trigger_ids.append("Id = '"+entity_id+"'")
+                    elif entity_id.startswith('01p'):
+                        class_ids.append("Id = '"+entity_id+"'")
+
+                class_filter = ' or '.join(class_ids)
+                trigger_filter = ' or '.join(trigger_ids)
+                
+                soql = 'Select Id, Name From ApexClass WHERE '+class_filter
+                class_result = self.sfdc_client.execute_query(soql)
+
+                soql = 'Select Id, Name From ApexTrigger WHERE '+class_filter
+                trigger_result = self.sfdc_client.execute_query(soql)
+
+                if 'records' in class_result:
+                    for r in class_result['records']:
+                        id_to_name_map[r['Id']] = r['Name']
+
+                if 'records' in trigger_result:
+                    for r in trigger_result['records']:
+                        id_to_name_map[r['Id']] = r['Name']
+
+                for r in result['records']:
+                    r['API_Name'] = id_to_name_map[r['ExecutableEntityId']]
+
+                overlays = json.dumps(result['records'])
+                self.__put_overlays_file(overlays)
+                return mm_util.generate_success_response('Apex Execution Overlays Successfully Indexed to config/.overlays')
+        except BaseException, e:
+            raise e
+            return mm_util.generate_error_response(e.message)
+
+    def new_apex_overlay(self, payload):
+        '''
+            payload = {
+                "ActionScriptType" : "None",
+                "ExecutableEntityId" : "01pd0000001yXtYAAU",
+                "IsDumpingHeap" : True,
+                "Iteration" : 1,
+                "Line" : 3,
+                "ScopeId" : "005d0000000xxzsAAA"
+            }
+        '''
+        if 'project_name' in payload:
+            payload.pop('project_name', None)
+
+        create_result = self.sfdc_client.create_overlay_action(payload)
+        if type(create_result) is list:
+            create_result = create_result[0]
+        if type(create_result) is not str and type(create_result) is not unicode:
+            return json.dumps(create_result)
+        else:
+            return create_result
+
+    def delete_apex_overlay(self, payload):
+        delete_result = self.sfdc_client.remove_overlay_action(overlay_id=payload['id'])
+        return delete_result
+
+    def fetch_logs(self, payload):
+        try:
+            user_id = payload.get('user_id', self.sfdc_client.user_id)
+            limit   = payload.get('limit', 20)
+            log_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location != \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
+            logs = []
+            if 'records' in log_result:
+                for r in log_result['records']:
+                    id = r["Id"]
+                    log = self.sfdc_client.download_log(id)
+                    logs.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":log,"userid":r["LogUserId"]})
+                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/logs") == False:
+                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/logs")
+                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/logs"):
+                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/logs", the_file)
+                    try:
+                        if os.path.isfile(file_path):
+                            os.unlink(file_path)
+                    except Exception, e:
+                        print e
+                for log in logs:
+                    file_name = log["modstamp"]+"."+log["userid"]+".log"
+                    src = open(config.connection.workspace+"/"+self.project_name+"/logs/"+file_name, "w")
+                    src.write(log["log"])
+                    src.close() 
+                mm_util.generate_success_response('Logs successfully downloaded') 
+            else:
+                mm_util.generate_success_response('No logs to download') 
+        except Exception, e:
+            mm_util.generate_error_response(e.message)
+
     def __get_package(self):
         return mm_util.parse_xml_from_file(self.location+"/src/package.xml")
 
@@ -750,6 +851,13 @@ class MavensMateProject(object):
         json_data = json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"], sort_keys=True, indent=4)
         src.write(json_data)
         src.close()
+
+    #write a file containing the dynamic describe information for the org
+    def __put_overlays_file(self, overlays):
+        file_name = ".overlays"
+        src = open(config.connection.workspace+"/"+self.project_name+"/config/"+file_name, "w")
+        src.write(overlays)
+        src.close()   
 
     #returns metadata types for this org, or default types
     def __get_org_describe(self):
