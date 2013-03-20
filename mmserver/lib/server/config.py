@@ -96,6 +96,7 @@ def unit_test_request(request_handler):
             "run_all_tests" : false
         }
     '''
+    gc.logger.debug('in unit test method!')
     run_async_operation(request_handler, 'unit_test')
     
 def metadata_index_request(request_handler):
@@ -186,19 +187,25 @@ def metadata_list_request(request_handler):
 
 
 def run_async_operation(request_handler, operation_name):
+    gc.logger.debug('>>> running an async operation')
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    
+    gc.logger.debug(request_id)
+    gc.logger.debug(params)
+    gc.logger.debug(raw_post_body)
     #q = Queue() #on larger object puts, process would hang
     #using manager based on this recommendation:
     #http://stackoverflow.com/questions/11442892/python-multiprocessing-queue-failure
     manager = Manager()
-    q = manager.Queue()
-
+    q = manager.Queue() #TODO: request is failing here many times
+    gc.logger.debug('finished with queue')
     worker = BackgroundWorker(operation_name, params, True, request_id, raw_post_body, q)
+    gc.logger.debug('worker created')
     p = multiprocessing.Process(target=process_request_in_background,args=(worker,))
     p.start()
+    gc.logger.debug('started process!')
     add_to_request_queue(request_id, p, q)
+    gc.logger.debug('preparing to response with the async id!')
     return respond_with_async_request_id(request_handler, request_id)
 
 #client polls this servlet to determine whether the request is done
@@ -234,6 +241,10 @@ def status_request(request_handler):
             gc.logger.debug('>>> request is probably ready, returning response!!')
             print '>>>> DONE!!!'
             async_request_queue.pop(request_id, None)
+            # result = []
+            # for i in iter(queue.get, 'STOP'):
+            #     result.append(i)
+            #     time.sleep(.1)
             respond(request_handler, queue.get(), 'text/json')
 
 def add_to_request_queue(request_id, p, q):
@@ -269,8 +280,10 @@ def process_request_in_background(worker):
 
 #this returns the request id after an initial async request
 def respond_with_async_request_id(request_handler, request_id):
+    gc.logger.debug('responding with async request id!')
     response = { 'status' : 'pending', 'id' : request_id }
     json_response_body = json.dumps(response)
+    gc.logger.debug(json_response_body)
     respond(request_handler, json_response_body, 'text/json')
 
 def respond(request_handler, body, type='text/json'):
@@ -306,3 +319,7 @@ mappings = {
     '/apex/execute'         : { 'POST'  : execute_apex_request },
     '/metadata/list'        : { 'GET'   : metadata_list_request }
 }
+
+if __name__ == "__main__":
+    # add freeze support
+    multiprocessing.freeze_support()

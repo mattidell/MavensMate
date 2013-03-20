@@ -79,4 +79,3 @@ class BackgroundWorker(object):
                 arg_string.append(x + ' ')
         stripped_string = ''.join(arg_string).strip()
         return stripped_string
-
