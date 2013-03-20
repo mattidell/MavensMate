@@ -3,17 +3,18 @@ import sys
 import util
 import json
 import cgi
-import time
 import multiprocessing
 from multiprocessing import Queue
 from multiprocessing import Manager
 sys.path.append('../')
 from util import BackgroundWorker
 from urlparse import urlparse, parse_qs
-import lib.config as gc
+import config as gc
 
 # async_request_queue holds list of active async requests
 async_request_queue = {}
+#active_threads = []
+
 
 ####################
 ## ASYNC REQUESTS ##
@@ -107,6 +108,7 @@ def metadata_index_request(request_handler):
     run_async_operation(request_handler, 'index_metadata')
 
 
+
 ##########################
 ## SYNCHRONOUS REQUESTS ##
 ##########################
@@ -117,10 +119,8 @@ def get_active_session_request(request_handler):
     '''
     request_id = util.generate_request_id()
     params, json_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('get_active_session', params, False, request_id, json_body)
-    worker_thread.start()
-    worker_thread.join()
-    response = worker_thread.response
+    worker = BackgroundWorker('get_active_session', params, False, request_id, json_body)
+    response = worker.run()
     respond(request_handler, response)
 
 def update_credentials_request(request_handler):
@@ -140,37 +140,29 @@ def update_credentials_request(request_handler):
     '''
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('update_credentials', params, False, request_id, raw_post_body)
-    worker_thread.start()
-    worker_thread.join()
-    response = worker_thread.response
+    worker = BackgroundWorker('update_credentials', params, False, request_id, raw_post_body)
+    response = worker.run()
     respond(request_handler, response)
 
 def connections_list_request(request_handler):
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('list_connections', params, False, request_id, raw_post_body)
-    worker_thread.start()
-    worker_thread.join()
-    response = worker_thread.response
+    worker = BackgroundWorker('list_connections', params, False, request_id, raw_post_body)
+    response = worker.run()
     respond(request_handler, response)
 
 def connections_new_request(request_handler):
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('new_connection', params, False, request_id, raw_post_body)
-    worker_thread.start()
-    worker_thread.join()
-    response = worker_thread.response
+    worker = BackgroundWorker('new_connection', params, False, request_id, raw_post_body)
+    response = worker.run()
     respond(request_handler, response)
 
 def connections_delete_request(request_handler):
     request_id = util.generate_request_id()
     params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('delete_connection', params, False, request_id, raw_post_body)
-    worker_thread.start()
-    worker_thread.join()
-    response = worker_thread.response
+    worker = BackgroundWorker('delete_connection', params, False, request_id, raw_post_body)
+    response = worker.run()
     respond(request_handler, response)
 
 def metadata_list_request(request_handler):
@@ -192,6 +184,8 @@ def metadata_list_request(request_handler):
 ##########################
 ## END REQUEST HANDLERS ##
 ##########################
+
+
 
 
 def run_async_operation(request_handler, operation_name):
@@ -245,8 +239,8 @@ def status_request(request_handler):
         respond(request_handler, response_body, 'text/json')
     else:
         async_thread = async_request_queue[request_id]
-        gc.logger.debug('found async thread, is it alive????')
-        gc.logger.debug(async_thread.is_alive())
+        gc.logger.debug('found async thread')
+        gc.logger.debug(async_thread)
         if async_thread.is_alive():
             gc.logger.debug('>>> request is not ready')
             print '>>>> NOT READY....'
@@ -302,7 +296,7 @@ def respond_with_async_request_id(request_handler, request_id):
 
 def respond(request_handler, body, type='text/json'):
     gc.logger.debug('responding!')
-    #gc.logger.debug(body)
+    gc.logger.debug(body)
     #print '>>>>>>>> responding with, ' body
     request_handler.send_response(200)
     request_handler.send_header('Content-type', type)

@@ -401,7 +401,6 @@
 			type: "POST",
 			url: "http://127.0.0.1:9000/project/unit_test", 
 			dataType: "json",
-			contentType: 'application/json; charset=utf-8',
 			data: JSON.stringify({
 				project_name 		: '{{ name }}',
 				classes 			: $('#tests').val(),
@@ -436,16 +435,6 @@ $(function(){
 
 	$('.tabs').tabs()
 
-	// $('.tabs').bind('change', function (e) {
- //  		//console.log(e.target) // activated tab
- //  		if ($(e.target).html() == "Pacman") {
- //  			$("#pacman").removeClass("hidden")
- //  		} else {
- //  			$("#pacman").addClass("hidden")
- //  		}
-	// })
-
-	//setTimeout(resize(), 500);
 	resize()
 	resize_test_container_sizes()
 	window.moveTo((screen.width-675)/2,(screen.height-document.getElementById('content1').offsetHeight-400)/2);

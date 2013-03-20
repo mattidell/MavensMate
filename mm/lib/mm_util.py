@@ -18,6 +18,8 @@ import xmltodict
 
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
+import jinja2htmlcompress
+from jinja2htmlcompress import HTMLCompress
 
 SFDC_API_VERSION = "26.0"
 
@@ -106,6 +108,9 @@ def delete_password_by_key(key):
     except:
         #TODO: this has not been implemented in keyring yet :-(
         pass
+
+#def start_local_server():
+
 
 def get_file_extension(path):
     return os.path.splitext(path)[1]
@@ -373,7 +378,7 @@ def generate_ui(operation):
 
 def generate_html_response(operation, obj, params):
     template_path = config.base_path + "/lib/ui/templates"
-    env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True,extensions=['jinja2.ext.loopcontrols'])
+    env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True,extensions=['jinja2.ext.loopcontrols', jinja2htmlcompress.HTMLCompress])
     env.globals['get_file_lines'] = get_file_lines
     env.globals['htmlize'] = htmlize
     env.globals['does_file_exist'] = does_file_exist
@@ -420,6 +425,7 @@ def get_file_lines(api_name, metadata_type_name):
 
 def htmlize(seed):
     try:
+        seed = seed.decode('utf8')
         seed = re.sub("&", "&amp;", seed)
         seed = re.sub('"', "&quot;", seed)
         seed = re.sub("<", "&lt;", seed)
@@ -432,7 +438,7 @@ def htmlize(seed):
         return 'Not Available'
 
 def launch_ui(tmp_html_file_location):
-    os.system("open '"+config.base_path+"/bin/MavensMateWindowServer.app' --args -url '"+tmp_html_file_location+"'")
+    os.system("open -n '"+config.base_path+"/bin/MavensMateWindowServer.app' --args -url '"+tmp_html_file_location+"'")
     threading.Thread(target=remove_tmp_html_file, args=(tmp_html_file_location,)).start()
 
 def remove_tmp_html_file(tmp_html_file_location):

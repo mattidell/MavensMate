@@ -6,7 +6,7 @@ import shutil
 import threading
 import subprocess
 import pipes
-import lib.config as global_config
+import config as global_config
 
 #this function is only used on async requests
 def generate_request_id():
@@ -29,7 +29,7 @@ class BackgroundWorker(threading.Thread):
     def run(self):
         mm_response = None
         args = self.get_arguments()
-        global_config.logger.debug('>>> running thread arguments on next line!')
+        global_config.logger.debug('>>> running thread!')
         global_config.logger.debug(args)
         p = subprocess.Popen("{0} {1}".format(pipes.quote(global_config.mm_path), args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         p.stdin.write(self.payload)
@@ -39,8 +39,6 @@ class BackgroundWorker(threading.Thread):
         elif p.stderr is not None:
             mm_response = p.stderr.readlines()
         response_body = '\n'.join(mm_response)
-        global_config.logger.debug('>>> got a response body')
-        global_config.logger.debug(response_body)
         self.response = response_body
         self.finish()
         # if self.async == True:
@@ -50,9 +48,9 @@ class BackgroundWorker(threading.Thread):
 
     def finish(self):
         if self.operation == 'new_project' or self.operation == 'checkout_project':
-            #print self.response
+            print self.response
             if json.loads(self.response)['success'] == True:
-                os.system('killAll MavensMateWindowServer') #TODO: need pid here so we can kill the right window
+                os.system('killAll MavensMateWindowServer')
 
     def get_arguments(self):
         args = {}

@@ -349,6 +349,13 @@ class MavensMateClient(object):
             r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
             return mm_util.parse_rest_response(r.text)
 
+    def create_trace_flag(self, payload):
+        if 'ScopeId' not in payload:
+            payload['ScopeId'] = self.user_id
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/TraceFlag", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
     def create_overlay_action(self, payload):
         if 'ScopeId' not in payload:
             payload['ScopeId'] = self.user_id
@@ -389,6 +396,12 @@ class MavensMateClient(object):
         pod = self.metadata_server_url.replace("https://", "").split("-")[0]
         log_endpoint = "https://{0}.salesforce.com/apexdebug/traceDownload.apexp".format(pod)
         r = requests.get(log_endpoint, params={"id":id}, headers=self.get_rest_headers(), verify=False)
+        return r.text
+
+    def download_checkpoint(self, id):
+        pod = self.metadata_server_url.replace("https://", "").split("-")[0]
+        checkpoint_endpoint = "https://{0}.salesforce.com/servlet/debug/apex/ApexCSIJsonServlet".format(pod)
+        r = requests.get(checkpoint_endpoint, params={"log":id,"extent":"fewmet","doDelete":False,"page":1,"start":0,"limit":25}, headers=self.get_rest_headers(), verify=False)
         return r.text
 
     def get_rest_headers(self, method='GET'):

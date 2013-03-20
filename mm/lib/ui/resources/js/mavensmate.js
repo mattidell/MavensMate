@@ -366,7 +366,7 @@ function check_status(request_id) {
 			} catch(e) {
 				console.log(e)
 				console.log('caught an error, polling again...')
-				setTimeout(function() { check_status(request_id); }, 500);
+				setTimeout(function() { check_status(request_id); }, 2000);
 			}
 						
 		} 

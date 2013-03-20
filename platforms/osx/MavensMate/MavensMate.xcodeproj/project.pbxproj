@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */; };
+		462388AC16FA21C800826160 /* Sublime_Text_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 462388AB16FA21C800826160 /* Sublime_Text_Logo.png */; };
 		46A3908616EDE46A008B5C2C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A3908516EDE46A008B5C2C /* Cocoa.framework */; };
 		46A3909216EDE46A008B5C2C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3909116EDE46A008B5C2C /* main.m */; };
 		46A3909916EDE46A008B5C2C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3909816EDE46A008B5C2C /* AppDelegate.m */; };
@@ -48,6 +50,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MavensMateIcon@2x.png"; sourceTree = "<group>"; };
+		462388AB16FA21C800826160 /* Sublime_Text_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Sublime_Text_Logo.png; sourceTree = "<group>"; };
 		46A3908216EDE46A008B5C2C /* MavensMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MavensMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A3908516EDE46A008B5C2C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		46A3908816EDE46A008B5C2C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -158,6 +162,8 @@
 		46A390A316EDEC07008B5C2C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */,
+				462388AB16FA21C800826160 /* Sublime_Text_Logo.png */,
 				46A390D016EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png */,
 				46A390CC16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png */,
 			);
@@ -233,6 +239,8 @@
 				46A390D116EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png in Resources */,
 				46A3929516EE3669008B5C2C /* MavensMateWindowServer.icns in Resources */,
 				46A392A016EE4BFE008B5C2C /* dsa_pub.pem in Resources */,
+				462388AC16FA21C800826160 /* Sublime_Text_Logo.png in Resources */,
+				461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

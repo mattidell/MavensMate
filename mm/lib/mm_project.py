@@ -710,12 +710,12 @@ class MavensMateProject(object):
     def new_apex_overlay(self, payload):
         '''
             payload = {
-                "ActionScriptType" : "None",
-                "ExecutableEntityId" : "01pd0000001yXtYAAU",
-                "IsDumpingHeap" : True,
-                "Iteration" : 1,
-                "Line" : 3,
-                "ScopeId" : "005d0000000xxzsAAA"
+                "ActionScriptType"      : "None",
+                "ExecutableEntityId"    : "01pd0000001yXtYAAU",
+                "IsDumpingHeap"         : True,
+                "Iteration"             : 1,
+                "Line"                  : 3,
+                "ScopeId"               : "005d0000000xxzsAAA"
             }
         '''
         if 'project_name' in payload:
@@ -733,6 +733,35 @@ class MavensMateProject(object):
         delete_result = self.sfdc_client.remove_overlay_action(overlay_id=payload['id'])
         return delete_result
 
+    def new_trace_log(self, payload):
+        try:
+            '''
+                payload = {
+                    "ApexCode"          : "None",
+                    "ApexProfiling"     : "01pd0000001yXtYAAU",
+                    "Callout"           : True,
+                    "Database"          : 1,
+                    "ExpirationDate"    : 3,
+                    "ScopeId"           : "",
+                    "System"            : "",
+                    "TracedEntityId"    : "",
+                    "Validation"        : "",
+                    "Visualforce"       : "",
+                    "Workflow"          : ""
+                }
+            '''
+            if 'project_name' in payload:
+                payload.pop('project_name', None)
+            create_result = self.sfdc_client.create_trace_flag(payload)
+            if type(create_result) is list:
+                create_result = create_result[0]
+            if type(create_result) is not str and type(create_result) is not unicode:
+                return json.dumps(create_result)
+            else:
+                return create_result
+        except Exception, e:
+            mm_util.generate_error_response(e.message)
+
     def fetch_logs(self, payload):
         try:
             user_id = payload.get('user_id', self.sfdc_client.user_id)
@@ -744,10 +773,10 @@ class MavensMateProject(object):
                     id = r["Id"]
                     log = self.sfdc_client.download_log(id)
                     logs.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":log,"userid":r["LogUserId"]})
-                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/logs") == False:
-                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/logs")
-                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/logs"):
-                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/logs", the_file)
+                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/debug/logs") == False:
+                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/debug/logs")
+                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/debug/logs"):
+                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/debug/logs", the_file)
                     try:
                         if os.path.isfile(file_path):
                             os.unlink(file_path)
@@ -755,12 +784,37 @@ class MavensMateProject(object):
                         print e
                 for log in logs:
                     file_name = log["modstamp"]+"."+log["userid"]+".log"
-                    src = open(config.connection.workspace+"/"+self.project_name+"/logs/"+file_name, "w")
+                    src = open(config.connection.workspace+"/"+self.project_name+"/debug/logs/"+file_name, "w")
                     src.write(log["log"])
                     src.close() 
                 mm_util.generate_success_response('Logs successfully downloaded') 
             else:
                 mm_util.generate_success_response('No logs to download') 
+
+            checkpoint_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location = \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
+            checkpoints = []
+            if 'records' in checkpoint_result:
+                for r in checkpoint_result['records']:
+                    id = r["Id"]
+                    cp = self.sfdc_client.download_checkpoint(id)
+                    checkpoints.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":cp,"userid":r["LogUserId"]})
+                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints") == False:
+                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints")
+                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints"):
+                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints", the_file)
+                    try:
+                        if os.path.isfile(file_path):
+                            os.unlink(file_path)
+                    except Exception, e:
+                        print e
+                for cp in checkpoints:
+                    file_name = cp["modstamp"]+"."+cp["userid"]+".log"
+                    src = open(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints/"+file_name, "w")
+                    src.write(cp["log"])
+                    src.close() 
+                mm_util.generate_success_response('Checkpoints successfully downloaded') 
+            else:
+                mm_util.generate_success_response('No checkpoints to download') 
         except Exception, e:
             mm_util.generate_error_response(e.message)
 

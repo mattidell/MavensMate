@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os.path
 import sys
 import argparse
@@ -36,6 +38,7 @@ def main():
         #os.system('killAll MavensMateWindowServer') #TODO: try/except?
         tmp_html_file = util.generate_ui(operation)
         util.launch_ui(tmp_html_file)
+        #server.run(False)
         print util.generate_success_response('OK')
     else:        
         if operation == 'new_project':
