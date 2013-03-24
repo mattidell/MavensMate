@@ -24,9 +24,8 @@ class MavensMatePluginConnection(object):
         self.project                = None
         self.sfdc_api_version       = self.get_sfdc_api_version()
         self.ui                     = params.get('ui', False) #=> whether this connection was created for the purposes of generating a UI
-        #TODO: i think 27/28 is bad logic
-        if mm_util.SFDC_API_VERSION == "":
-            mm_util.SFDC_API_VERSION = self.sfdc_api_version
+        if self.sfdc_api_version != None:
+            mm_util.SFDC_API_VERSION = self.sfdc_api_version #setting api version based on plugin settings
         if self.project_directory != None and os.path.exists(self.project_directory):
             params['location'] = self.project_directory
             params['ui'] = self.ui
@@ -72,19 +71,20 @@ class MavensMatePluginConnection(object):
             if 'project_name' not in params or params['project_name'] == '':
                 return mm_util.generate_error_response('Please specify a project name')
 
-            if 'package' not in params or params['package'] == []:
-                params['package'] = {
-                    'ApexClass'         : '*',
-                    'ApexComponent'     : '*',
-                    'ApexPage'          : '*',
-                    'ApexTrigger'       : '*',
-                    'StaticResource'    : '*'
-                }
-            self.project = MavensMateProject(params)
             if ('action' in kwargs and kwargs['action'] == 'new') or 'action' not in kwargs:
+                if 'package' not in params or params['package'] == []:
+                    params['package'] = {
+                        'ApexClass'         : '*',
+                        'ApexComponent'     : '*',
+                        'ApexPage'          : '*',
+                        'ApexTrigger'       : '*',
+                        'StaticResource'    : '*'
+                    }
+                self.project = MavensMateProject(params)
                 result = self.project.retrieve_and_write_to_disk()
-            elif 'action' in kwargs and kwargs['action'] == 'checkout':
-                result = self.project.checkout_from_source_control()
+            elif 'action' in kwargs and kwargs['action'] == 'existing':
+                self.project = MavensMateProject(params)
+                result = self.project.retrieve_and_write_to_disk('existing')
 
             if json.loads(result)['success'] == True:
                 #opens project based on the client
@@ -97,14 +97,14 @@ class MavensMatePluginConnection(object):
             return mm_util.generate_error_response(e.message)
 
     def get_sfdc_api_version(self):
-        if self.plugin_client_settings == None:
-            return '26.0'
-        else:
+        try:
             return self.get_plugin_client_setting('mm_api_version')
-            # if 'mm_api_version' in self.plugin_client_settings['user'] and self.plugin_client_settings['user']['mm_api_version'] != None:
-            #     return self.plugin_client_settings['user']['mm_api_version']
-            # else:
-            #     return self.plugin_client_settings['default']['mm_api_version']
+        except:
+            return None
+        # if 'mm_api_version' in self.plugin_client_settings['user'] and self.plugin_client_settings['user']['mm_api_version'] != None:
+        #     return self.plugin_client_settings['user']['mm_api_version']
+        # else:
+        #     return self.plugin_client_settings['default']['mm_api_version']
 
     def get_plugin_client_setting(self, setting_name):
         if setting_name in self.plugin_client_settings['user'] and self.plugin_client_settings['user'][setting_name] != None:

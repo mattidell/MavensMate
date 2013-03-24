@@ -15,13 +15,13 @@ import threading
 import sys
 import re
 import xmltodict
-
+from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
 import jinja2htmlcompress
 from jinja2htmlcompress import HTMLCompress
 
-SFDC_API_VERSION = "26.0"
+SFDC_API_VERSION = "26.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
 
 PRODUCTION_ENDPOINT = "https://www.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
 SANDBOX_ENDPOINT    = "https://test.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
@@ -108,9 +108,6 @@ def delete_password_by_key(key):
     except:
         #TODO: this has not been implemented in keyring yet :-(
         pass
-
-#def start_local_server():
-
 
 def get_file_extension(path):
     return os.path.splitext(path)[1]
@@ -275,7 +272,10 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
     }
     template_name = ''
     if metadata_type == 'ApexClass':
-        template_name = template_map[metadata_type][apex_class_type]
+        try:
+            template_name = template_map[metadata_type][apex_class_type]
+        except:
+            template_name = template_map[metadata_type]['default']
     else:
         template_name = template_map[metadata_type]
     template = env.get_template(template_name)
@@ -295,7 +295,7 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
 def parse_manifest(location):
     return parse_json_from_file(location)
 
-def generate_ui(operation):
+def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
@@ -372,6 +372,13 @@ def generate_ui(operation):
             base_path=config.base_path,
             name=config.connection.project.project_name,
             project_location=config.connection.project.location)
+    elif operation == 'new_project_from_existing_directory':
+        project_name = os.path.basename(params['directory'])
+        template = env.get_template('/project/new_from_existing.html')
+        file_body = template.render(
+            base_path=config.base_path,
+            project_name=project_name,
+            directory=params['directory'])
     temp.write(file_body)
     temp.close()
     return temp.name

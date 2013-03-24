@@ -15,7 +15,8 @@ import distutils
 import xmltodict
 import threading
 import time
-
+import collections
+from mm_exceptions import MMException
 from operator import itemgetter
 from mm_client import MavensMateClient
 sys.path.append('../')
@@ -31,14 +32,9 @@ class MavensMateProject(object):
         self.username       = params.get('username', None)
         self.password       = params.get('password', None)
         self.org_type       = params.get('org_type', None)
-        self.vc_username    = params.get('vc_username', None)
-        self.vc_password    = params.get('vc_password', None)    
-        self.vc_url         = params.get('vc_url', None)
-        self.vc_type        = params.get('vc_type', None)
-        self.vc_branch      = params.get('vc_branch', 'master')
-        self.vc_url         = params.get('vc_url', None)
         self.package        = params.get('package', None)
         self.ui             = params.get('ui', False)
+        self.directory      = params.get('directory', False)
         self.sfdc_client    = None
         self.defer_connection   = params.get('defer_connection', False)
 
@@ -57,21 +53,39 @@ class MavensMateProject(object):
                 self.__set_sfdc_session()
 
     #used to create a new project in a workspace
-    def retrieve_and_write_to_disk(self):
+    def retrieve_and_write_to_disk(self,action='new'):
         try:
+            if os.path.isdir(config.connection.workspace+"/"+self.project_name) and action == 'new':
+                return mm_util.generate_error_response("A project with this name already exists in your workspace.")
+            
+            if action == 'existing':
+                existing_parent_directory = os.path.dirname(self.directory)
+                existing_is_in_workspace = True
+                if existing_parent_directory != config.connection.workspace:
+                    existing_is_in_workspace = False
+                if os.path.isdir(config.connection.workspace+"/"+self.project_name) and existing_is_in_workspace == False and action == 'existing':
+                    return mm_util.generate_error_response("A project with this name already exists in your workspace.")   
+
             self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type})             
             self.id = mm_util.new_mavensmate_id()
-            project_metadata = self.sfdc_client.retrieve(package=self.package)
-            mm_util.put_project_directory_on_disk(self.project_name, force=True)
-            mm_util.extract_base64_encoded_zip(project_metadata.zipFile, config.connection.workspace+"/"+self.project_name)
-            mm_util.rename_directory(config.connection.workspace+"/"+self.project_name+"/unpackaged", config.connection.workspace+"/"+self.project_name+"/src")
+            if action == 'new':
+                project_metadata = self.sfdc_client.retrieve(package=self.package)
+                mm_util.put_project_directory_on_disk(self.project_name, force=True)
+                mm_util.extract_base64_encoded_zip(project_metadata.zipFile, config.connection.workspace+"/"+self.project_name)
+                mm_util.rename_directory(config.connection.workspace+"/"+self.project_name+"/unpackaged", config.connection.workspace+"/"+self.project_name+"/src")
+            elif action == 'existing':
+                shutil.move(self.directory, config.connection.workspace)
+
             self.location = config.connection.workspace+"/"+self.project_name
             self.__put_project_file()
             self.__put_base_config()
             self.__set_sfdc_session()
             mm_util.put_password_by_key(self.id, self.password)
             self.sfdc_session = self.__get_sfdc_session() #hacky...need to fix
-            return mm_util.generate_success_response("Project Retrieved and Created Successfully")
+            if action == 'new':
+                return mm_util.generate_success_response("Project Retrieved and Created Successfully")
+            else:
+                return mm_util.generate_success_response("Project Created Successfully")
         except BaseException, e:
             #print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
@@ -105,47 +119,16 @@ class MavensMateProject(object):
             #print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
 
-    #checks a project out of source control & adds MavensMate nature
-    def checkout_from_source_control(self):
-        try:
-            self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type})             
-            mm_util.put_project_directory_on_disk(self.project_name, force=True)
-            self.location = config.connection.workspace+"/"+self.project_name
-            #checkout here
-            if self.vc_type == "Git":
-                if vc_branch.lower() == 'head':
-                    os.system("git clone '{0}' '{1}'".format(self.vc_url,self.location))
-                else:
-                    branchname = self.vc_branch.split('/')[-1]
-                    os.system("git clone '{0}' -b '{1}' '{2}'".format(self.vc_url,self.vc_branch,self.location))
-            elif self.vc_type == "SVN":
-                os.chdir(self.location)
-                os.system("svn checkout '{0}' '{1}' --trust-server-cert --non-interactive --username {2} --password {3}".format(self.vc_url,self.project_name,self.vc_username,self.vc_password))
-
-            mm_util.put_password(self.project_name, self.password)
-            self.__put_project_file()
-            self.__put_base_config()
-            self.__set_sfdc_session()
-            self.sfdc_session = self.__get_sfdc_session() #hacky...need to fix
-            return mm_util.generate_success_response("Project Checked Out and Created Successfully")
-        except BaseException, e:
-            return mm_util.generate_error_response(e.message)
-
     #creates a new piece of metadata
     def new_metadata(self, params):
         try:
-            if 'manifest' in params:
-                request = mm_util.parse_manifest(params['manifest'])
-                metadata_type                   = request['metadata_type']
-                api_name                        = request['api_name']
-                apex_class_type                 = request['apex_class_type']
-                apex_trigger_object_api_name    = request['apex_trigger_object_api_name'] if 'apex_trigger_object_api_name' in request else ''
-                #os.remove(params['manifest'])
-            else:
-                metadata_type                   = params.get('metadata_type', None)
-                api_name                        = params.get('api_name', None)
-                apex_class_type                 = params.get('apex_class_type', None)
-                apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
+            metadata_type                   = params.get('metadata_type', None)
+            api_name                        = params.get('api_name', None)
+            apex_class_type                 = params.get('apex_class_type', None)
+            apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
+
+            if metadata_type == 'ApexClass' and apex_class_type == None:
+                apex_class_type = 'default'
 
             if self.sfdc_client.does_metadata_exist(object_type=metadata_type, name=api_name) == True:
                 return mm_util.generate_error_response("This API name is already in use in your org")      
@@ -168,15 +151,51 @@ class MavensMateProject(object):
                         continue
                     full_file_path = os.path.join(dirname, filename)
                     extension = filename.split(".")[1]
-                    metadata_type = mm_util.get_meta_type_by_suffix(extension)
-                    if not os.path.exists(self.location+"/src/"+metadata_type['directoryName']):
-                        os.makedirs(self.location+"/src/"+metadata_type['directoryName'])
-                    shutil.copy(full_file_path, self.location+"/src/"+metadata_type['directoryName'])
+                    mt = mm_util.get_meta_type_by_suffix(extension)
+                    if not os.path.exists(self.location+"/src/"+mt['directoryName']):
+                        os.makedirs(self.location+"/src/"+mt['directoryName'])
+                    shutil.copy(full_file_path, self.location+"/src/"+mt['directoryName'])
             shutil.rmtree(tmp)
+            self.__update_package_xml_with_metadata(metadata_type, api_name)
             return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'])
         except BaseException, e:
-            
             return mm_util.generate_error_response(e.message)
+
+    def __update_package_xml_with_metadata(self, metadata_type, api_name, operation='insert'):
+        supported_types = ['ApexClass', 'ApexTrigger', 'ApexComponent', 'ApexPage']
+        if metadata_type not in supported_types:
+            return
+        package_dict = self.__get_package_as_dict()
+        for i, val in enumerate(package_dict['Package']['types']):
+            if val['name'] == metadata_type:
+                if val['members'] == '*':
+                    pass #we don't need to add/remove here
+                else:
+                    if operation == 'insert' and api_name not in val['members']:
+                        if type(val['members']) is not list:
+                            val['members'] = [val['members']]
+                        val['members'].append(api_name)
+                        val['members'] = sorted(val['members'])
+                    elif operation == 'delete' and api_name in val['members']:
+                        if type(val['members']) is not list:
+                            val['members'] = [val['members']]
+                        val['members'].pop(api_name)
+                        if type(val['members']) is list:
+                            val['members'] = sorted(val['members'])
+                        else:
+                            val['members'] = ""
+
+        metadata_hash = collections.OrderedDict()
+        for i, val in enumerate(package_dict['Package']['types']):
+            if val['members'] == "*" or type(val['members']) is list:
+                metadata_hash[val['name']] = val['members']
+            else:
+                metadata_hash[val['name']] = [val['members']]
+
+        new_package_xml_contents = mm_util.get_package_xml_contents(metadata_hash)
+        existing_package_xml = open(self.location+"/src/package.xml", "w")
+        existing_package_xml.write(new_package_xml_contents)
+        existing_package_xml.close()
 
     #compiles the entire project
     def compile(self):
@@ -414,10 +433,31 @@ class MavensMateProject(object):
             if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
                 self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
             
-            #TODO: handle refreshing directories
+            if 'directories' in params and 'files' in params:
+                raise MMException("Please select either directories or files to refresh")
+            elif 'directories' in params:
+                metadata = {}
+                project_package = self.__get_package_as_dict()
+                types = []
+                for d in params['directories']:
+                    basename = os.path.basename(d)
+                    metadata_type = mm_util.get_meta_type_by_dir(basename)
+                    types.append(metadata_type['xmlName'])
+
+                for i, val in enumerate(project_package['Package']['types']):
+                    package_type = val['name']
+                    members = val['members']
+                    if package_type in types:
+                        metadata[package_type] = members
+                
+                if len(metadata) == 0:
+                    raise MMException("Could not find metadata types to refresh")
+            elif 'files' in params:
+                metadata = mm_util.get_metadata_hash(params['files'])
+            else:
+                raise MMException("Please provide either an array of 'directories' or an array of 'files'")
 
             #retrieves a fresh set of metadata based on the files that have been requested
-            metadata = mm_util.get_metadata_hash(params['files'])
             retrieve_result = self.sfdc_client.retrieve(package=metadata)
             mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
 
@@ -435,7 +475,7 @@ class MavensMateProject(object):
                     shutil.move(full_file_path, destination)
             shutil.rmtree(self.location+"/unpackaged")
             return mm_util.generate_success_response("Refresh Completed Successfully")
-        except BaseException, e:
+        except Exception, e:
             return mm_util.generate_error_response(e.message)
 
     #executes a string of apex
@@ -573,7 +613,7 @@ class MavensMateProject(object):
             #end for testing only
 
             #process package and select only the items the package has specified
-            project_package = self.__get_package()
+            project_package = self.__get_package_as_dict()
             for i, val in enumerate(project_package['Package']['types']):
                 metadata_type = val['name']
                 metadata_def = mm_util.get_meta_type_by_name(metadata_type)
@@ -818,7 +858,7 @@ class MavensMateProject(object):
         except Exception, e:
             mm_util.generate_error_response(e.message)
 
-    def __get_package(self):
+    def __get_package_as_dict(self):
         return mm_util.parse_xml_from_file(self.location+"/src/package.xml")
 
     def get_is_metadata_indexed(self):

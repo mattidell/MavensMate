@@ -6,21 +6,14 @@
       <description>Most recent changes with links to updates.</description>
       <language>en</language>
          <item>
-            <title>Version 0.2 beta</title>
+            <title>Version 0.21 beta</title>
 						<description><![CDATA[
-                <h2>Version 0.2 beta</h2>
-                <p>This update addresses some major issues with mmserver where the server failed to respond appropriately to routine requests.</p>
-                <p>
-                  <ul>
-                    <li>Adds install capability via "Plugins" menu item</li>
-                    <li>Adds the ability to download logs and heap dumps</li>
-                    <li>Fixes whitespace issues with jinja2 templates</li>
-                  </ul>
-                </p>
+                <h2>Version 0.21 beta</h2>
+                <p>This update fixes an issue with the MavensMate for Sublime Text install path. After updating, run the Sublime Text plugin install again.</p>
             ]]>
             </description>
-            <pubDate>Thu, 21 March 2013 00:00:00 +0000</pubDate>
-            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.2" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC4CFQCodOuhXaGgST1nzofsIxoBpH88fQIVAILdq85pxdSHEpNeN6cCn4XlQmE0" />
+            <pubDate>Thu, 21 March 2013 08:00:00 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.21" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFEb6sEwLNikGAMGAjGGeg+bIWVHkAhRZEu1ZkuxzmzqTstNoik9yDlPPJw==" />
          </item>
    </channel>
 </rss>

@@ -36,10 +36,9 @@ def main():
     #example: mm -o new_project --ui
     if args.ui_switch == True:
         #os.system('killAll MavensMateWindowServer') #TODO: try/except?
-        tmp_html_file = util.generate_ui(operation)
+        tmp_html_file = util.generate_ui(operation,request_payload)
         util.launch_ui(tmp_html_file)
-        #server.run(False)
-        print util.generate_success_response('OK')
+        print util.generate_success_response('UI Generated Successfully')
     else:        
         if operation == 'new_project':
             new_project()
@@ -89,6 +88,12 @@ def main():
             delete_apex_overlay()
         elif operation == 'fetch_logs':
             fetch_logs()
+        elif operation == 'new_project_from_existing_directory':
+            new_project_from_existing_directory()
+        elif operation == 'foo':
+            foo()
+        else:
+            print util.generate_error_response('Invalid operation requested')
 
     if args.callback != None:
         os.system(args.callback)
@@ -116,6 +121,9 @@ def list_metadata():
     }) 
     print json.dumps(client.list_metadata(request_payload['metadata_type']))
 
+def foo():
+    print config.connection.project.update_package_xml_with_metadata('ApexClass', 'a1');
+
 def list_connections():
     print config.connection.project.get_org_connections()
 
@@ -141,6 +149,9 @@ def index_metadata(args):
 
 def new_project():
     print config.connection.new_project(request_payload,action='new')
+
+def new_project_from_existing_directory():
+    print config.connection.new_project(request_payload,action='existing')
 
 def edit_project():
     print config.connection.project.edit(request_payload)

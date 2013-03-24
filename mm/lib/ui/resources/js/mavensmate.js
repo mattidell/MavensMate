@@ -26,11 +26,14 @@ $(function() {
 		console.log(e)
 	}
 	$("input[type='text']:first").focus(); //focus first input element
-	//resizeWindowOnDomElementRemoved();
-	//submitFormOnEnter();
+
 	$(".alert-message p a.close").live("click", function(){
 		$(this).parent().parent().hide();
 	})	
+
+	$("#result_wrapper a.close").live("click", function(){
+		$(this).parent().parent().hide();
+	})
 });
 
 function showElement(id) {

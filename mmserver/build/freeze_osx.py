@@ -13,7 +13,6 @@ mmserver_path           = os.path.dirname(os.path.dirname(__file__))
 mmserver_build_path     = os.path.dirname(__file__)
 build_settings          = util.parse_json_from_file('build_settings.json')
 
-
 def main():
     #remove dist directory
     if os.path.exists("{0}/dist".format(mmserver_path)):

@@ -85,7 +85,7 @@ class SforceMetadataClient(SforceBaseClient):
         if 'package' in kwargs and type(kwargs['package']) is not dict: 
             #if package is location of package.xml, we'll parse the xml and create a request
             package_dict = xmltodict.parse(mm_util.get_file_as_string(kwargs['package']))
-            config.logger.debug('>>>> ', package_dict)
+            #config.logger.debug('>>>> ', package_dict)
             api_version = package_dict['Package']['version']
             package_dict['unpackaged'] = package_dict.pop('Package')
             package_dict['unpackaged'].pop('version')

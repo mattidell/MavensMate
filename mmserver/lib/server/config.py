@@ -35,6 +35,20 @@ def project_request(request_handler):
     '''
     run_async_operation(request_handler, 'new_project')
 
+def project_existing_request(request_handler):
+    '''
+        POST /project/existing
+        {
+            "project_name"  : "my project name"
+            "username"      : "mm@force.com",
+            "password"      : "force",
+            "org_type"      : "developer",
+            "directory"     : "/path/to/project",
+            "action"        : "existing"
+        }
+    '''
+    run_async_operation(request_handler, 'new_project_from_existing_directory')
+
 def project_edit_request(request_handler):
     '''
         POST /project/edit
@@ -185,8 +199,10 @@ def metadata_list_request(request_handler):
     '''
     request_id = util.generate_request_id()
     params, json_body = get_request_params(request_handler)
-    worker = BackgroundWorker('list_metadata', params, False, request_id, json_body)
-    response = worker.run()
+    worker_thread = BackgroundWorker('list_metadata', params, False, request_id, json_body)
+    worker_thread.start()
+    worker_thread.join()
+    response = worker_thread.response
     respond(request_handler, response)
 
 ##########################
@@ -329,6 +345,7 @@ mappings = {
     '/project/conns/new'    : { 'POST'  : connections_new_request },
     '/project/conns/delete' : { 'POST'  : connections_delete_request },
     '/project/upgrade'      : { 'POST'  : project_upgrade_request },
+    '/project/existing'     : { 'POST'  : project_existing_request },
     '/session'              : { 'GET'   : get_active_session_request },
     '/apex/execute'         : { 'POST'  : execute_apex_request },
     '/metadata/list'        : { 'GET'   : metadata_list_request }

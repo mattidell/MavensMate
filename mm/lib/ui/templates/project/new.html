@@ -20,7 +20,6 @@
 	 
 	<ul class="tabs">
 		<li class="active"><a id="project_details_tab" href="#form">Details</a></li>
-		<!-- <li><a href="#vc">Version Control</a></li> -->
 		{% if user_action == "new" %}
 		<li><a href="#metadata">Metadata</a></li>
 		{% endif %}
@@ -104,6 +103,13 @@
 		-->
 		{% if user_action == "new" %}
 		<div id="metadata">
+			<!-- <div id="filter">
+				<div class="select-wrapper" style="position:absolute;top:10px;left:5px;width:165px;text-align:right;">
+					<a href="#" id="btnSelectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">All</a>
+					<a href="#" id="btnDeselectAll" class="btn small" style="font-weight:normal;padding:4px 7px 4px;">None</a>
+					<a href="javascript:void(0)" id="btnRefresh" style="font-weight:normal;padding:4px 7px 4px;" class="btn success small" onclick="refresh_index()">Refresh</a>
+				</div>
+			</div> -->
 			<div id="project_wrapper">
 				<div id="treewrapper">
 					<div id="tree"></div>
