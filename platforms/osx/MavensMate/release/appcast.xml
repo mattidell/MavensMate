@@ -14,6 +14,7 @@
                     <li>Better plugin update visibility</li>
                     <li>Fixed issues with refreshing files/directories</li>
                     <li>package.xml is now updated properly when new Apex-related metadata is created</li>
+                  </ul>
                 </p>
             ]]>
             </description>
