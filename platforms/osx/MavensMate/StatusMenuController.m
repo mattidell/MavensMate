@@ -9,11 +9,13 @@
 #import "StatusMenuController.h"
 #import "DragAndDropStatusMenuView.h"
 #import "PluginsController.h"
+#import "AboutController.h"
 
 @implementation StatusMenuController
 
 @synthesize pluginsController = _pluginsController;
- 
+@synthesize aboutController = _aboutController;
+
 //@synthesize _statusItem = statusItem;
 
 -(StatusMenuController*)init {
@@ -39,6 +41,14 @@
 
 -(void)showMenu {
     [_statusItem popUpStatusItemMenu:_statusMenu];
+}
+
+-(IBAction)openAboutView:(id)sender {
+    //if(!_aboutController) {
+        _aboutController = [[AboutController alloc] init];
+	//}
+    [[_aboutController window] makeKeyAndOrderFront:nil];
+    [[NSApplication sharedApplication] arrangeInFront:nil];
 }
 
 -(IBAction)openPluginsView:(id)sender {

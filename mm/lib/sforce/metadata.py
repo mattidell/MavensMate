@@ -142,7 +142,6 @@ class SforceMetadataClient(SforceBaseClient):
             return result
 
     def deploy(self, params={}, **kwargs):
-        
         if 'debug_categories' in params:
             self._setHeaders('deploy', debug_categories=params['debug_categories'])  
         

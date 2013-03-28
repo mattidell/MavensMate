@@ -19,6 +19,8 @@
 		461E5B9E16FCAD41000DA2DD /* AlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 461E5B9D16FCAD41000DA2DD /* AlertController.m */; };
 		461E5BA016FCBA3A000DA2DD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B9F16FCBA3A000DA2DD /* MainMenu.xib */; };
 		462388AC16FA21C800826160 /* Sublime_Text_Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 462388AB16FA21C800826160 /* Sublime_Text_Logo.png */; };
+		467592DC170039D1007BC4D4 /* About.xib in Resources */ = {isa = PBXBuildFile; fileRef = 467592DB170039D1007BC4D4 /* About.xib */; };
+		467592DF17003BD0007BC4D4 /* AboutController.m in Sources */ = {isa = PBXBuildFile; fileRef = 467592DE17003BD0007BC4D4 /* AboutController.m */; };
 		46A3908616EDE46A008B5C2C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A3908516EDE46A008B5C2C /* Cocoa.framework */; };
 		46A3909216EDE46A008B5C2C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3909116EDE46A008B5C2C /* main.m */; };
 		46A3909916EDE46A008B5C2C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3909816EDE46A008B5C2C /* AppDelegate.m */; };
@@ -76,7 +78,9 @@
 		461E5B9D16FCAD41000DA2DD /* AlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlertController.m; sourceTree = "<group>"; };
 		461E5B9F16FCBA3A000DA2DD /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		462388AB16FA21C800826160 /* Sublime_Text_Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Sublime_Text_Logo.png; sourceTree = "<group>"; };
-		46A3908216EDE46A008B5C2C /* MavensMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = MavensMate.app; path = /Users/josephferraro/Development/Python/mavensmate/platforms/osx/MavensMate/build/Release/MavensMate.app; sourceTree = "<absolute>"; };
+		467592DB170039D1007BC4D4 /* About.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = About.xib; sourceTree = "<group>"; };
+		467592DD17003BD0007BC4D4 /* AboutController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutController.h; sourceTree = "<group>"; };
+		467592DE17003BD0007BC4D4 /* AboutController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutController.m; sourceTree = "<group>"; };
 		46A3908516EDE46A008B5C2C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		46A3908816EDE46A008B5C2C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		46A3908916EDE46A008B5C2C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -95,6 +99,7 @@
 		46DC902716F12F25005ED324 /* mmserver */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mmserver; path = ../../../mmserver/dist/mmserver; sourceTree = "<group>"; };
 		46DC902916F12F32005ED324 /* mm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mm; path = ../../../mm/dist/mm; sourceTree = "<group>"; };
 		46DC902B16F12F79005ED324 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
+		46FEB95017042FC600515A23 /* MavensMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MavensMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +131,7 @@
 				461E5B8E16FCAAC6000DA2DD /* Alert.xib */,
 				461E5B9316FCAC03000DA2DD /* DragAndDropStatusMenuView.h */,
 				461E5B9416FCAC03000DA2DD /* DragAndDropStatusMenuView.m */,
+				467592DB170039D1007BC4D4 /* About.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -141,6 +147,8 @@
 				461E5B9A16FCAD33000DA2DD /* LoadingController.m */,
 				461E5B9C16FCAD41000DA2DD /* AlertController.h */,
 				461E5B9D16FCAD41000DA2DD /* AlertController.m */,
+				467592DD17003BD0007BC4D4 /* AboutController.h */,
+				467592DE17003BD0007BC4D4 /* AboutController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -156,6 +164,7 @@
 				46A3925716EE061E008B5C2C /* Resources */,
 				46A3908B16EDE46A008B5C2C /* MavensMate */,
 				46A3908416EDE46A008B5C2C /* Frameworks */,
+				46FEB95017042FC600515A23 /* MavensMate.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -250,7 +259,7 @@
 			);
 			name = MavensMate;
 			productName = MavensMate;
-			productReference = 46A3908216EDE46A008B5C2C /* MavensMate.app */;
+			productReference = 46FEB95017042FC600515A23 /* MavensMate.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -297,6 +306,7 @@
 				461E5B8D16FCAAA6000DA2DD /* Loading.xib in Resources */,
 				461E5B8F16FCAAC6000DA2DD /* Alert.xib in Resources */,
 				461E5BA016FCBA3A000DA2DD /* MainMenu.xib in Resources */,
+				467592DC170039D1007BC4D4 /* About.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +324,7 @@
 				461E5B9816FCAD23000DA2DD /* PluginsController.m in Sources */,
 				461E5B9B16FCAD33000DA2DD /* LoadingController.m in Sources */,
 				461E5B9E16FCAD41000DA2DD /* AlertController.m in Sources */,
+				467592DF17003BD0007BC4D4 /* AboutController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

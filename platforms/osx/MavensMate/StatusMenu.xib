@@ -88,6 +88,14 @@
 						<reference key="NSOnImage" ref="1042213074"/>
 						<reference key="NSMixedImage" ref="44795814"/>
 					</object>
+					<object class="NSMenuItem" id="276061610">
+						<reference key="NSMenu" ref="259411960"/>
+						<string key="NSTitle">About MavensMate</string>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="1042213074"/>
+						<reference key="NSMixedImage" ref="44795814"/>
+					</object>
 					<object class="NSMenuItem" id="658429942">
 						<reference key="NSMenu" ref="259411960"/>
 						<string key="NSTitle">Quit MavensMate</string>
@@ -143,6 +151,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">openAboutView:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="276061610"/>
+					</object>
+					<int key="connectionID">33</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">checkForUpdates:</string>
 						<reference key="source" ref="631518271"/>
 						<reference key="destination" ref="688037809"/>
@@ -186,6 +202,7 @@
 							<reference ref="240190719"/>
 							<reference ref="145946298"/>
 							<reference ref="315269213"/>
+							<reference ref="276061610"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -224,6 +241,11 @@
 						<reference key="object" ref="631518271"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">32</int>
+						<reference key="object" ref="276061610"/>
+						<reference key="parent" ref="259411960"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -233,6 +255,7 @@
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="29.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -243,7 +266,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">31</int>
+			<int key="maxID">33</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -281,10 +304,15 @@
 					<string key="className">StatusMenuController</string>
 					<string key="superclassName">NSViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="openAboutView:">id</string>
 						<string key="openPluginsView:">id</string>
 						<string key="restartServer:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="openAboutView:">
+							<string key="name">openAboutView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="openPluginsView:">
 							<string key="name">openPluginsView:</string>
 							<string key="candidateClassName">id</string>
@@ -295,13 +323,13 @@
 						</object>
 					</dictionary>
 					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">statusMenu</string>
+						<string key="NS.key.0">_statusMenu</string>
 						<string key="NS.object.0">NSMenu</string>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">statusMenu</string>
+						<string key="NS.key.0">_statusMenu</string>
 						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">statusMenu</string>
+							<string key="name">_statusMenu</string>
 							<string key="candidateClassName">NSMenu</string>
 						</object>
 					</object>

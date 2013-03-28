@@ -10,6 +10,7 @@
 #import "DragAndDropStatusMenuView.h"
 
 @class PluginsController;
+@class AboutController;
 
 @interface StatusMenuController : NSViewController {
 @private
@@ -18,10 +19,11 @@
 }
 
 @property (strong) PluginsController *pluginsController;
-
+@property (strong) AboutController *aboutController;
 
 -(StatusMenuController*)init;
 -(IBAction)openPluginsView:(id)sender;
+-(IBAction)openAboutView:(id)sender;
 -(IBAction)restartServer:(id)sender;
 -(void)showMenu;
 

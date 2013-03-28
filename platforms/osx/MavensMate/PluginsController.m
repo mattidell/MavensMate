@@ -23,6 +23,7 @@
     self = [[PluginsController alloc] initWithWindowNibName:@"Plugins"];
     [self.window setDelegate:self];
     [self.window setLevel:kCGMainMenuWindowLevel-3];
+    //[self.window setCollectionBehavior:NSWindowCollectionBehaviorStationary|NSWindowCollectionBehaviorCanJoinAllSpaces|NSWindowCollectionBehaviorFullScreenAuxiliary];
     [_sublimeTextButtonProgressIndicator startAnimation:self];
     self = [super init];
     if (self) {

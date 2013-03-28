@@ -145,10 +145,7 @@ class MavensMateClient(object):
         if self.aclient == None:
             self.aclient = self.__get_apex_client()
         params['namespace'] = self.get_org_namespace()
-        return self.aclient.runTests(params) 
-        # if self.mclient == None:
-        #     self.mclient = self.__get_metadata_client()
-        # return self.mclient.deploy(**kwargs)
+        return self.aclient.runTests(params)
 
     def get_org_namespace(self):
         if self.mclient == None:
@@ -354,6 +351,12 @@ class MavensMateClient(object):
             payload['ScopeId'] = self.user_id
         payload = json.dumps(payload)
         r = requests.post(self.get_tooling_url()+"/sobjects/TraceFlag", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
+    #TODO: support in the future
+    def run_async_apex_tests(self, payload):
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/ApexTestQueueItem", data=payload, headers=self.get_rest_headers('POST'), verify=False)
         return mm_util.parse_rest_response(r.text)
 
     def create_overlay_action(self, payload):

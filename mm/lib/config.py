@@ -1,10 +1,11 @@
 import logging
 import os.path
 import sys
-#handler = logging.FileHandler('/Users/josephferraro/Desktop/foo.log')
+import tempfile
+handler = logging.FileHandler(tempfile.gettempdir()+"/mm.log")
 #handler = logging.FileHandler('')
 logging.raiseExceptions = False
-handler = logging.NullHandler()
+#handler = logging.NullHandler()
 logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.INFO)
 logging.getLogger('suds.client').propagate = False
@@ -15,6 +16,7 @@ logging.getLogger('mm').addHandler(handler)
 logger.setLevel(logging.DEBUG)
 requests_log = logging.getLogger("requests")
 requests_log.setLevel(logging.ERROR)
+
 # logging.getLogger('suds.transport.http').propagate = False
 # logging.getLogger('suds.client').setLevel(logging.DEBUG)
 # logging.getLogger('suds.transport').setLevel(logging.DEBUG)

@@ -489,6 +489,10 @@ def lower_keys(x):
 
 #prepares the unit test result for processing by the jinja template
 def process_unit_test_result(result):
+    
+    config.logger.debug('>>>> RUN TEST RESULT')
+    config.logger.debug(result)
+
     triggers = []
     classes = []
 

@@ -1,10 +1,11 @@
 #when mavensmate binary is executed, a plugin connection should be created immediately
 #plugin connection should have a single instance of a mm_client associated
-
 import os
 import json
 import mm_util
 import sys
+import config
+import logging
 from enum import enum
 from mm_project import MavensMateProject
 
@@ -34,6 +35,20 @@ class MavensMatePluginConnection(object):
             params['location'] = self.workspace+"/"+self.project_name
             params['ui'] = self.ui
             self.project = MavensMateProject(params)
+        if self.get_log_level() != None:
+            log_level = self.get_log_level()
+            if log_level == 'EXCEPTION':
+                config.logger.setLevel(logging.EXCEPTION)
+            elif log_level == 'CRITICAL':
+                config.logger.setLevel(logging.CRITICAL)
+            elif log_level == 'ERROR':
+                config.logger.setLevel(logging.ERROR)
+            elif log_level == 'WARNING':
+                config.logger.setLevel(logging.WARNING)
+            elif log_level == 'DEBUG':
+                config.logger.setLevel(logging.DEBUG)
+            elif log_level == 'INFO':
+                config.logger.setLevel(logging.INFO) 
 
     #returns the workspace for the current connection (/Users/username/Workspaces/MavensMate)
     def get_workspace(self):
@@ -95,6 +110,12 @@ class MavensMatePluginConnection(object):
             return result
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
+
+    def get_log_level(self):
+        try:
+            return self.get_plugin_client_setting('mm_log_level')
+        except:
+            return None
 
     def get_sfdc_api_version(self):
         try:

@@ -226,64 +226,69 @@ class MavensMateProject(object):
     def compile_selected_metadata(self, params):
         try:
             files = params.get('files', None)
-            if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
-                file_path = files[0]
-                file_ext = file_path.split('.')[-1]
-                metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
-                f = open(file_path, "r")
-                file_body = f.read()
-                f.close()
-                result = self.sfdc_client.compile_apex(metadata_type['xmlName'], file_body, retXml=True)
-                d = xmltodict.parse(result,postprocessor=mm_util.xmltodict_postprocessor)
-                if file_ext == 'trigger':
-                    return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileTriggersResponse"]["result"])
-                else:
-                    return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileClassesResponse"]["result"])
-            else:
-                for f in files:
-                    if '-meta.xml' in f:
-                        corresponding_file = f.split('-meta.xml')[0]
-                        if corresponding_file not in files:
-                            files.append(corresponding_file)
-                for f in files:
-                    if '-meta.xml' in f:
-                        continue
-                    file_ext = f.split('.')[-1]
+            try:
+                if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
+                    file_path = files[0]
+                    file_ext = file_path.split('.')[-1]
                     metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
-                    if metadata_type['metaFile'] == True:
-                        corresponding_file = f + '-meta.xml'
-                        if corresponding_file not in files:
-                            files.append(corresponding_file)
+                    f = open(file_path, "r")
+                    file_body = f.read()
+                    f.close()
+                    file_body = file_body.decode("utf-8")
+                    result = self.sfdc_client.compile_apex(metadata_type['xmlName'], file_body, retXml=True)
+                    d = xmltodict.parse(result,postprocessor=mm_util.xmltodict_postprocessor)
+                    if file_ext == 'trigger':
+                        return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileTriggersResponse"]["result"])
+                    else:
+                        return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileClassesResponse"]["result"])
+            except UnicodeDecodeError:
+                #decode error, let's use the metadata api
+                pass
 
-                metadata_package_dict = mm_util.get_metadata_hash(files)
-                tmp = mm_util.put_tmp_directory_on_disk()
-                os.makedirs(tmp+"/unpackaged")
-                #copy files from project directory to tmp
-                for full_file_path in files:
-                    if '/package.xml' in full_file_path:
-                        continue
-                    destination = tmp + '/unpackaged/' + full_file_path.split('/src/')[1]
-                    destination_directory = os.path.dirname(destination)
-                    if not os.path.exists(destination_directory):
-                        os.makedirs(destination_directory)
-                    shutil.copy2(full_file_path, destination_directory)
+            for f in files:
+                if '-meta.xml' in f:
+                    corresponding_file = f.split('-meta.xml')[0]
+                    if corresponding_file not in files:
+                        files.append(corresponding_file)
+            for f in files:
+                if '-meta.xml' in f:
+                    continue
+                file_ext = f.split('.')[-1]
+                metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
+                if metadata_type['metaFile'] == True:
+                    corresponding_file = f + '-meta.xml'
+                    if corresponding_file not in files:
+                        files.append(corresponding_file)
 
-                package_xml = mm_util.get_package_xml_contents(metadata_package_dict)
-                mm_util.put_package_xml_in_directory(tmp+"/unpackaged", package_xml)
-                zip_file = mm_util.zip_directory(tmp, tmp)
-                deploy_params = {
-                    "zip_file"          : zip_file,
-                    "rollback_on_error" : True,
-                    "ret_xml"           : True
-                }
-                deploy_result = self.sfdc_client.deploy(deploy_params)
-                d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
-                shutil.rmtree(tmp)
-                return json.dumps(
-                        d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
-                    )
-        except BaseException, e:
-            #print traceback.print_exc()
+            metadata_package_dict = mm_util.get_metadata_hash(files)
+            tmp = mm_util.put_tmp_directory_on_disk()
+            os.makedirs(tmp+"/unpackaged")
+            #copy files from project directory to tmp
+            for full_file_path in files:
+                if '/package.xml' in full_file_path:
+                    continue
+                destination = tmp + '/unpackaged/' + full_file_path.split('/src/')[1]
+                destination_directory = os.path.dirname(destination)
+                if not os.path.exists(destination_directory):
+                    os.makedirs(destination_directory)
+                shutil.copy2(full_file_path, destination_directory)
+
+            package_xml = mm_util.get_package_xml_contents(metadata_package_dict)
+            mm_util.put_package_xml_in_directory(tmp+"/unpackaged", package_xml)
+            zip_file = mm_util.zip_directory(tmp, tmp)
+            deploy_params = {
+                "zip_file"          : zip_file,
+                "rollback_on_error" : True,
+                "ret_xml"           : True
+            }
+            deploy_result = self.sfdc_client.deploy(deploy_params)
+            d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+            shutil.rmtree(tmp)
+            return json.dumps(
+                    d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
+                )
+        except Exception, e:
+            print traceback.print_exc()
             try:
                 shutil.rmtree(tmp)
             except:
@@ -500,18 +505,35 @@ class MavensMateProject(object):
     #executes 1 or more unit tests
     def run_unit_tests(self, params):
         try:
-            run_tests_result = self.sfdc_client.run_tests(params)
-            if "soapenv:Envelope" in run_tests_result:
-                result = {}
-                result = run_tests_result["soapenv:Envelope"]["soapenv:Body"]["runTestsResponse"]["result"]
-                try:
-                    result['log'] = run_tests_result["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
-                except:
-                    pass
-                return result
-            elif 'log' in run_tests_result:
-                run_tests_result['log'] = run_tests_result['log']
-                return mm_util.generate_response(run_tests_result)
+            api = params.get('api', 'apex')
+            if api == 'apex':
+                run_tests_result = self.sfdc_client.run_tests(params)
+                if "soapenv:Envelope" in run_tests_result:
+                    result = {}
+                    result = run_tests_result["soapenv:Envelope"]["soapenv:Body"]["runTestsResponse"]["result"]
+                    try:
+                        result['log'] = run_tests_result["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
+                    except:
+                        pass
+                    return result
+                elif 'log' in run_tests_result:
+                    run_tests_result['log'] = run_tests_result['log']
+                    return mm_util.generate_response(run_tests_result)
+            else:
+                # payload = {
+                #     'namespace' : params.get('namespace', None),
+                #     'allTests'  : params.get('run_all_tests', False),
+                #     'classes'   : params.get('classes', [])
+                # }
+                #deploy_metadata = self.sfdc_client.retrieve(package=params['package'])
+                #TODO: empty zip here
+                threads = []
+                thread = DeploymentHandler(self, destination, params, deploy_metadata)
+                thread.start()  
+                thread.join()
+                test_result = thread.result
+                return test_result
+
         except BaseException, e:
             return mm_util.generate_error_response(e.message)  
 
