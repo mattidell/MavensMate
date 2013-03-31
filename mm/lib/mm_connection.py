@@ -11,12 +11,15 @@ from mm_project import MavensMateProject
 
 class MavensMatePluginConnection(object):
 
-    PluginClients = enum(SUBLIME_TEXT='Sublime Text', NOTEPAD_PLUS_PLUS='Notepad++', TEXTMATE='TextMate')
-
+    currently_supported_clients = ['SUBLIME_TEXT_2', 'SUBLIME_TEXT_3']
+    PluginClients = enum(SUBLIME_TEXT_2='SUBLIME_TEXT_2', SUBLIME_TEXT_3='SUBLIME_TEXT_3', NOTEPAD_PLUS_PLUS='NOTEPAD_PLUS_PLUS', TEXTMATE='TEXTMATE')
+    
     def __init__(self, params={}, **kwargs):
         params = dict(params.items() + kwargs.items())
         self.platform               = sys.platform
-        self.plugin_client          = params.get('client', 'Sublime Text') #=> "Sublime Text", "Notepad++", "TextMate"
+        self.plugin_client          = params.get('client', 'SUBLIME_TEXT_2') #=> "Sublime Text", "Notepad++", "TextMate"
+        if self.plugin_client not in self.currently_supported_clients:
+            self.plugin_client = 'SUBLIME_TEXT_2'
         self.plugin_client_version  = params.get('client_version', '2.0.1') #=> "1.0", "1.1.1", "v1"
         self.plugin_client_settings = self.get_plugin_client_settings()
         self.workspace              = self.get_workspace()
@@ -56,7 +59,7 @@ class MavensMatePluginConnection(object):
 
     #returns the MavensMate settings as a dict for the current plugin
     def get_plugin_client_settings(self):
-        if self.plugin_client == self.PluginClients.SUBLIME_TEXT:
+        if self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
             if self.platform == 'darwin':
                 default_settings = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 2/Packages/MavensMate/mavensmate.sublime-settings'))
                 user_settings    = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 2/Packages/User/mavensmate.sublime-settings'))
@@ -67,6 +70,23 @@ class MavensMatePluginConnection(object):
             elif self.platform == 'win32' or self.platform == 'cygwin':
                 default_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 2', 'Packages', 'MavensMate')+"mavensmate.sublime-settings")
                 user_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 2', 'Packages', 'User')+"mavensmate.sublime-settings")
+                return {
+                    'user'    : user_settings,
+                    'default' : default_settings
+                }
+            elif self.platform == 'linux2':
+                pass
+        elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
+            if self.platform == 'darwin':
+                default_settings = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 3/Packages/MavensMate/mavensmate.sublime-settings'))
+                user_settings    = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 3/Packages/User/mavensmate.sublime-settings'))
+                return {
+                    'user'    : user_settings,
+                    'default' : default_settings
+                }
+            elif self.platform == 'win32' or self.platform == 'cygwin':
+                default_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 3', 'Packages', 'MavensMate')+"mavensmate.sublime-settings")
+                user_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 3', 'Packages', 'User')+"mavensmate.sublime-settings")
                 return {
                     'user'    : user_settings,
                     'default' : default_settings
@@ -103,9 +123,12 @@ class MavensMatePluginConnection(object):
 
             if json.loads(result)['success'] == True:
                 #opens project based on the client
-                if self.plugin_client == self.PluginClients.SUBLIME_TEXT:
+                if self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
                     if self.platform == 'darwin':
                         os.system("'/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl' --project '{0}'".format(self.project.location+"/"+self.project.project_name+".sublime-project"))
+                elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
+                    if self.platform == 'darwin':
+                        os.system("'/Applications/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{0}'".format(self.project.location+"/"+self.project.project_name+".sublime-project"))
 
             return result
         except BaseException, e:

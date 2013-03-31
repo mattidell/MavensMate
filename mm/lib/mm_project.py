@@ -989,7 +989,7 @@ class MavensMateProject(object):
         self.__put_describe_file()
 
     def __put_project_file(self):
-        if config.connection.plugin_client == 'Sublime Text':
+        if config.connection.plugin_client == 'SUBLIME_TEXT_2' or config.connection.plugin_client == 'SUBLIME_TEXT_3':
             src = open(config.connection.workspace+"/"+self.project_name+"/"+self.project_name+".sublime-project", "w")
             src.write('{"folders":[{"path": "'+config.connection.workspace+"/"+self.project_name+'"}]}')
             src.close()

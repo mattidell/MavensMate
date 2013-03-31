@@ -9,12 +9,14 @@
 #import "StatusMenuController.h"
 #import "DragAndDropStatusMenuView.h"
 #import "PluginsController.h"
+#import "PluginViewsController.h"
 #import "AboutController.h"
 
 @implementation StatusMenuController
 
 @synthesize pluginsController = _pluginsController;
 @synthesize aboutController = _aboutController;
+@synthesize pluginViewsController = _pluginViewsController;
 
 //@synthesize _statusItem = statusItem;
 
@@ -57,6 +59,17 @@
 	//}
     [[_pluginsController window] makeKeyAndOrderFront:nil];
     [[NSApplication sharedApplication] arrangeInFront:nil];
+}
+
+- (IBAction)openNewPluginsView:(id)sender{
+	[[PluginViewsController sharedPrefsWindowController] showWindow:nil];
+    [[NSApplication sharedApplication] arrangeInFront:nil];
+    [_pluginViewsController checkForPluginUpdates];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+	[[PluginViewsController sharedPrefsWindowController] setCrossFade:[[NSUserDefaults standardUserDefaults] boolForKey:@"fade"]];
+	[[PluginViewsController sharedPrefsWindowController] setShiftSlowsAnimation:[[NSUserDefaults standardUserDefaults] boolForKey:@"shiftSlowsAnimation"]];
 }
 
 //local server related actions

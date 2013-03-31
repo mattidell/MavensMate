@@ -130,8 +130,8 @@ def get_active_session_request(request_handler):
         GET /session?username=mm@force.com&password=force&org_type=developer
     '''
     request_id = util.generate_request_id()
-    params, json_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('get_active_session', params, False, request_id, json_body)
+    params, json_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('get_active_session', params, False, request_id, json_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -153,8 +153,8 @@ def update_credentials_request(request_handler):
               have been updated
     '''
     request_id = util.generate_request_id()
-    params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('update_credentials', params, False, request_id, raw_post_body)
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('update_credentials', params, False, request_id, raw_post_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -162,8 +162,8 @@ def update_credentials_request(request_handler):
 
 def connections_list_request(request_handler):
     request_id = util.generate_request_id()
-    params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('list_connections', params, False, request_id, raw_post_body)
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('list_connections', params, False, request_id, raw_post_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -171,8 +171,8 @@ def connections_list_request(request_handler):
 
 def connections_new_request(request_handler):
     request_id = util.generate_request_id()
-    params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('new_connection', params, False, request_id, raw_post_body)
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('new_connection', params, False, request_id, raw_post_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -180,8 +180,8 @@ def connections_new_request(request_handler):
 
 def connections_delete_request(request_handler):
     request_id = util.generate_request_id()
-    params, raw_post_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('delete_connection', params, False, request_id, raw_post_body)
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('delete_connection', params, False, request_id, raw_post_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -198,8 +198,8 @@ def metadata_list_request(request_handler):
         call to get a list of metadata of a certain type
     '''
     request_id = util.generate_request_id()
-    params, json_body = get_request_params(request_handler)
-    worker_thread = BackgroundWorker('list_metadata', params, False, request_id, json_body)
+    params, json_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('list_metadata', params, False, request_id, json_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
@@ -213,12 +213,12 @@ def metadata_list_request(request_handler):
 def run_async_operation(request_handler, operation_name):
     gc.logger.debug('>>> running an async operation')
     request_id = util.generate_request_id()
-    params, raw_post_body = get_request_params(request_handler)
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
     gc.logger.debug(request_id)
     gc.logger.debug(params)
     gc.logger.debug(raw_post_body)
     
-    worker_thread = BackgroundWorker(operation_name, params, True, request_id, raw_post_body)
+    worker_thread = BackgroundWorker(operation_name, params, True, request_id, raw_post_body, plugin_client)
     gc.logger.debug('worker created')
     worker_thread.start()
     gc.logger.debug('worker thread started')
@@ -244,7 +244,7 @@ def run_async_operation(request_handler, operation_name):
 #if the request IS done, it will respond with the body of the request
 def status_request(request_handler):
     gc.logger.debug('>>> status request')
-    params, json_string = get_request_params(request_handler)
+    params, json_string, plugin_client = get_request_params(request_handler)
     gc.logger.debug('>>> params: ')
     gc.logger.debug(params)
     try:
@@ -284,19 +284,20 @@ def get_request_params(request_handler):
     print '>>>>>> ', request_handler.path
     print '>>>>>> ', request_handler.command
     #print '>>>>>> ', request_handler.headers
+    plugin_client = request_handler.headers.get('mm_plugin_client', 'SUBLIME_TEXT_2')
     if request_handler.command == 'POST':
         data_string = request_handler.rfile.read(int(request_handler.headers['Content-Length']))
         #print '>>>>>>> ', data_string
         postvars = json.loads(data_string)
         if 'package' in postvars:
             postvars['package'] = json.dumps(postvars['package'])
-        return postvars, data_string
+        return postvars, data_string, plugin_client
     elif request_handler.command == 'GET':
         params = parse_qs(urlparse(request_handler.path).query)
         for key in params:
             params[key] = params[key][0]
         json_string = json.dumps(params)
-        return params, json_string
+        return params, json_string, plugin_client
 
 def process_request_in_background(worker):
     worker.run()

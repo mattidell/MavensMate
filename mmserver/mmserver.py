@@ -10,7 +10,10 @@ def main():
     parser.add_argument('-m', '--mmpath') 
     args = parser.parse_args()
     config.mm_path = args.mmpath
-    server.run()
+    try:
+        server.run()
+    except:
+        config.logger.warn("Server at port 9000 already running")
 
 if __name__ == '__main__':
     main() 

@@ -17,6 +17,11 @@
     <script src="{{ base_path }}/lib/ui/resources/js/mavensmate.js" type="text/javascript"></script>
     <script src="{{ base_path }}/lib/ui/resources/js/jquery.tablescroll.js" type="text/javascript"></script>
     <script src="{{ base_path }}/lib/ui/resources/js/chosen.jquery.js" type="text/javascript"></script>
+    <script>
+        $.ajaxSetup({
+            headers: { "mm_plugin_client": "{{ client }}" }
+        });
+    </script>
 </head>
 <body id='body'>
   	<div data-scrollspy="scrollspy" class="topbar">

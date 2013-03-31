@@ -17,13 +17,14 @@ def get_random_string(size=8, chars=string.ascii_lowercase + string.digits):
 
 #the main job of the backgroundworker is to submit a request for work to be done by mm
 class BackgroundWorker(threading.Thread):
-    def __init__(self, operation, params, async, request_id=None, payload=None):
-        self.operation  = operation
-        self.params     = params
-        self.request_id = request_id
-        self.async      = async
-        self.payload    = payload
-        self.response   = None
+    def __init__(self, operation, params, async, request_id=None, payload=None, plugin_client='SUBLIME_TEXT_2'):
+        self.operation      = operation
+        self.params         = params
+        self.request_id     = request_id
+        self.async          = async
+        self.payload        = payload
+        self.plugin_client  = plugin_client
+        self.response       = None
         threading.Thread.__init__(self)
 
     def run(self):
@@ -31,6 +32,7 @@ class BackgroundWorker(threading.Thread):
         args = self.get_arguments()
         global_config.logger.debug('>>> running thread arguments on next line!')
         global_config.logger.debug(args)
+        print args
         p = subprocess.Popen("{0} {1}".format(pipes.quote(global_config.mm_path), args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         p.stdin.write(self.payload)
         p.stdin.close()
@@ -57,6 +59,7 @@ class BackgroundWorker(threading.Thread):
     def get_arguments(self):
         args = {}
         args['-o'] = self.operation #new_project, get_active_session
+        args['-c'] = self.plugin_client
 
         if self.operation == 'new_project':
             pass

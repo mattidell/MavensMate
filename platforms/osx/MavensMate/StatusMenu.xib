@@ -119,14 +119,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">openPluginsView:</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="1023820056"/>
-					</object>
-					<int key="connectionID">25</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">restartServer:</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="240190719"/>
@@ -156,6 +148,14 @@
 						<reference key="destination" ref="276061610"/>
 					</object>
 					<int key="connectionID">33</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">openNewPluginsView:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1023820056"/>
+					</object>
+					<int key="connectionID">35</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -196,20 +196,15 @@
 						<int key="objectID">5</int>
 						<reference key="object" ref="259411960"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="1023820056"/>
 							<reference ref="688037809"/>
 							<reference ref="658429942"/>
 							<reference ref="240190719"/>
 							<reference ref="145946298"/>
 							<reference ref="315269213"/>
 							<reference ref="276061610"/>
+							<reference ref="1023820056"/>
 						</array>
 						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">6</int>
-						<reference key="object" ref="1023820056"/>
-						<reference key="parent" ref="259411960"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">7</int>
@@ -246,6 +241,11 @@
 						<reference key="object" ref="276061610"/>
 						<reference key="parent" ref="259411960"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">34</int>
+						<reference key="object" ref="1023820056"/>
+						<reference key="parent" ref="259411960"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -256,8 +256,8 @@
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="29.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="32.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="7.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="9.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -266,7 +266,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">33</int>
+			<int key="maxID">35</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -305,12 +305,17 @@
 					<string key="superclassName">NSViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="openAboutView:">id</string>
+						<string key="openNewPluginsView:">id</string>
 						<string key="openPluginsView:">id</string>
 						<string key="restartServer:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="openAboutView:">
 							<string key="name">openAboutView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="openNewPluginsView:">
+							<string key="name">openNewPluginsView:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="openPluginsView:">

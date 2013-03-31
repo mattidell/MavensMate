@@ -19,7 +19,7 @@ request_payload = util.get_request_payload()
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--operation') #name of the operation being requested
-    parser.add_argument('-c', '--client') #name of the plugin client ("Sublime Text", "TextMate", "Notepad++", "BBEdit", etc.)
+    parser.add_argument('-c', '--client') #name of the plugin client ("SUBLIME_TEXT_2", "SUBLIME_TEXT_3", "TEXTMATE", "NOTEPAD_PLUS_PLUS", "BB_EDIT", etc.)
     parser.add_argument('-p', '--projectname') #name of the project
     parser.add_argument('-d', '--projectdirectory') #name of the project
     parser.add_argument('--callback') #some terminal script to run upon completion of a command
@@ -106,12 +106,12 @@ def setup_connection(args):
         #project_name        = request_payload.get('project_name', args.projectname)
         #project_directory   = request_payload.get('project_directory', args.projectdirectory)
         config.connection = MavensMatePluginConnection(
-            client=args.client or 'Sublime Text',
+            client=args.client or 'SUBLIME_TEXT_2',
             ui=args.ui_switch,
             params=request_payload
         )
     else:
-        config.connection = MavensMatePluginConnection(client=args.client or 'Sublime Text',params=request_payload)
+        config.connection = MavensMatePluginConnection(client=args.client or 'SUBLIME_TEXT_2',params=request_payload)
 
 # echo '{ "username" : "joeferraro4@force.com", "password" : "352198", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():

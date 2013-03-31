@@ -11,6 +11,7 @@
 
 @class PluginsController;
 @class AboutController;
+@class PluginViewsController;
 
 @interface StatusMenuController : NSViewController {
 @private
@@ -20,9 +21,11 @@
 
 @property (strong) PluginsController *pluginsController;
 @property (strong) AboutController *aboutController;
+@property (strong) PluginViewsController *pluginViewsController;
 
 -(StatusMenuController*)init;
 -(IBAction)openPluginsView:(id)sender;
+-(IBAction)openNewPluginsView:(id)sender;
 -(IBAction)openAboutView:(id)sender;
 -(IBAction)restartServer:(id)sender;
 -(void)showMenu;

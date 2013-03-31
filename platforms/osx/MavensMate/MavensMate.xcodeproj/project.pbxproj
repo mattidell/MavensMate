@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */; };
 		461E5B8916FCA9CF000DA2DD /* StatusMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8816FCA9CF000DA2DD /* StatusMenu.xib */; };
-		461E5B8B16FCAA32000DA2DD /* Plugins.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8A16FCAA32000DA2DD /* Plugins.xib */; };
 		461E5B8D16FCAAA6000DA2DD /* Loading.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8C16FCAAA6000DA2DD /* Loading.xib */; };
 		461E5B8F16FCAAC6000DA2DD /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8E16FCAAC6000DA2DD /* Alert.xib */; };
 		461E5B9216FCAB5D000DA2DD /* StatusMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 461E5B9116FCAB5D000DA2DD /* StatusMenuController.m */; };
@@ -34,6 +33,9 @@
 		46DC902A16F12F32005ED324 /* mm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902916F12F32005ED324 /* mm */; };
 		46DC902C16F12F79005ED324 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46DC902B16F12F79005ED324 /* Sparkle.framework */; };
 		46DC902D16F12FC7005ED324 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902B16F12F79005ED324 /* Sparkle.framework */; };
+		46FEB9521707019A00515A23 /* PluginViews.xib in Resources */ = {isa = PBXBuildFile; fileRef = 46FEB9511707019A00515A23 /* PluginViews.xib */; };
+		46FEB9551707023E00515A23 /* DBPrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FEB9541707023E00515A23 /* DBPrefsWindowController.m */; };
+		46FEB9581707028F00515A23 /* PluginViewsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FEB9571707028F00515A23 /* PluginViewsController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,7 +65,6 @@
 /* Begin PBXFileReference section */
 		461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MavensMateIcon@2x.png"; sourceTree = "<group>"; };
 		461E5B8816FCA9CF000DA2DD /* StatusMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StatusMenu.xib; sourceTree = "<group>"; };
-		461E5B8A16FCAA32000DA2DD /* Plugins.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Plugins.xib; sourceTree = "<group>"; };
 		461E5B8C16FCAAA6000DA2DD /* Loading.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loading.xib; sourceTree = "<group>"; };
 		461E5B8E16FCAAC6000DA2DD /* Alert.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
 		461E5B9016FCAB5D000DA2DD /* StatusMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusMenuController.h; sourceTree = "<group>"; };
@@ -100,6 +101,11 @@
 		46DC902916F12F32005ED324 /* mm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mm; path = ../../../mm/dist/mm; sourceTree = "<group>"; };
 		46DC902B16F12F79005ED324 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		46FEB95017042FC600515A23 /* MavensMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MavensMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		46FEB9511707019A00515A23 /* PluginViews.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PluginViews.xib; sourceTree = "<group>"; };
+		46FEB9531707023600515A23 /* DBPrefsWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPrefsWindowController.h; sourceTree = "<group>"; };
+		46FEB9541707023E00515A23 /* DBPrefsWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPrefsWindowController.m; sourceTree = "<group>"; };
+		46FEB9561707028F00515A23 /* PluginViewsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PluginViewsController.h; sourceTree = "<group>"; };
+		46FEB9571707028F00515A23 /* PluginViewsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PluginViewsController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,12 +132,12 @@
 			isa = PBXGroup;
 			children = (
 				461E5B8816FCA9CF000DA2DD /* StatusMenu.xib */,
-				461E5B8A16FCAA32000DA2DD /* Plugins.xib */,
 				461E5B8C16FCAAA6000DA2DD /* Loading.xib */,
 				461E5B8E16FCAAC6000DA2DD /* Alert.xib */,
 				461E5B9316FCAC03000DA2DD /* DragAndDropStatusMenuView.h */,
 				461E5B9416FCAC03000DA2DD /* DragAndDropStatusMenuView.m */,
 				467592DB170039D1007BC4D4 /* About.xib */,
+				46FEB9511707019A00515A23 /* PluginViews.xib */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -149,6 +155,10 @@
 				461E5B9D16FCAD41000DA2DD /* AlertController.m */,
 				467592DD17003BD0007BC4D4 /* AboutController.h */,
 				467592DE17003BD0007BC4D4 /* AboutController.m */,
+				46FEB9531707023600515A23 /* DBPrefsWindowController.h */,
+				46FEB9541707023E00515A23 /* DBPrefsWindowController.m */,
+				46FEB9561707028F00515A23 /* PluginViewsController.h */,
+				46FEB9571707028F00515A23 /* PluginViewsController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -302,11 +312,11 @@
 				462388AC16FA21C800826160 /* Sublime_Text_Logo.png in Resources */,
 				461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */,
 				461E5B8916FCA9CF000DA2DD /* StatusMenu.xib in Resources */,
-				461E5B8B16FCAA32000DA2DD /* Plugins.xib in Resources */,
 				461E5B8D16FCAAA6000DA2DD /* Loading.xib in Resources */,
 				461E5B8F16FCAAC6000DA2DD /* Alert.xib in Resources */,
 				461E5BA016FCBA3A000DA2DD /* MainMenu.xib in Resources */,
 				467592DC170039D1007BC4D4 /* About.xib in Resources */,
+				46FEB9521707019A00515A23 /* PluginViews.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +335,8 @@
 				461E5B9B16FCAD33000DA2DD /* LoadingController.m in Sources */,
 				461E5B9E16FCAD41000DA2DD /* AlertController.m in Sources */,
 				467592DF17003BD0007BC4D4 /* AboutController.m in Sources */,
+				46FEB9551707023E00515A23 /* DBPrefsWindowController.m in Sources */,
+				46FEB9581707028F00515A23 /* PluginViewsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

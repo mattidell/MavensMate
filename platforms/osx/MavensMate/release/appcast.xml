@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>MavensMate Changelog</title>
+      <link>http://joe-ferraro.com/mavensmate/appcast.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 0.27</title>
+						<description><![CDATA[
+                <h2>Version 0.27</h2>
+                <p>
+                  <ul>
+                    <li>Updated "Plugins" panel now supports the ability to install both Sublime Text 2 and Sublime Text 3 plugins.</li>
+                    <li>Minor bug fix in mmserver</li>
+                  </ul>
+                </p>
+            ]]>
+            </description>
+            <pubDate>Sun, 31 March 2013 20:05:02 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.27" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFA63W4bLyq4wCnzmrsvBwl5Sg1vQAhRQdpp98BVl9oi2I7vweE9bwivuPg==" />
+         </item>
+   </channel>
+</rss>

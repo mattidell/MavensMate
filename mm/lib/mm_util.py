@@ -301,16 +301,17 @@ def generate_ui(operation,params={}):
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
-        file_body = template.render(user_action='new',base_path=config.base_path,workspace=config.connection.workspace)
+        file_body = template.render(user_action='new',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client)
     elif operation == 'checkout_project':
         template = env.get_template('/project/new.html')
-        file_body = template.render(user_action='checkout',base_path=config.base_path,workspace=config.connection.workspace)
+        file_body = template.render(user_action='checkout',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client)
     elif operation == 'upgrade_project':
         template = env.get_template('/project/upgrade.html')
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
-            project_location=config.connection.project.location
+            project_location=config.connection.project.location,
+            client=config.connection.plugin_client
         )
     elif operation == 'edit_project':
         tree_body = ''
@@ -329,7 +330,8 @@ def generate_ui(operation,params={}):
             org_type=creds['org_type'],
             has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
-            tree_body=tree_body
+            tree_body=tree_body,
+            client=config.connection.plugin_client
         )
     elif operation == 'unit_test':
         template = env.get_template('/unit_test/index.html')
@@ -350,14 +352,15 @@ def generate_ui(operation,params={}):
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
-            classes=apex_classes)
+            classes=apex_classes,
+            client=config.connection.plugin_client)
     elif operation == 'deploy':
         tree_body = ''
         if config.connection.project.is_metadata_indexed == True:
             template = env.get_template('/project/tree.html')
             org_metadata = config.connection.project.get_org_metadata()
             tree_body = template.render(metadata=org_metadata)
-            print tree_body
+            #print tree_body
         template = env.get_template('/deploy/index.html')
         file_body = template.render(
             base_path=config.base_path,
@@ -365,20 +368,23 @@ def generate_ui(operation,params={}):
             has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
             connections=config.connection.project.get_org_connections(False),
-            tree_body=tree_body)
+            tree_body=tree_body,
+            client=config.connection.plugin_client)
     elif operation == 'execute_apex':
         template = env.get_template('/execute_apex/index.html')
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
-            project_location=config.connection.project.location)
+            project_location=config.connection.project.location,
+            client=config.connection.plugin_client)
     elif operation == 'new_project_from_existing_directory':
         project_name = os.path.basename(params['directory'])
         template = env.get_template('/project/new_from_existing.html')
         file_body = template.render(
             base_path=config.base_path,
             project_name=project_name,
-            directory=params['directory'])
+            directory=params['directory'],
+            client=config.connection.plugin_client)
     temp.write(file_body)
     temp.close()
     return temp.name
