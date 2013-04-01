@@ -54,7 +54,7 @@
 		<div class="actions">					
 			<input type="button" id="btnSubmit" class="btn primary" value="Upgrade Project"  onclick="upgrade();">
 			&nbsp;
-			<button type="reset" class="btn" onclick="window.close();">Cancel</button>
+			<button id="btnCancel" type="reset" class="btn" onclick="window.close();">Cancel</button>
 		</div>
 	</fieldset>
 </form>   
@@ -91,6 +91,7 @@
 				$(".alert-message").show()
 			} else {
 				$("#btnSubmit").remove()
+				$("#btnCancel").html("Done")
 				$(".alert-message").addClass("success").removeClass("error")
 				$("#message").html("Your project has been successfully upgraded!")
 				$(".alert-message").show()
