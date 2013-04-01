@@ -40,9 +40,7 @@ class MavensMatePluginConnection(object):
             self.project = MavensMateProject(params)
         if self.get_log_level() != None:
             log_level = self.get_log_level()
-            if log_level == 'EXCEPTION':
-                config.logger.setLevel(logging.EXCEPTION)
-            elif log_level == 'CRITICAL':
+            if log_level == 'CRITICAL':
                 config.logger.setLevel(logging.CRITICAL)
             elif log_level == 'ERROR':
                 config.logger.setLevel(logging.ERROR)
