@@ -32,10 +32,13 @@ class MavensMateClient(object):
         self.credentials            = kwargs.get('credentials', None)
         self.override_session       = kwargs.get('override_session', False)
 
+        self.reset_creds            = False #set flag to true to have MavensMateProject restore creds
+
         self.username               = None
         self.password               = None
         self.sid                    = None
         self.user_id                = None
+        self.server_url             = None
         self.metadata_server_url    = None
         self.endpoint               = None
         self.pod                    = None
@@ -54,25 +57,40 @@ class MavensMateClient(object):
             self.sid                    = self.credentials['sid']                   if 'sid' in self.credentials else None
             self.user_id                = self.credentials['user_id']               if 'user_id' in self.credentials else None
             self.metadata_server_url    = self.credentials['metadata_server_url']   if 'metadata_server_url' in self.credentials else None
+            self.server_url             = self.credentials['server_url']            if 'server_url' in self.credentials else None
             self.org_type               = self.credentials['org_type']              if 'org_type' in self.credentials else 'production'
             self.endpoint               = self.credentials['endpoint']              if 'endpoint' in self.credentials else mm_util.get_sfdc_endpoint_by_type(self.org_type)
 
         #we do this to prevent an unnecessary "login" call
         #if the getUserInfo call fails, we catch it and reset our class variables 
-        if self.override_session == False and self.sid != None and self.user_id != None and self.metadata_server_url != None and self.endpoint != None:
+        if self.override_session == False and self.sid != None and self.user_id != None and self.metadata_server_url != None and self.endpoint != None and self.server_url != None:
             self.pclient = self.__get_partner_client()
+            self.pclient._setEndpoint(self.server_url)
+
+            header = self.pclient.generateHeader('SessionHeader')
+            header.sessionId = self.sid
+            self.pclient.setSessionHeader(header)
+            self.pclient._setHeaders('')
+
             result = None
             try:
+                config.logger.debug('GETTING USER INFO')
                 result = self.pclient.getUserInfo()
+                config.logger.debug(result)
             except WebFault, e:
                 #exception here means most likely that cached auth creds are no longer valid
                 #we're ok with this, the script will attempt another login
                 self.sid = None
+        elif self.server_url == None:
+            self.pclient = self.__get_partner_client()
+            self.login()
+            self.reset_creds = True  
 
         #if the cached creds didnt work & username/password/endpoint are not provided, get them from keyring
         if self.sid == None or self.override_session == True:
             self.pclient = self.__get_partner_client()
             self.login()   
+            self.reset_creds = True
 
     def login(self):
         result = None
@@ -80,10 +98,12 @@ class MavensMateClient(object):
             result = self.pclient.login(self.username, self.password, '')
         except WebFault, e:
             raise e
-        #print result
+        config.logger.debug('LOGIN RESULT')
+        config.logger.debug(result)
         self.metadata_server_url    = result.metadataServerUrl
         self.sid                    = result.sessionId
         self.user_id                = result.userId
+        self.server_url             = result.serverUrl
         #TODO: do need to reset clients here now?
 
     def is_connection_alive(self):
@@ -345,6 +365,12 @@ class MavensMateClient(object):
             payload = { 'q' : query_string }
             r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
             return mm_util.parse_rest_response(r.text)
+
+    def get_trace_flags(self, **kwargs):        
+        query_string = "Select Id, ScopeId, TracedEntityId, ExpirationDate from TraceFlag limit 5000"
+        payload = { 'q' : query_string }
+        r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
+        return mm_util.parse_rest_response(r.text)    
 
     def create_trace_flag(self, payload):
         if 'ScopeId' not in payload:

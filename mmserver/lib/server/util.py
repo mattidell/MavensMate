@@ -15,6 +15,14 @@ def generate_request_id():
 def get_random_string(size=8, chars=string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
+def generate_error_response(message):
+    res = {
+        "success"   : False,
+        "body_type" : "text",
+        "body"      : message
+    }
+    return json.dumps(res)
+
 #the main job of the backgroundworker is to submit a request for work to be done by mm
 class BackgroundWorker(threading.Thread):
     def __init__(self, operation, params, async, request_id=None, payload=None, plugin_client='SUBLIME_TEXT_2'):
@@ -32,7 +40,6 @@ class BackgroundWorker(threading.Thread):
         args = self.get_arguments()
         global_config.logger.debug('>>> running thread arguments on next line!')
         global_config.logger.debug(args)
-        print args
         p = subprocess.Popen("{0} {1}".format(pipes.quote(global_config.mm_path), args), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         p.stdin.write(self.payload)
         p.stdin.close()
@@ -43,6 +50,13 @@ class BackgroundWorker(threading.Thread):
         response_body = '\n'.join(mm_response)
         global_config.logger.debug('>>> got a response body')
         global_config.logger.debug(response_body)
+
+        if '--html' not in args:
+            try:
+                valid_json = json.loads(response_body)
+            except:
+                response_body = generate_error_response(response_body)
+
         self.response = response_body
         self.finish()
         # if self.async == True:
@@ -51,7 +65,7 @@ class BackgroundWorker(threading.Thread):
         #     return response_body
 
     def finish(self):
-        if self.operation == 'new_project' or self.operation == 'checkout_project':
+        if self.operation == 'new_project' or self.operation == 'checkout_project' or self.operation == 'new_project_from_existing_directory':
             #print self.response
             if json.loads(self.response)['success'] == True:
                 os.system('killAll MavensMateWindowServer') #TODO: need pid here so we can kill the right window

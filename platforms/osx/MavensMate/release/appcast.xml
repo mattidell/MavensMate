@@ -6,19 +6,27 @@
       <description>Most recent changes with links to updates.</description>
       <language>en</language>
          <item>
-            <title>Version 0.27</title>
+            <title>Version 0.29</title>
 						<description><![CDATA[
-                <h2>Version 0.27</h2>
+                <h2>Version 0.29</h2>
+                <p>This release brings many much-needed bug fixes</p>
                 <p>
                   <ul>
-                    <li>Updated "Plugins" panel now supports the ability to install both Sublime Text 2 and Sublime Text 3 plugins.</li>
-                    <li>Minor bug fix in mmserver</li>
+                    <li>Deployment issue to production orgs has been resolved (<a href="https://github.com/joeferraro/MavensMate-SublimeText/issues/118">#118</a>) (thanks @britishboyindc)</li>
+                    <li>Creating a new MavensMate project from an existing directory (inside or outside your workspace) is now much more stable (thanks @knthornt)</li>
+                    <li>mm_client has been tweaked for performance, so you may experience faster API-related operations</li>
+                    <li>Logging is now properly connected to plugin settings: "mm_log_location" and "mm_log_level"</li>
+                    <li>Better validation for operations</li>
+                    <li>Edit/Deploy project now more accurately displays project's selected metadata</li>
                   </ul>
+                </p>
+                <p>
+                  <b>MavensMate for Sublime Text has also been updated to 2.1.3, so be sure to run the update from MavensMate.app --> Plugins</b>
                 </p>
             ]]>
             </description>
-            <pubDate>Sun, 31 March 2013 20:05:02 +0000</pubDate>
-            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.27" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFA63W4bLyq4wCnzmrsvBwl5Sg1vQAhRQdpp98BVl9oi2I7vweE9bwivuPg==" />
+            <pubDate>Fri, 05 April 2013 11:31:27 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.29" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFEYaaBPe70EXfPMkTEhzPfCI9q2+AhQl/xEHjl09+6ZL3Omlgc46qr+9kg==" />
          </item>
    </channel>
 </rss>

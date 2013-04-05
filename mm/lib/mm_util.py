@@ -319,7 +319,6 @@ def generate_ui(operation,params={}):
             template = env.get_template('/project/tree.html')
             org_metadata = config.connection.project.get_org_metadata()
             tree_body = template.render(metadata=org_metadata)
-            #print tree_body
         template = env.get_template('/project/edit.html')
         creds = config.connection.project.get_creds()
         file_body = template.render(
@@ -384,6 +383,14 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             project_name=project_name,
             directory=params['directory'],
+            client=config.connection.plugin_client)
+    elif operation == 'debug_log':
+        template = env.get_template('/debug_log/index.html')
+        file_body = template.render(
+            base_path=config.base_path,
+            project_name=config.connection.project.project_name,
+            users=config.connection.project.get_org_users_list(),
+            logs=config.connection.project.get_org_logs(),
             client=config.connection.plugin_client)
     temp.write(file_body)
     temp.close()
@@ -470,6 +477,7 @@ def generate_success_response(message, type="text"):
     return json.dumps(res)
 
 def generate_error_response(message):
+    config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
     res = {
         "success"   : False,
         "body_type" : "text",

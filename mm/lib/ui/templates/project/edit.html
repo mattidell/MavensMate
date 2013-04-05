@@ -99,9 +99,20 @@
 			    	project_name 		: '{{ name }}' 
 				}),
 				beforeSend: function() { showLoading('Updating project credentials'); },
-				complete: function(data){	
-					global_init_handler(data)			
-				} 
+				complete: function(data){
+					console.log(data)				
+					var response = JSON.parse(data.responseText)
+					if (response["success"] == false) {
+						$("#error_message").html(response["body"] + "<a class=\"close\" href=\"#\">x</a>")
+						$(".alert-message.success").hide()
+						$(".alert-message.error").show()
+					} else {
+						$("#success_message").html(response["body"] + "<a class=\"close\" href=\"#\">x</a>")
+						$(".alert-message.error").hide()
+						$(".alert-message.success").show()
+					}
+					hideLoading();
+				}
 			});
 		}
 
@@ -129,7 +140,7 @@
 				type: "POST",
 				url: "http://127.0.0.1:9000/project/index", 
 				data: JSON.stringify({
-					project_directory 	: mm_cpd
+					project_name 	: '{{ name }}'
 				}),
 				beforeSend: function() { showLoading('Indexing your Salesforce.com metadata.  This operation could take a while depending on the size of your org.<br/><br/>Thanks for being patient! :)'); },
 				complete: function(data, status, xhr){
@@ -159,21 +170,10 @@
 				hideLoading();
 			} else if (operation == "update") {
 				if (response["success"] == false) {
-					$("#error_message").html(response["message"])
+					$("#error_message").html(response["body"])
 					$(".alert-message.error").show()
 				} else {
 					$("#success_message").html("Project updated successfully")
-					$(".alert-message.success").show()
-				}
-				hideLoading();
-			} else if (operation == "update_creds") {
-				if (response["success"] == false) {
-					$("#error_message").html(response["body"] + "<a class=\"close\" href=\"#\">x</a>")
-					$(".alert-message.success").hide()
-					$(".alert-message.error").show()
-				} else {
-					$("#success_message").html(response["body"] + "<a class=\"close\" href=\"#\">x</a>")
-					$(".alert-message.error").hide()
 					$(".alert-message.success").show()
 				}
 				hideLoading();
@@ -218,7 +218,7 @@
 					persist: false,
 					checkbox: true,
 					selectMode: 3,
-					debugLevel: 2
+					debugLevel: 0
 				});
 				$("#tree").dynatree("getRoot").visit(function(node) {
 					node.expand(false);

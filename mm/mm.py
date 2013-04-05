@@ -29,7 +29,12 @@ def main():
         dest='respond_with_html', help='Include flag if you want the response in HTML')
     args = parser.parse_args()
     operation = args.operation
-    setup_connection(args)
+    
+    try:
+        setup_connection(args)
+    except Exception as e:
+        print util.generate_error_response(e.message)
+        return
 
     #if the arg switch argument is included, the request is to launch the out of box
     #MavensMate UI, so we generate the HTML for the UI and launch the process
@@ -90,8 +95,8 @@ def main():
             fetch_logs()
         elif operation == 'new_project_from_existing_directory':
             new_project_from_existing_directory()
-        elif operation == 'foo':
-            foo()
+        elif operation == 'debug_log':
+            TODO()
         else:
             print util.generate_error_response('Invalid operation requested')
 
@@ -108,21 +113,22 @@ def setup_connection(args):
         config.connection = MavensMatePluginConnection(
             client=args.client or 'SUBLIME_TEXT_2',
             ui=args.ui_switch,
-            params=request_payload
-        )
+            params=request_payload,
+            operation=args.operation)
     else:
-        config.connection = MavensMatePluginConnection(client=args.client or 'SUBLIME_TEXT_2',params=request_payload)
+        config.connection = MavensMatePluginConnection(
+            client=args.client or 'SUBLIME_TEXT_2',
+            params=request_payload,
+            operation=args.operation)
 
 # echo '{ "username" : "joeferraro4@force.com", "password" : "352198", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():
     client = MavensMateClient(credentials={
         "sid"                   : request_payload.get('sid', None),
-        "metadata_server_url"   : urllib.unquote(request_payload.get('murl', None))
+        "metadata_server_url"   : urllib.unquote(request_payload.get('metadata_server_url', None)),
+        "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
     }) 
     print json.dumps(client.list_metadata(request_payload['metadata_type']))
-
-def foo():
-    print config.connection.project.update_package_xml_with_metadata('ApexClass', 'a1');
 
 def list_connections():
     print config.connection.project.get_org_connections()
@@ -210,6 +216,7 @@ def get_active_session():
             "sid"                   : client.sid,
             "user_id"               : client.user_id,
             "metadata_server_url"   : client.metadata_server_url,
+            "server_url"            : client.server_url,
             "metadata"              : client.get_org_metadata(),
             "success"               : True
         }
@@ -232,9 +239,8 @@ def update_credentials():
         config.connection.project.password = request_payload['password']
         config.connection.project.org_type = request_payload['org_type']
         config.connection.project.update_credentials()
-        print util.generate_success_response('Success')
+        print util.generate_success_response('Your credentials were updated successfully')
     except BaseException, e:
-        #print traceback.print_exc()
         print util.generate_error_response(e.message)
 
 if  __name__ == '__main__':

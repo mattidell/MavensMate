@@ -39,18 +39,34 @@ class MavensMateProject(object):
         self.defer_connection   = params.get('defer_connection', False)
 
         if 'location' in params and os.path.exists(params['location']): #=> existing project on the disk
+            
             self.location               = params.get('location', None)
             self.settings               = self.__get_settings()
-            self.project_name           = self.settings['project_name']
+            self.project_name           = self.settings.get('project_name', None)
             self.sfdc_session           = self.__get_sfdc_session()
             self.package                = self.location + "/src/package.xml"
             self.is_metadata_indexed    = self.get_is_metadata_indexed()
 
+            config.logger.debug(self.sfdc_session)
+
             if self.ui == False and self.defer_connection == False:
                 self.sfdc_client        = MavensMateClient(credentials=self.get_creds())
 
-            if self.sfdc_session == None:
-                self.__set_sfdc_session()
+                if self.sfdc_session != None and 'sid' in self.sfdc_session and self.sfdc_client != None and (self.sfdc_session['sid'] != self.sfdc_client.sid): 
+                    config.logger.debug('storing updated session information locally')
+                    self.__set_sfdc_session()
+                elif self.sfdc_session == None:
+                    config.logger.debug('storing new session information locally')
+                    self.__set_sfdc_session()
+                elif 'server_url' not in self.sfdc_session:
+                    config.logger.debug('storing new session information locally because of missing server_url')
+                    self.__set_sfdc_session()
+                elif self.sfdc_client.reset_creds == True:
+                    config.logger.debug('storing new session information locally because reset_creds')
+                    self.__set_sfdc_session()
+
+        elif 'location' in params and not os.path.exists(params['location']):
+            raise MMException('Project not found in your workspace')
 
     #used to create a new project in a workspace
     def retrieve_and_write_to_disk(self,action='new'):
@@ -64,7 +80,7 @@ class MavensMateProject(object):
                 if existing_parent_directory != config.connection.workspace:
                     existing_is_in_workspace = False
                 if os.path.isdir(config.connection.workspace+"/"+self.project_name) and existing_is_in_workspace == False and action == 'existing':
-                    return mm_util.generate_error_response("A project with this name already exists in your workspace.")   
+                    raise MMException("A project with this name already exists in your workspace.")   
 
             self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type})             
             self.id = mm_util.new_mavensmate_id()
@@ -73,7 +89,7 @@ class MavensMateProject(object):
                 mm_util.put_project_directory_on_disk(self.project_name, force=True)
                 mm_util.extract_base64_encoded_zip(project_metadata.zipFile, config.connection.workspace+"/"+self.project_name)
                 mm_util.rename_directory(config.connection.workspace+"/"+self.project_name+"/unpackaged", config.connection.workspace+"/"+self.project_name+"/src")
-            elif action == 'existing':
+            elif action == 'existing' and existing_is_in_workspace == False:
                 shutil.move(self.directory, config.connection.workspace)
 
             self.location = config.connection.workspace+"/"+self.project_name
@@ -86,8 +102,7 @@ class MavensMateProject(object):
                 return mm_util.generate_success_response("Project Retrieved and Created Successfully")
             else:
                 return mm_util.generate_success_response("Project Created Successfully")
-        except BaseException, e:
-            #print traceback.print_exc()
+        except Exception, e:
             return mm_util.generate_error_response(e.message)
 
     #updates the salesforce.com credentials associated with the project
@@ -343,14 +358,16 @@ class MavensMateProject(object):
     #edits the contents of the project based on a package definition
     def edit(self, params):
         try:
+            if 'package' not in params:
+                raise MMException('"package" definition required in JSON body')
             self.package = params['package']
-            clean_result = self.clean(overwrite_package_xml=True)
+            clean_result = json.loads(self.clean(overwrite_package_xml=True))
             if clean_result['success'] == True:
-                mm_util.generate_success_response('Project Edited Successfully')
+                return mm_util.generate_success_response('Project Edited Successfully')
             else:
-                mm_util.generate_error_response(clean_result['body'])
-        except BaseException, e:
-            mm_util.generate_error_response(e.message)
+                return mm_util.generate_error_response(clean_result['body'])
+        except Exception as e:
+            return mm_util.generate_error_response(e.message)
 
     #reverts a project to the server state based on the existing package.xml
     def clean(self, **kwargs):
@@ -389,8 +406,16 @@ class MavensMateProject(object):
                     if not os.path.exists(destination_directory):
                         os.makedirs(destination_directory)
                     shutil.move(full_file_path, destination)
-            #TODO : what if the user has removed metadata from package.xml, do we need to delete
-            # those directories?
+           
+            #remove empty directories
+            for dirname, dirnames, filenames in os.walk(self.location+"/src"):
+                if dirname == self.location+"/src":
+                    continue
+                files = os.listdir(dirname)
+                if len(files) == 0:
+                    os.rmdir(dirname) 
+                    
+
             if 'overwrite_package_xml' in kwargs and kwargs['overwrite_package_xml'] == True:
                 os.remove(self.location+"/src/package.xml")
                 shutil.move(self.location+"/unpackaged/package.xml", self.location+"/src")
@@ -615,11 +640,9 @@ class MavensMateProject(object):
 
             data = self.__get_org_describe()
             threads = []
+            creds = self.get_creds()
             for metadata_type in data["metadataObjects"]: 
-                thread_client = MavensMateClient(credentials={
-                    "sid"                   : self.sfdc_client.sid,
-                    "metadata_server_url"   : self.sfdc_client.metadata_server_url
-                })
+                thread_client = MavensMateClient(credentials=creds)
                 thread = IndexCall(thread_client, metadata_type)
                 threads.append(thread)
                 thread.start()
@@ -634,96 +657,99 @@ class MavensMateProject(object):
             #return_list = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
             #end for testing only
 
-            #process package and select only the items the package has specified
-            project_package = self.__get_package_as_dict()
-            for i, val in enumerate(project_package['Package']['types']):
-                metadata_type = val['name']
-                metadata_def = mm_util.get_meta_type_by_name(metadata_type)
-                #print metadata_def
-                members = val['members']
-                #print 'processing: ', metadata_type
-                #print 'package members: ', members
-                
-                is_parent_type  = 'parentXmlName' not in metadata_def
-                is_child_type   = 'parentXmlName' in metadata_def
-                is_folder_based = 'inFolder' in metadata_def and metadata_def['inFolder'] == True
-                
-                server_metadata_item = None
-                
-                #loop through list of metadata types in the org itself,
-                #try to match on the name of this type of metadata
-                for item in return_list:
-                    if item['xmlName'] == metadata_type:
-                        server_metadata_item = item
-                        break
-
-                if members == "*": #if package is subscribed to all
-                    server_metadata_item['select'] = True
-                    continue
-                else: #package has specified members (members => ['Account', 'Lead'])
-                
-                    if type(members) is not list:
-                        members = [members]
-                    
-                    if is_folder_based: #e.g.: dashboard, report, etc.
-                        #print 'folder based!'
-                        for m in members:
-                            if '/' in m:
-                                arr = m.split("/")
-                                folder_name = arr[0]
-                                item_name = arr[1]
-                            else:
-                                folder_name = m
-
-                            if '/' in m: #it doesnt seem to matter to set the folder as selected?
-                                for child in server_metadata_item['children']:
-                                    if child['title'] == folder_name:
-                                        for folder_item in child['children']:
-                                            if folder_item['title'] == item_name:
-                                                folder_item['selected'] = True
-                                                break
-
-                    elif is_child_type: #weblink, customfield, etc.
-                        #print 'child type!'
-                        parent_type = mm_util.get_meta_type_by_name(metadata_def['parentXmlName'])
-                        for item in return_list:
-                            if item['xmlName'] == parent_type['xmlName']:
-                                parent_server_metadata_item = item
-                                break
-
-                        for m in members:
-                            arr = m.split(".")
-                            object_name = arr[0]
-                            item_name = arr[1]
-                            for child in parent_server_metadata_item['children']:
-                                if child['title'] == object_name:
-                                    #"Account"
-                                    for gchild in child['children']:
-                                        if gchild['title'] == metadata_def['tagName']:
-                                            #"fields"
-                                            for ggchild in gchild['children']:
-                                                if ggchild['title'] == item_name:
-                                                    #"field_name__c"
-                                                    ggchild['selected'] = True
-                                                    break
-                    else:
-                        #print 'regular type with specific items selected'
-                        server_metadata_item['select'] = False
-                        for m in members:
-                            for child in server_metadata_item['children']:
-                                if child['title'] == m:
-                                    child['selected'] = True
-                                    break
-                
-            file_body = json.dumps(return_list)
-            #file_body = json.dumps(return_list, sort_keys=False, indent=4)
+            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
+            file_body = json.dumps(metadata_with_selected_flags)
+            #file_body = json.dumps(metadata_with_selected_flags, sort_keys=False, indent=4)
             src = open(self.location+"/config/.org_metadata", "w")
             src.write(file_body)
             src.close()
             return file_body
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
-            #print traceback.print_exc()
+
+    def __select_metadata_based_on_package_xml(self, return_list):
+        #process package and select only the items the package has specified
+        project_package = self.__get_package_as_dict()
+        for i, val in enumerate(project_package['Package']['types']):
+            metadata_type = val['name']
+            metadata_def = mm_util.get_meta_type_by_name(metadata_type)
+            #print metadata_def
+            members = val['members']
+            #print 'processing: ', metadata_type
+            #print 'package members: ', members
+            
+            is_parent_type  = 'parentXmlName' not in metadata_def
+            is_child_type   = 'parentXmlName' in metadata_def
+            is_folder_based = 'inFolder' in metadata_def and metadata_def['inFolder'] == True
+            
+            server_metadata_item = None
+            
+            #loop through list of metadata types in the org itself,
+            #try to match on the name of this type of metadata
+            for item in return_list:
+                if item['xmlName'] == metadata_type:
+                    server_metadata_item = item
+                    break
+
+            if members == "*": #if package is subscribed to all
+                #server_metadata_item['select'] = True
+                server_metadata_item['selected'] = True
+                continue
+            else: #package has specified members (members => ['Account', 'Lead'])
+            
+                if type(members) is not list:
+                    members = [members]
+                
+                if is_folder_based: #e.g.: dashboard, report, etc.
+                    #print 'folder based!'
+                    for m in members:
+                        if '/' in m:
+                            arr = m.split("/")
+                            folder_name = arr[0]
+                            item_name = arr[1]
+                        else:
+                            folder_name = m
+
+                        if '/' in m: #it doesnt seem to matter to set the folder as selected?
+                            for child in server_metadata_item['children']:
+                                if child['title'] == folder_name:
+                                    for folder_item in child['children']:
+                                        if folder_item['title'] == item_name:
+                                            folder_item['selected'] = True
+                                            break
+
+                elif is_child_type: #weblink, customfield, etc.
+                    #print 'child type!'
+                    parent_type = mm_util.get_meta_type_by_name(metadata_def['parentXmlName'])
+                    for item in return_list:
+                        if item['xmlName'] == parent_type['xmlName']:
+                            parent_server_metadata_item = item
+                            break
+
+                    for m in members:
+                        arr = m.split(".")
+                        object_name = arr[0]
+                        item_name = arr[1]
+                        for child in parent_server_metadata_item['children']:
+                            if child['title'] == object_name:
+                                #"Account"
+                                for gchild in child['children']:
+                                    if gchild['title'] == metadata_def['tagName']:
+                                        #"fields"
+                                        for ggchild in gchild['children']:
+                                            if ggchild['title'] == item_name:
+                                                #"field_name__c"
+                                                ggchild['selected'] = True
+                                                break
+                else:
+                    #print 'regular type with specific items selected'
+                    server_metadata_item['select'] = False
+                    for m in members:
+                        for child in server_metadata_item['children']:
+                            if child['title'] == m:
+                                child['selected'] = True
+                                break
+        return return_list
 
     def index_apex_overlays(self, payload):
         try:
@@ -893,9 +919,50 @@ class MavensMateProject(object):
         except:
             return False
 
+    def get_org_users_list(self):
+        if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
+            self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=False)  
+            self.__set_sfdc_session()
+        try:
+            query_result = self.sfdc_client.execute_query('Select Id, Name From User Where IsActive = True order by Name limit 10000')
+        except:
+            query_result = self.sfdc_client.execute_query('Select Id, Name From User Where Active = True order by Name limit 10000')
+        if 'records' in query_result:
+            return query_result['records']
+        else:
+            return []
+
+    def get_trace_flags(self):
+        if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
+            self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=False)  
+            self.__set_sfdc_session()
+        query_result = self.sfdc_client.execute_query('Select Id, Name From User Where IsActive = True order by Name limit 10000')
+        if 'records' in query_result:
+            return query_result['records']
+        else:
+            return []
+
     def get_org_metadata(self):
         if self.get_is_metadata_indexed() == True:
-            return mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+            cached_metadata = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+            for item in cached_metadata:
+                if 'selected' in item:
+                    item['selected'] = False
+                if 'children' in item:
+                    for child_item in item['children']:
+                        if 'selected' in child_item:
+                            child_item['selected'] = False
+                        if 'children' in child_item:
+                            for grand_child_item in child_item['children']:
+                                if 'selected' in grand_child_item:
+                                    grand_child_item['selected'] = False
+            
+            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(cached_metadata)
+            file_body = json.dumps(metadata_with_selected_flags)
+            src = open(self.location+"/config/.org_metadata", "w")
+            src.write(file_body)
+            src.close()
+            return metadata_with_selected_flags
         else:
             self.index_metadata()
             return mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
@@ -938,10 +1005,11 @@ class MavensMateProject(object):
         creds['endpoint'] = endpoint
         creds['org_type'] = org_type
         if self.sfdc_session != None:
-            creds['user_id']                = self.sfdc_session['user_id']
-            creds['sid']                    = self.sfdc_session['sid']
-            creds['metadata_server_url']    = self.sfdc_session['metadata_server_url']
-            creds['endpoint']               = self.sfdc_session['endpoint']
+            creds['user_id']                = self.sfdc_session.get('user_id', None)
+            creds['sid']                    = self.sfdc_session.get('sid', None)
+            creds['metadata_server_url']    = self.sfdc_session.get('metadata_server_url', None)
+            creds['endpoint']               = self.sfdc_session.get('endpoint', None)
+            creds['server_url']             = self.sfdc_session.get('server_url', None)
         return creds
 
     #write a file containing the MavensMate settings for the project
@@ -996,13 +1064,17 @@ class MavensMateProject(object):
 
     #returns the cached session information (handles yaml [legacy] & json)
     def __get_sfdc_session(self):
+        session = None
         try:
             try:
-                f = open(self.location + "/config/.session")
-                session = yaml.safe_load(f)
-                f.close()
-            except:
                 session = mm_util.parse_json_from_file(self.location + "/config/.session")
+            except:
+                try:
+                    f = open(self.location + "/config/.session")
+                    session = yaml.safe_load(f)
+                    f.close()
+                except:
+                    pass
             return session
         except:
             return None
@@ -1014,6 +1086,7 @@ class MavensMateProject(object):
                 "user_id"               : self.sfdc_client.user_id,
                 "sid"                   : self.sfdc_client.sid,
                 "metadata_server_url"   : self.sfdc_client.metadata_server_url,
+                "server_url"            : self.sfdc_client.server_url,
                 "endpoint"              : self.sfdc_client.endpoint
             }
             file_body = json.dumps(session)
@@ -1042,7 +1115,13 @@ class DeploymentHandler(threading.Thread):
                 "username":self.destination['username'],
                 "password":self.destination['password'],
                 "org_type":self.destination['org_type']
-            })       
+            })    
+
+            describe_result = deploy_client.describeMetadata(retXml=False)
+            if describe_result.testRequired == True:
+                self.params['rollback_on_error'] = True
+                self.params['run_tests'] = True
+
             self.params['zip_file'] = self.deploy_metadata.zipFile      
             deploy_result = deploy_client.deploy(self.params)
             #config.logger.debug('>>>>>> DEPLOY RESULT >>>>>>')

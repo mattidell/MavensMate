@@ -31,6 +31,9 @@ class TestClientOperations(unittest.TestCase):
     def setUp(self):
         pass
 
+    def test_describe(self):
+        print self.client.describeMetadata(retXml=False)
+
     def test_bad_login(self):
         try:
             self.client = MavensMateClient(credentials={"username":self.username, "password":"a_bad_password"}) 

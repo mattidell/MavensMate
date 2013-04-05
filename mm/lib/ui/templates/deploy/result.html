@@ -19,7 +19,7 @@
 				{% set deploy_type = "deployment"  %}
 				{% set further_instruction = ""  %}
 			{% endif %}
-			<p><strong>Success!</strong> Your {{ deploy_type }} completed successfully.{{ further_instruction }}</p>
+			<p><strong>Success!</strong>{{' '}}Your{{' '}}{{ deploy_type }}{{' '}}completed{{' '}}successfully.{{' '}}{{ further_instruction }}</p>
 			<script type="text/javascript">
 				$("#check_only").attr('checked', false);
 				$("#btnDeploy").val('Deploy to Server');

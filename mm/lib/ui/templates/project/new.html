@@ -29,7 +29,8 @@
 		<div id="form" class="active">
 			<form class="form-stacked">
 				<input type="hidden" value="" id="sid"/>
-				<input type="hidden" value="" id="murl"/>
+				<input type="hidden" value="" id="metadata_server_url"/>
+				<input type="hidden" value="" id="server_url"/>
 				<fieldset>
 					<div class="clearfix">
 						<label for="pn">Project Name</label> 
@@ -179,7 +180,8 @@
 					$("#result_output").show()
 				} else {
 					$('#sid').val(response["sid"])	
-					$('#murl').val(response["metadata_server_url"])
+					$('#metadata_server_url').val(response["metadata_server_url"])
+					$('#server_url').val(response["server_url"])
 					$("#result_output").hide()
 				}
 				hideLoading();
@@ -258,7 +260,8 @@
 								} else {
 									instantiate_metadata_tree(response["metadata"])
 									$('#sid').val(response["sid"])	
-									$('#murl').val(response["metadata_server_url"])
+									$('#metadata_server_url').val(response["metadata_server_url"])
+									$('#server_url').val(response["server_url"])
 									$("#result_output").hide()
 								}
 								hideLoading();
@@ -313,9 +316,10 @@
 			 	onLazyRead: function(node) {
 					node.appendAjax({url: "http://127.0.0.1:9000/metadata/list",
 			  			data: {
-							"metadata_type"	: node.data.title,
-							"sid"			: $("#sid").val(),
-							"murl" 			: $("#murl").val()
+							"metadata_type"			: node.data.title,
+							"sid"					: $("#sid").val(),
+							"metadata_server_url" 	: $("#metadata_server_url").val(),
+							"server_url" 			: $("#server_url").val()
 						},
 						dataFilter: function (data, type) {
 							console.log('processing data')

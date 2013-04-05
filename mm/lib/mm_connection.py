@@ -8,6 +8,7 @@ import config
 import logging
 from enum import enum
 from mm_project import MavensMateProject
+from mm_exceptions import MMException
 
 class MavensMatePluginConnection(object):
 
@@ -16,6 +17,7 @@ class MavensMatePluginConnection(object):
     
     def __init__(self, params={}, **kwargs):
         params = dict(params.items() + kwargs.items())
+        self.operation              = params.get('operation', None)
         self.platform               = sys.platform
         self.plugin_client          = params.get('client', 'SUBLIME_TEXT_2') #=> "Sublime Text", "Notepad++", "TextMate"
         if self.plugin_client not in self.currently_supported_clients:
@@ -23,33 +25,60 @@ class MavensMatePluginConnection(object):
         self.plugin_client_version  = params.get('client_version', '2.0.1') #=> "1.0", "1.1.1", "v1"
         self.plugin_client_settings = self.get_plugin_client_settings()
         self.workspace              = self.get_workspace()
-        self.project_directory      = params.get('project_directory', None)
         self.project_name           = params.get('project_name', None)
+        self.project_location       = None
+        if self.project_name != None:
+            self.project_location = self.workspace+"/"+self.project_name
+        self.project_id             = params.get('project_id', None)
         self.project                = None
         self.sfdc_api_version       = self.get_sfdc_api_version()
         self.ui                     = params.get('ui', False) #=> whether this connection was created for the purposes of generating a UI
+        
+        self.setup_logging()
+
         if self.sfdc_api_version != None:
             mm_util.SFDC_API_VERSION = self.sfdc_api_version #setting api version based on plugin settings
-        if self.project_directory != None and os.path.exists(self.project_directory):
-            params['location'] = self.project_directory
+
+        if self.operation != 'new_project' and self.operation != 'upgrade_project' and self.operation != 'new_project_from_existing_directory' and self.project_location != None:
+            if not os.path.exists(self.project_location+"/config/.settings"):
+                raise MMException('This does not seem to be a valid MavensMate project, missing config/.settings')
+            if not os.path.exists(self.project_location+"/src/package.xml"):
+                raise MMException('This does not seem to be a valid MavensMate project, missing package.xml')
+
+        if self.project_name != None and self.project_name != '' and not os.path.exists(self.project_location) and self.operation != 'new_project_from_existing_directory' and self.operation != 'new_project':
+            raise MMException('The project could not be found')
+        elif self.project_name != None and self.project_name != '' and os.path.exists(self.workspace+"/"+self.project_name) and self.operation != 'new_project_from_existing_directory':
+            params['location'] = self.project_location
             params['ui'] = self.ui
             self.project = MavensMateProject(params)
-        elif self.project_name != None and self.project_name != '' and os.path.exists(self.workspace+"/"+self.project_name):
-            params['location'] = self.workspace+"/"+self.project_name
-            params['ui'] = self.ui
-            self.project = MavensMateProject(params)
+
+    def setup_logging(self):
         if self.get_log_level() != None:
+            if self.get_log_location() != None:
+                try:
+                    config.logger.handlers = []
+                    config.suds_logger.handlers = []
+                    handler = logging.FileHandler(self.get_log_location()+"/mm.log")
+                    config.logger.addHandler(handler)
+                    config.suds_logger.addHandler(handler)
+                except:
+                    pass
             log_level = self.get_log_level()
             if log_level == 'CRITICAL':
                 config.logger.setLevel(logging.CRITICAL)
+                config.suds_logger.setLevel(logging.CRITICAL)
             elif log_level == 'ERROR':
                 config.logger.setLevel(logging.ERROR)
+                config.suds_logger.setLevel(logging.ERROR)
             elif log_level == 'WARNING':
                 config.logger.setLevel(logging.WARNING)
+                config.suds_logger.setLevel(logging.WARNING)
             elif log_level == 'DEBUG':
                 config.logger.setLevel(logging.DEBUG)
+                config.suds_logger.setLevel(logging.DEBUG)
             elif log_level == 'INFO':
                 config.logger.setLevel(logging.INFO) 
+                config.suds_logger.setLevel(logging.INFO)
 
     #returns the workspace for the current connection (/Users/username/Workspaces/MavensMate)
     def get_workspace(self):
@@ -135,6 +164,12 @@ class MavensMatePluginConnection(object):
     def get_log_level(self):
         try:
             return self.get_plugin_client_setting('mm_log_level')
+        except:
+            return None
+
+    def get_log_location(self):
+        try:
+            return self.get_plugin_client_setting('mm_log_location')
         except:
             return None
 
