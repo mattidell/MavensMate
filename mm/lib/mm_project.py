@@ -754,7 +754,7 @@ class MavensMateProject(object):
     def index_apex_overlays(self, payload):
         try:
             result = self.sfdc_client.get_overlay_actions()
-            if 'records' not in result:
+            if 'records' not in result or len(result['records']) == 0:
                 return mm_util.generate_success_response('Could Not Find Any Apex Execution Overlays')
             else:
                 id_to_name_map = {}
