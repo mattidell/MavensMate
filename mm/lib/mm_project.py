@@ -16,6 +16,7 @@ import xmltodict
 import threading
 import time
 import collections
+import webbrowser
 from mm_exceptions import MMException
 from operator import itemgetter
 from mm_client import MavensMateClient
@@ -506,6 +507,68 @@ class MavensMateProject(object):
             shutil.rmtree(self.location+"/unpackaged")
             return mm_util.generate_success_response("Refresh Completed Successfully")
         except Exception, e:
+            return mm_util.generate_error_response(e.message)
+
+    # Open selected file on SFDC
+    def open_selected_metadata(self, params):
+        try:
+            if "files" in params:
+                if "type" in params: 
+                    open_type = params.get("type", None) 
+                else:
+                    open_type = "edit"
+                files = params.get("files", None)
+                if len(files) > 0:
+                    opened = []
+                    for fileabs in files:
+                        pathinfo = fileabs.split("/")
+                        if len(pathinfo) == 0: continue
+
+                        filefull = pathinfo[-1].split(".")
+                        if len(filefull) == 0: continue
+
+                        extension = filefull.pop()
+                        filename = ".".join(filefull)
+                        if extension == "cls":
+                            object_type = "ApexClass"
+                        elif extension == "trigger":
+                            object_type = "ApexTrigger"
+                        elif extension == "page":
+                            object_type = "ApexPage"
+                        elif extension == "component":
+                            object_type = "ApexComponent"
+                        else:
+                            continue
+
+                        if open_type == "wsdl":
+                            if object_type != "ApexClass":
+                                continue
+                            is_webservice = False
+                            with open(fileabs, 'r') as content_file:
+                                content = content_file.read()
+                                p = re.compile("\swebservice\s", re.I + re.M)
+                                if p.search(content): is_webservice = True
+                            if not is_webservice:
+                                continue;
+
+                        object_id = self.sfdc_client.get_apex_entity_id_by_name(object_type=object_type, name=filename)
+                        if not object_id: continue
+
+                        server_url = self.sfdc_client.server_url.split('/')[2]
+                        if open_type == "wsdl":
+                            open_url = "https://" + server_url + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL=/services/wsdl/class/"+filename
+                        else:
+                            open_url = "https://" + server_url + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL=/"+object_id
+                        webbrowser.open(open_url, new=2)
+                        opened.append(filename+"."+extension)
+                    if len(opened) == 0:
+                        return mm_util.generate_error_response("There were no valid files to open.")
+                    return mm_util.generate_success_response("Opened "+(", ".join(opened))+" on server.")
+                return mm_util.generate_error_response("Unable to open file on server.")
+            else:
+                raise MMException("To open on Salesforce, you must provide an array of 'files'")
+        except Exception, e:
+            print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
 
     #executes a string of apex
