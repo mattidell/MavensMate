@@ -561,6 +561,7 @@ class MavensMateProject(object):
                         else:
                             ret_url = "/" + object_id
 
+                        # open the browser window for this file and track it
                         webbrowser.open(frontdoor+ret_url, new=2)
                         opened.append(filename+"."+extension)
                     if len(opened) == 0:
