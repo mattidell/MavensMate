@@ -5,13 +5,17 @@ import shutil
 import os
 import subprocess
 import pipes
-sys.path.append('../')
+
+# path variables
+mavensmate_path     = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir))
+pyinstaller_path    = mavensmate_path+"/tools/pyinstaller-dev"
+mm_path             = mavensmate_path+"/mm"
+mm_build_path       = mm_path+"/build"
+
+# add mm directory and import lib.mm_util
+sys.path.append(mavensmate_path+"/mm")
 import lib.mm_util as mm_util
 
-mavensmate_path     = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-pyinstaller_path    = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))+"/tools/pyinstaller-dev"
-mm_path             = os.path.dirname(os.path.dirname(__file__))
-mm_build_path       = os.path.dirname(__file__)
 build_settings      = mm_util.parse_json_from_file('build_settings.json')
 
 def main():
