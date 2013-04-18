@@ -16,7 +16,7 @@ mm_build_path       = mm_path+"/build"
 sys.path.append(mavensmate_path+"/mm")
 import lib.mm_util as mm_util
 
-build_settings      = mm_util.parse_json_from_file('build_settings.json')
+build_settings      = mm_util.parse_json_from_file(mm_build_path+'/build_settings.json')
 
 def main():
     #remove dist directory
