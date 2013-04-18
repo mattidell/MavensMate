@@ -17,6 +17,7 @@ import threading
 import time
 import collections
 import webbrowser
+from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
 from mm_client import MavensMateClient
@@ -521,45 +522,46 @@ class MavensMateProject(object):
                 if len(files) > 0:
                     opened = []
                     for fileabs in files:
-                        pathinfo = fileabs.split("/")
-                        if len(pathinfo) == 0: continue
 
-                        filefull = pathinfo[-1].split(".")
-                        if len(filefull) == 0: continue
-
-                        extension = filefull.pop()
-                        filename = ".".join(filefull)
-                        if extension == "cls":
-                            object_type = "ApexClass"
-                        elif extension == "trigger":
-                            object_type = "ApexTrigger"
-                        elif extension == "page":
-                            object_type = "ApexPage"
-                        elif extension == "component":
-                            object_type = "ApexComponent"
+                        # make sure we have meta data and then get the object type
+                        if os.path.isfile(fileabs+"-meta.xml"):
+                            xmldoc = minidom.parse(fileabs+"-meta.xml")
+                            root = xmldoc.firstChild
+                            object_type = root.nodeName
                         else:
                             continue
 
+                        # attempting to handle file types we don't know about yet.
+                        path = fileabs.split("/")
+                        filefull = path[-1].split(".")
+                        extension = filefull.pop()
+                        filename = ".".join(filefull)
+
+                        # only ApexClasses that are global and have webservice scope have WSDL files
                         if open_type == "wsdl":
                             if object_type != "ApexClass":
                                 continue
-                            is_webservice = False
                             with open(fileabs, 'r') as content_file:
                                 content = content_file.read()
+                                p = re.compile("global\s+class\s", re.I + re.M)
+                                if not p.search(content):
+                                    continue
                                 p = re.compile("\swebservice\s", re.I + re.M)
-                                if p.search(content): is_webservice = True
-                            if not is_webservice:
-                                continue;
+                                if not p.search(content): 
+                                    continue
 
                         object_id = self.sfdc_client.get_apex_entity_id_by_name(object_type=object_type, name=filename)
-                        if not object_id: continue
+                        if not object_id: 
+                            continue
 
-                        server_url = self.sfdc_client.server_url.split('/')[2]
+                        # get the server instance url and set the redirect url
+                        frontdoor = "https://" + self.sfdc_client.server_url.split('/')[2] + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL="
                         if open_type == "wsdl":
-                            open_url = "https://" + server_url + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL=/services/wsdl/class/"+filename
+                            ret_url = "/services/wsdl/class/" + filename
                         else:
-                            open_url = "https://" + server_url + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL=/"+object_id
-                        webbrowser.open(open_url, new=2)
+                            ret_url = "/" + object_id
+
+                        webbrowser.open(frontdoor+ret_url, new=2)
                         opened.append(filename+"."+extension)
                     if len(opened) == 0:
                         return mm_util.generate_error_response("There were no valid files to open.")
