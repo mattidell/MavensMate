@@ -56,5 +56,8 @@ def main():
     shutil.copytree("{0}/dist/mm/lib2/python2.7".format(mm_path), "{0}/dist/mm/lib/python2.7".format(mm_path))
     shutil.rmtree("{0}/dist/mm/lib2".format(mm_path))
 
+    #remove files
+    shutil.rmtree("{0}/mm".format(pyinstaller_path))
+
 if  __name__ == '__main__':
     main()
