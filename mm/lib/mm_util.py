@@ -307,10 +307,10 @@ def generate_ui(operation,params={}):
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
-        file_body = template.render(user_action='new',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client)
+        file_body = template.render(user_action='new',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'checkout_project':
         template = env.get_template('/project/new.html')
-        file_body = template.render(user_action='checkout',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client)
+        file_body = template.render(user_action='checkout',base_path=config.base_path,workspace=config.connection.workspace,client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'upgrade_project':
         template = env.get_template('/project/upgrade.html')
         file_body = template.render(
@@ -318,7 +318,7 @@ def generate_ui(operation,params={}):
             name=config.connection.project.project_name,
             project_location=config.connection.project.location,
             client=config.connection.plugin_client
-        )
+        ).encode('UTF-8')
     elif operation == 'edit_project':
         tree_body = ''
         if config.connection.project.is_metadata_indexed == True:
@@ -337,7 +337,7 @@ def generate_ui(operation,params={}):
             project_location=config.connection.project.location,
             tree_body=tree_body,
             client=config.connection.plugin_client
-        )
+        ).encode('UTF-8')
     elif operation == 'unit_test':
         template = env.get_template('/unit_test/index.html')
         istest = re.compile(r"@istest", re.I)
@@ -358,14 +358,13 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             name=config.connection.project.project_name,
             classes=apex_classes,
-            client=config.connection.plugin_client)
+            client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'deploy':
         tree_body = ''
         if config.connection.project.is_metadata_indexed == True:
             template = env.get_template('/project/tree.html')
             org_metadata = config.connection.project.get_org_metadata()
             tree_body = template.render(metadata=org_metadata,operation=operation)
-            #print tree_body
         template = env.get_template('/deploy/index.html')
         file_body = template.render(
             base_path=config.base_path,
@@ -375,14 +374,14 @@ def generate_ui(operation,params={}):
             connections=config.connection.project.get_org_connections(False),
             tree_body=tree_body,
             operation=operation,
-            client=config.connection.plugin_client)
+            client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'execute_apex':
         template = env.get_template('/execute_apex/index.html')
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
             project_location=config.connection.project.location,
-            client=config.connection.plugin_client)
+            client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'new_project_from_existing_directory':
         project_name = os.path.basename(params['directory'])
         template = env.get_template('/project/new_from_existing.html')
@@ -390,7 +389,7 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             project_name=project_name,
             directory=params['directory'],
-            client=config.connection.plugin_client)
+            client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'debug_log':
         template = env.get_template('/debug_log/index.html')
         file_body = template.render(
@@ -398,7 +397,7 @@ def generate_ui(operation,params={}):
             project_name=config.connection.project.project_name,
             users=config.connection.project.get_org_users_list(),
             logs=config.connection.project.get_org_logs(),
-            client=config.connection.plugin_client)
+            client=config.connection.plugin_client).encode('UTF-8')
     temp.write(file_body)
     temp.close()
     return temp.name
@@ -517,36 +516,37 @@ def process_unit_test_result(result):
     triggers = []
     classes = []
 
-    for coverage_result in result['codeCoverage']:
-        if 'locationsNotCovered' in coverage_result and type(coverage_result['locationsNotCovered']) is not list:
-            coverage_result['locationsNotCovered'] = [coverage_result['locationsNotCovered']]
-        if 'numLocations' in coverage_result and 'numLocationsNotCovered' in coverage_result:
-            locations = int(float(coverage_result['numLocations']))
-            locations_not_covered = int(float(coverage_result['numLocationsNotCovered']))
-            percent_covered = 0 
-            if locations > 0:
-                percent_covered = int(round(100 * ((float(locations) - float(locations_not_covered)) / locations)))
-            coverage_result['percentCovered'] = percent_covered
-            if percent_covered < 40:
-                coverage_result['coverageLevel'] = 'low'
-            elif percent_covered >= 40 and percent_covered < 75:
-                coverage_result['coverageLevel'] = 'medium'
-            elif percent_covered >= 75:
-                coverage_result['coverageLevel'] = 'high'
-            else:
-                coverage_result['coverageLevel'] = ''
+    if 'codeCoverage' in result:
+        for coverage_result in result['codeCoverage']:
+            if 'locationsNotCovered' in coverage_result and type(coverage_result['locationsNotCovered']) is not list:
+                coverage_result['locationsNotCovered'] = [coverage_result['locationsNotCovered']]
+            if 'numLocations' in coverage_result and 'numLocationsNotCovered' in coverage_result:
+                locations = int(float(coverage_result['numLocations']))
+                locations_not_covered = int(float(coverage_result['numLocationsNotCovered']))
+                percent_covered = 0 
+                if locations > 0:
+                    percent_covered = int(round(100 * ((float(locations) - float(locations_not_covered)) / locations)))
+                coverage_result['percentCovered'] = percent_covered
+                if percent_covered < 40:
+                    coverage_result['coverageLevel'] = 'low'
+                elif percent_covered >= 40 and percent_covered < 75:
+                    coverage_result['coverageLevel'] = 'medium'
+                elif percent_covered >= 75:
+                    coverage_result['coverageLevel'] = 'high'
+                else:
+                    coverage_result['coverageLevel'] = ''
 
-        if 'type' in coverage_result:
-            if coverage_result['type'] == 'Trigger':
-                triggers.append(coverage_result)
-            else:
-                classes.append(coverage_result)
-        elif 'id' in coverage_result:
-            result_id = coverage_result['id']
-            if result_id.startswith('01q'):
-                triggers.append(coverage_result)
-            else:
-                classes.append(coverage_result)
+            if 'type' in coverage_result:
+                if coverage_result['type'] == 'Trigger':
+                    triggers.append(coverage_result)
+                else:
+                    classes.append(coverage_result)
+            elif 'id' in coverage_result:
+                result_id = coverage_result['id']
+                if result_id.startswith('01q'):
+                    triggers.append(coverage_result)
+                else:
+                    classes.append(coverage_result)
 
     if 'codeCoverageWarnings' in result and type(result['codeCoverageWarnings']) is not list:
         result['codeCoverageWarnings'] = [result['codeCoverageWarnings']]
