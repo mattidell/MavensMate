@@ -6,6 +6,8 @@ mm/dist
 mmserver/dist
 tools/pyinstaller/mmserver
 tools/pyinstaller/mm
+tools/pyinstaller-dev/mmserver
+tools/pyinstaller-dev/mm
 platforms/osx/MavensMate/dist
 *.log
 platforms/osx/MavensMate/release/MavensMate.zip
