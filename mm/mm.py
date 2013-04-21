@@ -97,6 +97,8 @@ def main():
             new_project_from_existing_directory()
         elif operation == 'debug_log':
             TODO()
+        elif operation == 'open_sfdc_url':
+            open_sfdc_url()
         else:
             print util.generate_error_response('Invalid operation requested')
 
@@ -129,6 +131,9 @@ def list_metadata():
         "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
     }) 
     print json.dumps(client.list_metadata(request_payload['metadata_type']))
+
+def open_sfdc_url():
+    print config.connection.project.open_selected_metadata(request_payload);
 
 def list_connections():
     print config.connection.project.get_org_connections()

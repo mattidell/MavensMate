@@ -5,14 +5,18 @@ import shutil
 import os
 import subprocess
 import pipes
-sys.path.append('../')
+
+# path variables
+mavensmate_path     = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir))
+pyinstaller_path    = mavensmate_path+"/tools/pyinstaller-dev"
+mm_path             = mavensmate_path+"/mm"
+mm_build_path       = mm_path+"/build"
+
+# add mm directory and import lib.mm_util
+sys.path.append(mavensmate_path+"/mm")
 import lib.mm_util as mm_util
 
-mavensmate_path     = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-pyinstaller_path    = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))+"/tools/pyinstaller-dev"
-mm_path             = os.path.dirname(os.path.dirname(__file__))
-mm_build_path       = os.path.dirname(__file__)
-build_settings      = mm_util.parse_json_from_file('build_settings.json')
+build_settings      = mm_util.parse_json_from_file(mm_build_path+'/build_settings.json')
 
 def main():
     #remove dist directory
@@ -51,6 +55,9 @@ def main():
     shutil.copytree("{0}/lib".format(mm_path), "{0}/dist/mm/lib".format(mm_path))
     shutil.copytree("{0}/dist/mm/lib2/python2.7".format(mm_path), "{0}/dist/mm/lib/python2.7".format(mm_path))
     shutil.rmtree("{0}/dist/mm/lib2".format(mm_path))
+
+    #remove files
+    shutil.rmtree("{0}/mm".format(pyinstaller_path))
 
 if  __name__ == '__main__':
     main()

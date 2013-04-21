@@ -1,3 +1,4 @@
+{{ operation }}
 {% for item in metadata %}
      {% if 'children' in item and item['children']|length > 0 %}
           {% set class_name = "folder" %}
@@ -9,7 +10,7 @@
      {% else %}
           {% set has_child_types = False %}
      {% endif %}
-     {% if 'selected' in item and item['selected'] == True %}
+     {% if operation != 'deploy' and 'selected' in item and item['selected'] == True %}
           {% set level_1_selected = "selected" %}
      {% else %}
           {% set level_1_selected = "" %}

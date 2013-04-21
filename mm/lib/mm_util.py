@@ -358,7 +358,7 @@ def generate_ui(operation,params={}):
         if config.connection.project.is_metadata_indexed == True:
             template = env.get_template('/project/tree.html')
             org_metadata = config.connection.project.get_org_metadata()
-            tree_body = template.render(metadata=org_metadata)
+            tree_body = template.render(metadata=org_metadata,operation=operation)
             #print tree_body
         template = env.get_template('/deploy/index.html')
         file_body = template.render(
@@ -368,6 +368,7 @@ def generate_ui(operation,params={}):
             project_location=config.connection.project.location,
             connections=config.connection.project.get_org_connections(False),
             tree_body=tree_body,
+            operation=operation,
             client=config.connection.plugin_client)
     elif operation == 'execute_apex':
         template = env.get_template('/execute_apex/index.html')

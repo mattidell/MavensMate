@@ -16,6 +16,8 @@ import xmltodict
 import threading
 import time
 import collections
+import webbrowser
+from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
 from mm_client import MavensMateClient
@@ -506,6 +508,70 @@ class MavensMateProject(object):
             shutil.rmtree(self.location+"/unpackaged")
             return mm_util.generate_success_response("Refresh Completed Successfully")
         except Exception, e:
+            return mm_util.generate_error_response(e.message)
+
+    # Open selected file on SFDC
+    def open_selected_metadata(self, params):
+        try:
+            if "files" in params:
+                if "type" in params: 
+                    open_type = params.get("type", None) 
+                else:
+                    open_type = "edit"
+                files = params.get("files", None)
+                if len(files) > 0:
+                    opened = []
+                    for fileabs in files:
+
+                        # make sure we have meta data and then get the object type
+                        if os.path.isfile(fileabs+"-meta.xml"):
+                            xmldoc = minidom.parse(fileabs+"-meta.xml")
+                            root = xmldoc.firstChild
+                            object_type = root.nodeName
+                        else:
+                            continue
+
+                        # attempting to handle file types we don't know about yet.
+                        path = fileabs.split("/")
+                        filefull = path[-1].split(".")
+                        extension = filefull.pop()
+                        filename = ".".join(filefull)
+
+                        # only ApexClasses that are global and have webservice scope have WSDL files
+                        if open_type == "wsdl":
+                            if object_type != "ApexClass":
+                                continue
+                            with open(fileabs, 'r') as content_file:
+                                content = content_file.read()
+                                p = re.compile("global\s+class\s", re.I + re.M)
+                                if not p.search(content):
+                                    continue
+                                p = re.compile("\swebservice\s", re.I + re.M)
+                                if not p.search(content): 
+                                    continue
+
+                        object_id = self.sfdc_client.get_apex_entity_id_by_name(object_type=object_type, name=filename)
+                        if not object_id: 
+                            continue
+
+                        # get the server instance url and set the redirect url
+                        frontdoor = "https://" + self.sfdc_client.server_url.split('/')[2] + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL="
+                        if open_type == "wsdl":
+                            ret_url = "/services/wsdl/class/" + filename
+                        else:
+                            ret_url = "/" + object_id
+
+                        # open the browser window for this file and track it
+                        webbrowser.open(frontdoor+ret_url, new=2)
+                        opened.append(filename+"."+extension)
+                    if len(opened) == 0:
+                        return mm_util.generate_error_response("There were no valid files to open.")
+                    return mm_util.generate_success_response("Opened "+(", ".join(opened))+" on server.")
+                return mm_util.generate_error_response("Unable to open file on server.")
+            else:
+                raise MMException("To open on Salesforce, you must provide an array of 'files'")
+        except Exception, e:
+            print traceback.print_exc()
             return mm_util.generate_error_response(e.message)
 
     #executes a string of apex
