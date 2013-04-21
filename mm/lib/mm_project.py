@@ -473,8 +473,16 @@ class MavensMateProject(object):
                 types = []
                 for d in params['directories']:
                     basename = os.path.basename(d)
-                    metadata_type = mm_util.get_meta_type_by_dir(basename)
-                    types.append(metadata_type['xmlName'])
+                    # refresh all if it's the project base or src directory
+                    if basename == config.connection.project_name or basename == "src":
+                        data = mm_util.get_default_metadata_data();
+                        for item in data["metadataObjects"]: 
+                            if 'directoryName' in item:
+                                types.append(item['xmlName'])
+                    else:
+                        metadata_type = mm_util.get_meta_type_by_dir(basename)
+                        if metadata_type:
+                            types.append(metadata_type['xmlName'])
 
                 for i, val in enumerate(project_package['Package']['types']):
                     package_type = val['name']
@@ -1114,7 +1122,7 @@ class MavensMateProject(object):
         try:
             return mm_util.parse_json_from_file(self.location+"/config/.describe")
         except:
-            return mm_util.parse_json_from_file(config.base_path+"/lib/sforce/metadata/default_metadata.json")
+            return mm_util.get_default_metadata_data()
 
     def __put_base_config(self):
         if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/config") == False:

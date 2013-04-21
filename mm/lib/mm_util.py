@@ -229,23 +229,29 @@ def get_empty_package_xml_contents():
     template = env.get_template('empty_package.html')
     return template.render(sfdc_api_version=SFDC_API_VERSION)
 
+def get_default_metadata_data():
+    return parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_metadata.json")
+    
+def get_child_metadata_data():
+    return parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_child_metadata.json")
+
 def get_meta_type_by_suffix(suffix):
     if '-meta' in suffix:
         suffix = suffix.split('-meta')[0]
-    data = parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_metadata.json")
+    data = get_default_metadata_data()
     for item in data["metadataObjects"]: 
         if 'suffix' in item and item['suffix'] == suffix:
             return item
 
 def get_meta_type_by_dir(dir_name):
-    data = parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_metadata.json")
+    data = get_default_metadata_data()
     for item in data["metadataObjects"]: 
         if 'directoryName' in item and item['directoryName'] == dir_name:
             return item
 
 def get_meta_type_by_name(name):
-    data = parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_metadata.json")
-    child_data = parse_json_from_file(config.base_path + "/lib/sforce/metadata/default_child_metadata.json")
+    data = get_default_metadata_data()
+    child_data = get_child_metadata_data()
     for item in data["metadataObjects"]: 
         if 'xmlName' in item and item['xmlName'] == name:
             return item 
