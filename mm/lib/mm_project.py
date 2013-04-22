@@ -221,17 +221,19 @@ class MavensMateProject(object):
             shutil.copytree(self.location+"/src", tmp+"/src")
             mm_util.rename_directory(tmp+"/src", tmp+"/unpackaged")
             zip_file = mm_util.zip_directory(tmp, tmp)
+            if 'mm_compile_rollback_on_error' in config.connection.plugin_client_settings['user']:
+                rollback_on_error = config.connection.plugin_client_settings['user']['mm_compile_rollback_on_error'] != False
+            else:
+                rollback_on_error = True
             deploy_params = {
                 "zip_file"          : zip_file,
-                "rollback_on_error" : True,
+                "rollback_on_error" : rollback_on_error,
                 "ret_xml"           : True
             }
             deploy_result = self.sfdc_client.deploy(deploy_params)
             d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
             shutil.rmtree(tmp)
-            return json.dumps(
-                    d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
-                )
+            return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'])
         except BaseException, e:
             try:
                 shutil.rmtree(tmp)
