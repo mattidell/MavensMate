@@ -363,10 +363,15 @@ def generate_ui(operation,params={}):
                         apex_classes.append(f.split(".")[0])
                 except:
                     continue
+        if "selected" in params:
+            selected = params["selected"]
+        else:
+            selected = []
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
             classes=apex_classes,
+            selected=selected,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'deploy':
         tree_body = ''
