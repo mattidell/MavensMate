@@ -27,10 +27,19 @@ def main():
     if os.path.exists(pyinstaller_path+"/mm"):
         shutil.rmtree(pyinstaller_path+"/mm")
 
+    #get the build settings, or if it doesn't exist use which to find python
+    if "python_location" in build_settings and os.path.exists(build_settings["python_location"]):
+        python_location = build_settings["python_location"]
+    else:
+        cmd = "which python"
+        p = subprocess.Popen(cmd , shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        python_location = out.rstrip()
+
     #run pyinstaller on mm.py
     os.chdir(pyinstaller_path)
     pyinstaller_command = "{0} pyinstaller.py {1} --onedir {2}".format(
-        pipes.quote(build_settings['python_location']), 
+        pipes.quote(python_location), 
         pipes.quote(mm_path+"/mm.py"), 
         pipes.quote(mm_path+"/mm.spec"))
 
