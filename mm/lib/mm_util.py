@@ -49,10 +49,13 @@ template_path = config.base_path + "/lib/templates"
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
 def parse_json_from_file(location):
-    try:
+    try:   
         json_data = open(location)
-        data = json.load(json_data)
-        json_data.close()
+        if json_data:
+            data = json.load(json_data)
+            json_data.close()
+        else:
+            data = {}
         return data
     except:
         return parse_json(location)
@@ -75,10 +78,16 @@ def get_sfdc_endpoint(url):
     return endpoint
 
 def get_endpoint_type_by_url(endpoint):
-    return URL_TO_ENDPOINT_TYPE[endpoint]
+    if endpoint in URL_TO_ENDPOINT_TYPE: 
+        return URL_TO_ENDPOINT_TYPE[endpoint] 
+    else: 
+        return ""
 
 def get_sfdc_endpoint_by_type(type):
-    return ENDPOINTS[type]
+    if type in ENDPOINTS: 
+        return ENDPOINTS[type] 
+    else: 
+        return ""
 
 def put_project_directory_on_disk(project_name, **kwargs):
     if 'force' in kwargs and kwargs['force'] == True:

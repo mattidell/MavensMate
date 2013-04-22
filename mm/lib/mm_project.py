@@ -44,7 +44,7 @@ class MavensMateProject(object):
             
             self.location               = params.get('location', None)
             self.settings               = self.__get_settings()
-            self.project_name           = self.settings.get('project_name', None)
+            self.project_name           = self.settings.get('project_name', os.path.basename(self.location))
             self.sfdc_session           = self.__get_sfdc_session()
             self.package                = self.location + "/src/package.xml"
             self.is_metadata_indexed    = self.get_is_metadata_indexed()
@@ -1044,6 +1044,7 @@ class MavensMateProject(object):
             return mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
 
     def __get_settings(self):
+
         #returns settings for this project (handles legacy yaml format)
         if os.path.isfile(self.location + "/config/settings.yaml"):
             f = open(self.location + "/config/settings.yaml")
@@ -1056,25 +1057,31 @@ class MavensMateProject(object):
             return {}
 
     def get_creds(self): 
-        #this bit is to handle legacy projects still using the yaml-based settings
-        if os.path.exists(self.location + "/config/settings.yaml"):
-            f = open(self.location + "/config/settings.yaml")
-            settings = yaml.safe_load(f)
-            f.close()
-            project_name    = settings['project_name']
-            username        = settings['username']
-            environment     = settings['environment']
-            org_type        = settings['environment'] #TODO: let's standardize environment vs. org_type (org_type is preferred)
-            password        = mm_util.get_password_by_project_name(project_name)
-        elif os.path.exists(self.location + "/config/.settings"):
-            settings = mm_util.parse_json_from_file(self.location + "/config/.settings")
-            project_name    = settings['project_name']
-            username        = settings['username']
-            environment     = settings['environment']
-            org_type        = settings['environment'] #TODO: let's standardize environment vs. org_type (org_type is preferred)
-            id              = settings['id']
-            password        = mm_util.get_password_by_key(id)
-        endpoint = mm_util.get_sfdc_endpoint_by_type(environment)    
+        #initialize variables so it doesn't bomb if any are missing
+        id, project_name, username, environment, endpoint, org_type, password, is_legacy = None, '', '', None, '', '', '', False
+        #get the mm project settings
+        settings = self.__get_settings()
+
+        #get the common project properties
+        if 'id' in settings: 
+            id = settings['id']
+        if 'project_name' in settings: 
+            project_name = settings['project_name']
+        else:
+            #default to project folder name
+            project_name = os.path.basename(self.location)
+        if 'username' in settings: 
+            username = settings['username']
+        if 'environment' in settings: 
+            #TODO: let's standardize environment vs. org_type (org_type is preferred)
+            environment, org_type = settings['environment'], settings['environment']
+            endpoint = mm_util.get_sfdc_endpoint_by_type(environment)
+        #get password from id, or name for legacy/backup
+        if id:
+            password = mm_util.get_password_by_key(id)
+        else:
+            password = mm_util.get_password_by_project_name(project_name)
+  
         creds = { }
         creds['username'] = username
         creds['password'] = password
