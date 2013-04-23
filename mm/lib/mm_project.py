@@ -221,10 +221,7 @@ class MavensMateProject(object):
             shutil.copytree(self.location+"/src", tmp+"/src")
             mm_util.rename_directory(tmp+"/src", tmp+"/unpackaged")
             zip_file = mm_util.zip_directory(tmp, tmp)
-            if 'mm_compile_rollback_on_error' in config.connection.plugin_client_settings['user']:
-                rollback_on_error = config.connection.plugin_client_settings['user']['mm_compile_rollback_on_error'] != False
-            else:
-                rollback_on_error = True
+            mm_compile_rollback_on_error = config.connection.get_plugin_client_setting("mm_compile_rollback_on_error", False)
             deploy_params = {
                 "zip_file"          : zip_file,
                 "rollback_on_error" : rollback_on_error,
