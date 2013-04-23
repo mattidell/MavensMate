@@ -232,8 +232,30 @@ class MavensMateProject(object):
             }
             deploy_result = self.sfdc_client.deploy(deploy_params)
             d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+
+            dictionary = collections.OrderedDict()
+            dictionary2 = []
+            
+            for x, y in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'].iteritems():
+                if(x == "id"):
+                    dictionary["id"] = y
+                if(x == "runTestResult"):
+                    dictionary["runTestResult"] = y
+                if(x == "success"):
+                    dictionary["success"] = y
+                for a in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['messages']:
+                    #print "+++", x
+                    for key, value in a.iteritems():
+                        #print "===", a 
+                        #print "***", key, value
+                        if(key == 'problemType' and value == 'Error'):
+                            #print "### In here",  key, value
+                            dictionary2.append(a)
+                dictionary["Messages"] = dictionary2 
+
             shutil.rmtree(tmp)
-            return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'])
+            return json.dumps(dictionary, sort_keys=True, indent=2, separators=(',', ': '))
+            #return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'], sort_keys=True, indent=2, separators=(',', ': '))
         except BaseException, e:
             try:
                 shutil.rmtree(tmp)
@@ -256,6 +278,7 @@ class MavensMateProject(object):
                     file_body = file_body.decode("utf-8")
                     result = self.sfdc_client.compile_apex(metadata_type['xmlName'], file_body, retXml=True)
                     d = xmltodict.parse(result,postprocessor=mm_util.xmltodict_postprocessor)
+                   # print(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['changed'])
                     if file_ext == 'trigger':
                         return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileTriggersResponse"]["result"])
                     else:
