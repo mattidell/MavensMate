@@ -270,7 +270,7 @@ def get_meta_type_by_name(name):
 
 def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='default', apex_trigger_object_api_name=''):
     template_map = {
-        'ApexClass' : 
+        'ApexClass'     : 
         {
             'test'          : 'UnitTestApexClass.html',
             'batch'         : 'BatchApexClass.html',
@@ -281,19 +281,41 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
             'default'       : 'ApexClass.html',
             'base'          : 'ApexClass.html'
         },
-        'ApexTrigger'   : 'ApexTrigger.html',
-        'ApexComponent' : 'ApexComponent.html',
-        'ApexPage'      : 'ApexPage.html'
+        'ApexTrigger'   : 
+        {
+            'default'       : 'ApexTrigger.html'
+        },
+        'ApexComponent' :  
+        {
+            'default'       : 'ApexComponent.html'
+        },
+        'ApexPage'      : 
+        {
+            'default'       : 'ApexPage.html'
+        }
     }
+    custom_templates = config.connection.get_plugin_client_setting('mm_apex_templates_map', {})
+    #merge custom and default template maps
+    for apextype in template_map:
+        if apextype in custom_templates:
+            template_map[apextype] = dict(template_map[apextype], **custom_templates[apextype])
+    #get the template name
     template_name = ''
-    if metadata_type == 'ApexClass':
-        try:
-            template_name = template_map[metadata_type][apex_class_type]
-        except:
-            template_name = template_map[metadata_type]['default']
-    else:
-        template_name = template_map[metadata_type]
-    template = env.get_template(template_name)
+    try:
+        template_name = template_map[metadata_type][apex_class_type]
+    except:
+        template_name = template_map[metadata_type]['default']
+    try:
+        custom_template_path = config.connection.get_plugin_client_setting('mm_apex_templates_dir', config.connection.get_plugin_settings_path("User", "templates"))
+        if os.path.exists(os.path.join(custom_template_path, template_name)):
+            custom_env = Environment(loader=FileSystemLoader(custom_template_path),trim_blocks=True)
+            #try to load custom
+            template = custom_env.get_template(template_name)
+        else:
+            raise Exception("Template does not exist")
+    except:
+        #load default template
+        template = env.get_template(template_name)
     file_body = template.render(api_name=api_name,object_name=apex_trigger_object_api_name)
     metadata_type = get_meta_type_by_name(metadata_type)
     os.makedirs("{0}/{1}".format(where, metadata_type['directoryName']))
