@@ -49,14 +49,15 @@ template_path = config.base_path + "/lib/templates"
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
 def parse_json_from_file(location):
-    try:   
-        json_data = open(location)
-        if json_data:
-            data = json.load(json_data)
-            json_data.close()
+    try:
+        if os.path.exists(location):
+            json_data = open(location)
+            if json_data:
+                data = json.load(json_data)
+                json_data.close()
+                return data
         else:
-            data = {}
-        return data
+            return {}
     except:
         return parse_json(location)
 
