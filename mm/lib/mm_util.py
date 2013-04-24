@@ -270,32 +270,7 @@ def get_meta_type_by_name(name):
             return item
 
 def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='default', apex_trigger_object_api_name=''):
-    template_map = {
-        'ApexClass'     : 
-        {
-            'test'          : 'UnitTestApexClass.html',
-            'batch'         : 'BatchApexClass.html',
-            'schedulable'   : 'SchedulableApexClass.html',
-            'email'         : 'EmailServiceApexClass.html',
-            'url'           : 'UrlRewriterApexClass.html',
-            'webservice'    : 'WebserviceClass.html',
-            'empty'         : 'ApexClassNoConstructor.html',
-            'default'       : 'ApexClass.html',
-            'base'          : 'ApexClass.html'
-        },
-        'ApexTrigger'   : 
-        {
-            'default'       : 'ApexTrigger.html'
-        },
-        'ApexComponent' :  
-        {
-            'default'       : 'ApexComponent.html'
-        },
-        'ApexPage'      : 
-        {
-            'default'       : 'ApexPage.html'
-        }
-    }
+    template_map = config.connection.get_plugin_client_setting('mm_default_apex_templates_map', {})
     custom_templates = config.connection.get_plugin_client_setting('mm_apex_templates_map', {})
     #merge custom and default template maps
     for apextype in template_map:
