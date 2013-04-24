@@ -371,14 +371,26 @@ class MavensMateProject(object):
             delete_result = self.sfdc_client.delete(deploy_params)
             d = xmltodict.parse(delete_result,postprocessor=mm_util.xmltodict_postprocessor)
             shutil.rmtree(tmp)
-            if d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['success'] == True:
+            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
+            if result['success'] == True:
+                removed = []
                 for f in files:
-                    os.remove(f)
-                return mm_util.generate_success_response('OK')
+                    try:
+                        file_ext = f.split('.')[-1]
+                        metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
+                        if metadata_type == None or not 'directoryName' in metadata_type:
+                            continue;
+                        directory = metadata_type['directoryName']
+                        filepath = os.path.join(config.connection.project_location, "src", directory, f)
+                        metapath = os.path.join(config.connection.project_location, "src", directory, f + '-meta.xml')
+                        os.remove(filepath)
+                        os.remove(metapath)
+                        removed.append(f)
+                    except Exception, e:
+                        print e.message
+                return mm_util.generate_success_response("Removed metadata files: " + (",".join(removed)))
             else:
-                return json.dumps(
-                        d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
-                    )
+                return json.dumps(result)
         except Exception, e:
             return mm_util.generate_error_response(e.message)
 
