@@ -139,13 +139,16 @@ class MavensMateProject(object):
     #creates a new piece of metadata
     def new_metadata(self, params):
         try:
-            metadata_type                   = params.get('metadata_type', None)
+            metadata_type                   = params.get('metadata_type', 'None')
             api_name                        = params.get('api_name', None)
             apex_class_type                 = params.get('apex_class_type', None)
             apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
 
             if metadata_type == 'ApexClass' and apex_class_type == None:
                 apex_class_type = 'default'
+
+            if api_name == None:
+                return mm_util.generate_error_response("You must provide a name for the new metadata.")
 
             if self.sfdc_client.does_metadata_exist(object_type=metadata_type, name=api_name) == True:
                 return mm_util.generate_error_response("This API name is already in use in your org")      
@@ -487,9 +490,9 @@ class MavensMateProject(object):
             if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
                 self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
             
-            if 'directories' in params and 'files' in params:
+            if 'directories' in params and len(params['directories']) > 0 and 'files' in params and len(params['files']) > 0:
                 raise MMException("Please select either directories or files to refresh")
-            elif 'directories' in params:
+            elif 'directories' in params and len(params['directories']) > 0:
                 metadata = {}
                 project_package = self.__get_package_as_dict()
                 types = []
@@ -514,7 +517,7 @@ class MavensMateProject(object):
                 
                 if len(metadata) == 0:
                     raise MMException("Could not find metadata types to refresh")
-            elif 'files' in params:
+            elif 'files' in params and len(params['files']) > 0:
                 metadata = mm_util.get_metadata_hash(params['files'])
             else:
                 raise MMException("Please provide either an array of 'directories' or an array of 'files'")
@@ -769,6 +772,8 @@ class MavensMateProject(object):
         for i, val in enumerate(project_package['Package']['types']):
             metadata_type = val['name']
             metadata_def = mm_util.get_meta_type_by_name(metadata_type)
+            if metadata_def == None:
+                continue
             #print metadata_def
             members = val['members']
             #print 'processing: ', metadata_type
@@ -786,6 +791,9 @@ class MavensMateProject(object):
                 if item['xmlName'] == metadata_type:
                     server_metadata_item = item
                     break
+
+            if server_metadata_item == None:
+                continue
 
             if members == "*": #if package is subscribed to all
                 #server_metadata_item['select'] = True
