@@ -86,29 +86,32 @@ class MavensMatePluginConnection(object):
 
     #returns the MavensMate settings as a dict for the current plugin
     def get_plugin_client_settings(self):
-        settings_file = "mavensmate.sublime-settings"
+        user_path = self.get_plugin_settings_path("User")
+        def_path = self.get_plugin_settings_path("MavensMate")
+
+        settings = {}
+        if not user_path == None:
+            settings['user'] = mm_util.parse_json_from_file(user_path)
+        if not def_path == None:
+            settings['default'] = mm_util.parse_json_from_file(def_path)
+        return settings
+
+    def get_plugin_settings_path(self, type="User", obj="mavensmate.sublime-settings"):
         if self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
             sublime_ver = "Sublime Text 3"
         elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
             sublime_ver = "Sublime Text 2"
         else:
-            return {}
+            return None
 
         if self.platform == 'darwin':
-            path = '~/Library/Application Support/{0}/Packages/{1}/{2}'
-            return {
-                'default': mm_util.parse_json_from_file(os.path.expanduser(path.format(sublime_ver, "MavensMate", settings_file))),
-                'user': mm_util.parse_json_from_file(os.path.expanduser(path.format(sublime_ver, "User", settings_file)))
-            }
+            return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
         elif self.platform == 'win32' or self.platform == 'cygwin':
-            return {
-                'user': mm_util.parse_json_from_file(path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+settings_file),
-                'default': mm_util.parse_json_from_file(path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+settings_file)
-            }
+            return path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
         elif self.platform == 'linux2':
             pass
         else:
-            return {}
+            return None
 
     def get_plugin_client_setting(self, key, default=None):
         if 'user' in self.plugin_client_settings and key in self.plugin_client_settings["user"]:
