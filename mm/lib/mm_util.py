@@ -278,6 +278,7 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
             'schedulable'   : 'SchedulableApexClass.html',
             'email'         : 'EmailServiceApexClass.html',
             'url'           : 'UrlRewriterApexClass.html',
+            'webservice'    : 'WebserviceClass.html',
             'empty'         : 'ApexClassNoConstructor.html',
             'default'       : 'ApexClass.html',
             'base'          : 'ApexClass.html'
