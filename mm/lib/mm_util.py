@@ -571,11 +571,18 @@ def process_unit_test_result(result):
 
     results_normal = {}
     #{"foo"=>[{:name = "foobar"}{:name = "something else"}], "bar"=>[]}
-    
+    pass_fail = {}
     if 'successes' in result:
         if type(result['successes']) is not list:
             result['successes'] = [result['successes']]
         for success in result['successes']:
+            if success['name'] not in pass_fail:
+                pass_fail[success['name']] = {
+                    'fail': 0,
+                    'pass': 1
+                }
+            else:
+                pass_fail[success['name']]['pass'] += 1
             if success['name'] not in results_normal: #key isn't there yet, put it in        
                 results_normal[success['name']] = [success]
             else: #key is there, let's add metadata to it
@@ -587,6 +594,13 @@ def process_unit_test_result(result):
         if type(result['failures']) is not list:
             result['failures'] = [result['failures']]
         for failure in result['failures']:
+            if success['name'] not in pass_fail:
+                pass_fail[success['name']] = {
+                    'fail': 1,
+                    'pass': 0
+                }
+            else:
+                pass_fail[success['name']]['fail'] += 1
             if failure['name'] not in results_normal: #key isn't there yet, put it in        
                 results_normal[failure['name']] = [failure]
             else: #key is there, let's add metadata to it
@@ -594,10 +608,7 @@ def process_unit_test_result(result):
                 arr.append(failure) #add the new piece of metadata
                 results_normal[failure['name']] = arr #replace the key
 
-    #TODO:
-    # failing_tests = tests.count {|test| test[:stack_trace] } || 0
-    # passing_tests = tests.count {|test| !test[:stack_trace] } || 0
-    # total_tests = passing_tests + failing_tests
+    result['pass_fail'] = pass_fail
 
     result['results_normal'] = results_normal
 
