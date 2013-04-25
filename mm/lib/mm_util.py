@@ -15,6 +15,7 @@ import threading
 import sys
 import re
 import xmltodict
+import codecs
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -123,10 +124,14 @@ def get_file_extension(path):
     return os.path.splitext(path)[1]
 
 def get_file_as_string(file_path):
-    f = open(file_path, "r")
-    file_body = f.read()
-    f.close()
-    return file_body
+    try:
+        f = codecs.open(file_path, "r", "utf8")
+        file_body = f.read()
+        f.close()
+        return file_body
+    except Exception, e:
+        print "Couldn't open "+str(file_path)+" because: "+e.message
+    return ""
 
 def parse_rest_response(body):
     rjson = json.loads(body)
