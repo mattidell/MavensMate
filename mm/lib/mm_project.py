@@ -1240,10 +1240,8 @@ class DeploymentHandler(threading.Thread):
                 "org_type":self.destination['org_type']
             })    
 
-            describe_result = deploy_client.describeMetadata(retXml=False)
-            if describe_result.testRequired == True:
-                self.params['rollback_on_error'] = True
-                self.params['run_tests'] = True
+            if 'run_tests' in self.params and self.params['run_tests'] == True:
+                self.params['rollback_on_error'] = config.connection.get_plugin_client_setting('mm_deploy_rollback_on_error', True)
 
             self.params['zip_file'] = self.deploy_metadata.zipFile      
             deploy_result = deploy_client.deploy(self.params)
