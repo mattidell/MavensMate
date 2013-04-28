@@ -599,13 +599,13 @@ def process_unit_test_result(result):
         if type(result['failures']) is not list:
             result['failures'] = [result['failures']]
         for failure in result['failures']:
-            if success['name'] not in pass_fail:
-                pass_fail[success['name']] = {
+            if failure['name'] not in pass_fail:
+                pass_fail[failure['name']] = {
                     'fail': 1,
                     'pass': 0
                 }
             else:
-                pass_fail[success['name']]['fail'] += 1
+                pass_fail[failure['name']]['fail'] += 1
             if failure['name'] not in results_normal: #key isn't there yet, put it in        
                 results_normal[failure['name']] = [failure]
             else: #key is there, let's add metadata to it
