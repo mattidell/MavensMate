@@ -114,10 +114,11 @@ class MavensMatePluginConnection(object):
             return None
 
     def get_plugin_client_setting(self, key, default=None):
-        if 'user' in self.plugin_client_settings and key in self.plugin_client_settings["user"]:
-            return self.plugin_client_settings["user"][key]
-        if 'default' in self.plugin_client_settings and key in self.plugin_client_settings["default"]:
-            return self.get_plugin_client_settings["default"][key]
+        if self.plugin_client_settings != None:
+            if 'user' in self.plugin_client_settings and key in self.plugin_client_settings["user"]:
+                return self.plugin_client_settings["user"][key]
+            if 'default' in self.plugin_client_settings and key in self.plugin_client_settings["default"]:
+                return self.plugin_client_settings["default"][key]
         return default
 
     #retrieves metadata from server, creates local project
