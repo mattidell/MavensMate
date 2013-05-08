@@ -171,12 +171,14 @@
 			if (operation == "checkout" || operation == "new") {
 				if (response["success"] == false) {
 					$("#error_message").html(response["body"])
+					$("#error.alert-message").show()
 					$("#result_output").show()
 				}
 				hideLoading();
 			} else if (operation == "check_creds") {
 				if (response["success"] == false) {
 					$("#error_message").html(response["body"])
+					$("#error.alert-message").show()
 					$("#result_output").show()
 				} else {
 					$('#sid').val(response["sid"])	
