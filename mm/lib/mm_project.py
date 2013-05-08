@@ -185,8 +185,8 @@ class MavensMateProject(object):
         supported_types = ['ApexClass', 'ApexTrigger', 'ApexComponent', 'ApexPage']
         if metadata_type not in supported_types:
             return
-        package_dict = self.__get_package_as_dict()
-        for i, val in enumerate(package_dict['Package']['types']):
+        package_types = self.get_package_types()
+        for i, val in enumerate(package_types):
             if val['name'] == metadata_type:
                 if val['members'] == '*':
                     pass #we don't need to add/remove here
@@ -206,7 +206,7 @@ class MavensMateProject(object):
                             val['members'] = ""
 
         metadata_hash = collections.OrderedDict()
-        for i, val in enumerate(package_dict['Package']['types']):
+        for i, val in package_types:
             if val['members'] == "*" or type(val['members']) is list:
                 metadata_hash[val['name']] = val['members']
             else:
@@ -400,6 +400,29 @@ class MavensMateProject(object):
             if 'package' not in params:
                 raise MMException('"package" definition required in JSON body')
             self.package = params['package']
+
+            if 'CustomObject' in self.package:
+                custom_fields = []
+                for member in self.package['CustomObject']:
+                    if member == "*" or not member.endswith("__c"):
+                        for item in self.get_org_metadata():
+                           if item['xmlName'] == 'CustomObject':
+                                for child in item['children']:
+                                    if (member == "*" and not child['key'].endswith("__c")) or child['key'] == member:
+                                        for props in child['children']:
+                                            if props['key'] == 'fields':
+                                                for field in props['children']:
+                                                    custom_fields.append(child['key']+'.'+field['key'])
+                                                break
+                                        if member != "*":
+                                            break
+                                break
+
+                if len(custom_fields):
+                    if 'CustomField' not in self.package:
+                        self.package['CustomField'] = []
+                    self.package['CustomField'] = list(set(self.package['CustomField']+custom_fields))
+
             clean_result = json.loads(self.clean(overwrite_package_xml=True))
             if clean_result['success'] == True:
                 return mm_util.generate_success_response('Project Edited Successfully')
@@ -434,11 +457,12 @@ class MavensMateProject(object):
                     if '/src/package.xml' not in full_file_path:
                         os.remove(full_file_path)
 
-            #replaces with retrieved metadata
+            #TODO: handle exception that could render the project unusable bc of lost files
+            #replace project metadata with retrieved metadata
             for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
                 for filename in filenames:
                     full_file_path = os.path.join(dirname, filename)
-                    if '/unpackaged/package.xml' in full_file_path:
+                    if '/unpackaged/package.xml' in full_file_path and ('overwrite_package_xml' not in kwargs or kwargs['overwrite_package_xml'] != True):
                         continue
                     destination = full_file_path.replace('/unpackaged/', '/src/')
                     destination_directory = os.path.dirname(destination)
@@ -446,54 +470,14 @@ class MavensMateProject(object):
                         os.makedirs(destination_directory)
                     shutil.move(full_file_path, destination)
            
-            #remove empty directories
-            for dirname, dirnames, filenames in os.walk(self.location+"/src"):
-                if dirname == self.location+"/src":
-                    continue
-                files = os.listdir(dirname)
-                if len(files) == 0:
-                    os.rmdir(dirname) 
-                    
-
-            if 'overwrite_package_xml' in kwargs and kwargs['overwrite_package_xml'] == True:
-                os.remove(self.location+"/src/package.xml")
-                shutil.move(self.location+"/unpackaged/package.xml", self.location+"/src")
             shutil.rmtree(self.location+"/unpackaged")
+
             return mm_util.generate_success_response('Project Cleaned Successfully')
         except Exception, e:
             #TODO: if the clean fails, we need to have a way to ensure the project is returned to its original state
             #maybe we copy the project tree to a tmp folder, if we encounter an exception, we can remove the project
             #and replace it with the copied one in tmp
             #raise e
-            return mm_util.generate_error_response(e.message)
-
-    #refreshes a directory from the server
-    def refresh_directory(self, directory_name):
-        try:
-            if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
-                self.sfdc_client = MavensMateClient(credentials=self.get_creds())  
-
-            for dirname, dirnames, filenames in os.walk(directory_name):
-                if '.git' in dirnames:
-                    dirnames.remove('.git')
-                if '.svn' in dirnames:
-                    dirnames.remove('.svn')
-
-                for filename in filenames:
-                    full_file_path = os.path.join(dirname, filename)
-                    if '/src/package.xml' not in full_file_path:
-                        os.remove(full_file_path)
-
-            base_directory_name = os.path.split(directory_name)[-1]
-            metadata_type = mm_util.get_meta_type_by_dir(base_directory_name)
-            tmp = mm_util.put_tmp_directory_on_disk()
-            retrieve_result = self.sfdc_client.retrieve(package=self.package, type=metadata_type['xmlName'])
-            mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, tmp)
-            for file_name in os.listdir(tmp+"/unpackaged/"+metadata_type['directoryName']):
-                shutil.move(tmp+"/unpackaged/"+metadata_type['directoryName']+"/"+file_name, self.location+"/src/"+metadata_type['directoryName'])
-            shutil.rmtree(tmp)
-            return mm_util.generate_success_response("Refresh Directory Completed Successfully")
-        except BaseException, e:
             return mm_util.generate_error_response(e.message)
 
     #refreshes file(s) from the server
@@ -503,10 +487,9 @@ class MavensMateProject(object):
                 self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
             
             if 'directories' in params and len(params['directories']) > 0 and 'files' in params and len(params['files']) > 0:
-                raise MMException("Please select either directories or files to refresh")
+                raise MMException("Please select either directories or files to refresh, not both")
             elif 'directories' in params and len(params['directories']) > 0:
                 metadata = {}
-                project_package = self.__get_package_as_dict()
                 types = []
                 for d in params['directories']:
                     basename = os.path.basename(d)
@@ -520,12 +503,37 @@ class MavensMateProject(object):
                         metadata_type = mm_util.get_meta_type_by_dir(basename)
                         if metadata_type:
                             types.append(metadata_type['xmlName'])
-
-                for i, val in enumerate(project_package['Package']['types']):
+                            if 'childXmlNames' in metadata_type:
+                                for child in metadata_type['childXmlNames']:
+                                    types.append(child)
+              
+                custom_fields = []
+                for val in self.get_package_types():
                     package_type = val['name']
                     members = val['members']
                     if package_type in types:
                         metadata[package_type] = members
+
+                    if package_type == 'CustomObject':
+                        for member in members:
+                            if members == "*":
+                                for item in self.get_org_metadata():
+                                   if item['xmlName'] == 'CustomObject':
+                                        for child in item['children']:
+                                            if not child['key'].endswith("__c"):
+                                                for props in child['children']:
+                                                    if props['key'] == 'fields':
+                                                        for field in props['children']:
+                                                            custom_fields.append(child['key']+'.'+field['key'])
+                                                        break
+                                                if member != "*":
+                                                    break
+                                        break
+
+                        if len(custom_fields):
+                            if 'CustomField' not in metadata:
+                                metadata['CustomField'] = []
+                            metadata['CustomField'] = list(set(metadata['CustomField']+custom_fields))
                 
                 if len(metadata) == 0:
                     raise MMException("Could not find metadata types to refresh")
@@ -536,6 +544,7 @@ class MavensMateProject(object):
 
             #retrieves a fresh set of metadata based on the files that have been requested
             retrieve_result = self.sfdc_client.retrieve(package=metadata)
+
             mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
 
             #TODO: handle exception that could render the project unusable bc of lost files
@@ -743,20 +752,22 @@ class MavensMateProject(object):
 
     #compiles a list of all metadata in the org and places in .org_metadata file
     def index_metadata(self):
-        try:
+        try:    
             return_list = []
             if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
                 self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
                 self.__set_sfdc_session()
 
             data = self.__get_org_describe()
+
             threads = []
             creds = self.get_creds()
-            for metadata_type in data["metadataObjects"]: 
+            for metadata_type in data["metadataObjects"]:
                 thread_client = MavensMateClient(credentials=creds)
                 thread = IndexCall(thread_client, metadata_type)
                 threads.append(thread)
                 thread.start()
+
             thread_results = []
             for thread in threads:
                 thread.join()  
@@ -780,13 +791,70 @@ class MavensMateProject(object):
 
     def __select_metadata_based_on_package_xml(self, return_list):
         #process package and select only the items the package has specified
-        project_package = self.__get_package_as_dict()
-        for i, val in enumerate(project_package['Package']['types']):
+        package_types = self.get_package_types();
+
+        for item in return_list:
+            item['selected'] = False
+            if 'children' in item:
+                for child in item['children']:
+                    child['selected'] = False
+                    if 'children' in child:
+                        for gchild in child['children']:
+                            gchild['selected'] = False
+                            if 'children' in gchild:
+                                for ggchild in gchild['children']:
+                                    ggchild['selected'] = False
+
+        
+        #expand standard "custombjects" to customfields
+        custom_fields = []
+        for val in package_types:
+            metadata_type = val['name']
+            if metadata_type == 'CustomObject' and 'members' in val:
+                for member in val['members']:
+                    if not member.endswith("__c") or member == "*":
+                        #standard object
+                        for item in return_list:
+                           if item['xmlName'] == 'CustomObject':
+                                for child in item['children']:
+                                    if child['key'] == member or member == "*":
+                                        for props in child['children']:
+                                            if props['key'] == 'fields':
+                                                for field in props['children']:
+                                                    custom_fields.append(child['key']+'.'+field['key'])
+                                                break
+                                        if member != "*":
+                                            break
+                                break
+        
+        if len(custom_fields):
+            custom_field = None
+            new_packages = []
+            for val in package_types:
+                if val['name'] == 'CustomField':
+                    custom_field = val
+                else:
+                    new_packages.append(val)
+
+            if custom_field == None:
+                custom_field = {'name':'CustomField'}
+
+            if 'members' in custom_field and type(custom_field['members']) == list:
+                members = custom_field['members']
+            else:
+                members = []
+            custom_field['members'] = list(set(members+custom_fields))
+            new_packages.append(custom_field)
+            package_types = new_packages
+            
+
+        for val in package_types:
             metadata_type = val['name']
             metadata_def = mm_util.get_meta_type_by_name(metadata_type)
+
             if metadata_def == None:
                 continue
-            #print metadata_def
+            
             members = val['members']
             #print 'processing: ', metadata_type
             #print 'package members: ', members
@@ -800,7 +868,10 @@ class MavensMateProject(object):
             #loop through list of metadata types in the org itself,
             #try to match on the name of this type of metadata
             for item in return_list:
-                if item['xmlName'] == metadata_type:
+                if is_parent_type and item['xmlName'] == metadata_type:
+                    server_metadata_item = item
+                    break
+                if is_child_type and item['xmlName'] == metadata_def['parentXmlName']:
                     server_metadata_item = item
                     break
 
@@ -808,7 +879,6 @@ class MavensMateProject(object):
                 continue
 
             if members == "*": #if package is subscribed to all
-                #server_metadata_item['select'] = True
                 server_metadata_item['selected'] = True
                 continue
             else: #package has specified members (members => ['Account', 'Lead'])
@@ -833,6 +903,7 @@ class MavensMateProject(object):
                                         if folder_item['title'] == item_name:
                                             folder_item['selected'] = True
                                             break
+                                    break
 
                 elif is_child_type: #weblink, customfield, etc.
                     #print 'child type!'
@@ -840,7 +911,6 @@ class MavensMateProject(object):
                     for item in return_list:
                         if item['xmlName'] == parent_type['xmlName']:
                             parent_server_metadata_item = item
-                            break
 
                     for m in members:
                         arr = m.split(".")
@@ -850,21 +920,26 @@ class MavensMateProject(object):
                             if child['title'] == object_name:
                                 #"Account"
                                 for gchild in child['children']:
-                                    if gchild['title'] == metadata_def['tagName']:
-                                        #"fields"
-                                        for ggchild in gchild['children']:
-                                            if ggchild['title'] == item_name:
-                                                #"field_name__c"
-                                                ggchild['selected'] = True
-                                                break
+                                    #"fields"
+                                    for ggchild in gchild['children']:
+                                        if gchild['title'] == metadata_def['tagName'] and ggchild['title'] == item_name:
+                                            #"field_name__c"
+                                            ggchild['selected'] = True
+                                        break
+                                break
+
                 else:
                     #print 'regular type with specific items selected'
-                    server_metadata_item['select'] = False
                     for m in members:
                         for child in server_metadata_item['children']:
                             if child['title'] == m:
                                 child['selected'] = True
-                                break
+                                if 'children' in child:
+                                    for gchild in child['children']:
+                                        gchild['selected'] = True
+                                        for ggchild in gchild['children']:
+                                            ggchild['selected'] = True
+
         return return_list
 
     def index_apex_overlays(self, payload):
@@ -1024,6 +1099,13 @@ class MavensMateProject(object):
 
     def __get_package_as_dict(self):
         return mm_util.parse_xml_from_file(self.location+"/src/package.xml")
+
+    def get_package_types(self):
+        project_package = self.__get_package_as_dict()
+        package_types = project_package['Package']['types']
+        if not isinstance(package_types, (list, tuple)):
+            package_types = [package_types]
+        return package_types
 
     def get_is_metadata_indexed(self):
         try:
