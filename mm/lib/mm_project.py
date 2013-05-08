@@ -206,7 +206,7 @@ class MavensMateProject(object):
                             val['members'] = ""
 
         metadata_hash = collections.OrderedDict()
-        for i, val in package_types:
+        for val in package_types:
             if val['members'] == "*" or type(val['members']) is list:
                 metadata_hash[val['name']] = val['members']
             else:
