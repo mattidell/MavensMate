@@ -6,27 +6,21 @@
       <description>Most recent changes with links to updates.</description>
       <language>en</language>
          <item>
-            <title>Version 0.29</title>
+            <title>Version 0.30</title>
 						<description><![CDATA[
-                <h2>Version 0.29</h2>
-                <p>This release brings many much-needed bug fixes</p>
-                <p>
-                  <ul>
-                    <li>Deployment issue to production orgs has been resolved (<a href="https://github.com/joeferraro/MavensMate-SublimeText/issues/118">#118</a>) (thanks @britishboyindc)</li>
-                    <li>Creating a new MavensMate project from an existing directory (inside or outside your workspace) is now much more stable (thanks @knthornt)</li>
-                    <li>mm_client has been tweaked for performance, so you may experience faster API-related operations</li>
-                    <li>Logging is now properly connected to plugin settings: "mm_log_location" and "mm_log_level"</li>
-                    <li>Better validation for operations</li>
-                    <li>Edit/Deploy project now more accurately displays project's selected metadata</li>
-                  </ul>
-                </p>
-                <p>
-                  <b>MavensMate for Sublime Text has also been updated to 2.1.3, so be sure to run the update from MavensMate.app --> Plugins</b>
-                </p>
+                <h2>Version 0.30</h2>
+                <p><strong>This update is highly recommended</strong>. Thanks to @doublesharp for all fixes/enhancements in this release. Once you have updated MavensMate.app, be sure to update the appropriate Sublime Text plugins from the "Plugins" menu item.</p>
+                <ul>
+                  <li>Refresh from server fix</li>
+                  <li>UTF-8 encoding fix</li>
+                  <li>Index_apex_overlays fix</li>
+                  <li>Open file on server</li>
+                </ul>
+                <p>For full list of code changes: <a href="https://github.com/joeferraro/MavensMate/commits/master">https://github.com/joeferraro/MavensMate/commits/master</a>
             ]]>
             </description>
-            <pubDate>Fri, 05 April 2013 11:31:27 +0000</pubDate>
-            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.29" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFEYaaBPe70EXfPMkTEhzPfCI9q2+AhQl/xEHjl09+6ZL3Omlgc46qr+9kg==" />
+            <pubDate>Sun, 21 April 2013 19:08:57 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.30" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFQCkf+HqTw8YK2CpdgDnFBxQvO+0cwITZ/iOay4I/DdVlvs5pVesXSoFEg==" />
          </item>
    </channel>
 </rss>
