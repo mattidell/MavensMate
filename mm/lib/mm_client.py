@@ -271,6 +271,8 @@ class MavensMateClient(object):
                     full_name = "Account" 
                 #print 'processing: ', element
                 if has_children_metadata == True:
+                    if not full_name in object_hash:
+                        continue
                     object_detail = object_hash[full_name]
                     if object_detail == None:
                         continue

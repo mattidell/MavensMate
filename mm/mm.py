@@ -156,7 +156,7 @@ def index_metadata(args):
         html = util.generate_html_response(args.operation, index_result, request_payload)
         print util.generate_success_response(html, "html")
     else:
-        print index_result
+        print util.generate_success_response(index_result)
 
 def new_project():
     print config.connection.new_project(request_payload,action='new')

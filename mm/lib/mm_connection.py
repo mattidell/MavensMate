@@ -82,46 +82,44 @@ class MavensMatePluginConnection(object):
 
     #returns the workspace for the current connection (/Users/username/Workspaces/MavensMate)
     def get_workspace(self):
-        return self.plugin_client_settings['user']['mm_workspace']
+        return self.get_plugin_client_setting('mm_workspace')
 
     #returns the MavensMate settings as a dict for the current plugin
     def get_plugin_client_settings(self):
-        if self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
-            if self.platform == 'darwin':
-                default_settings = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 2/Packages/MavensMate/mavensmate.sublime-settings'))
-                user_settings    = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 2/Packages/User/mavensmate.sublime-settings'))
-                return {
-                    'user'    : user_settings,
-                    'default' : default_settings
-                }
-            elif self.platform == 'win32' or self.platform == 'cygwin':
-                default_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 2', 'Packages', 'MavensMate')+"mavensmate.sublime-settings")
-                user_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 2', 'Packages', 'User')+"mavensmate.sublime-settings")
-                return {
-                    'user'    : user_settings,
-                    'default' : default_settings
-                }
-            elif self.platform == 'linux2':
-                pass
-        elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
-            if self.platform == 'darwin':
-                default_settings = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 3/Packages/MavensMate/mavensmate.sublime-settings'))
-                user_settings    = mm_util.parse_json_from_file(os.path.expanduser('~/Library/Application Support/Sublime Text 3/Packages/User/mavensmate.sublime-settings'))
-                return {
-                    'user'    : user_settings,
-                    'default' : default_settings
-                }
-            elif self.platform == 'win32' or self.platform == 'cygwin':
-                default_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 3', 'Packages', 'MavensMate')+"mavensmate.sublime-settings")
-                user_settings = mm_util.parse_json_from_file(path.join(environ['APPDATA'], 'Sublime Text 3', 'Packages', 'User')+"mavensmate.sublime-settings")
-                return {
-                    'user'    : user_settings,
-                    'default' : default_settings
-                }
-            elif self.platform == 'linux2':
-                pass
+        user_path = self.get_plugin_settings_path("User")
+        def_path = self.get_plugin_settings_path("MavensMate")
+
+        settings = {}
+        if not user_path == None:
+            settings['user'] = mm_util.parse_json_from_file(user_path)
+        if not def_path == None:
+            settings['default'] = mm_util.parse_json_from_file(def_path)
+        return settings
+
+    def get_plugin_settings_path(self, type="User", obj="mavensmate.sublime-settings"):
+        if self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
+            sublime_ver = "Sublime Text 3"
+        elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
+            sublime_ver = "Sublime Text 2"
         else:
             return None
+
+        if self.platform == 'darwin':
+            return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
+        elif self.platform == 'win32' or self.platform == 'cygwin':
+            return path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
+        elif self.platform == 'linux2':
+            pass
+        else:
+            return None
+
+    def get_plugin_client_setting(self, key, default=None):
+        if self.plugin_client_settings != None:
+            if 'user' in self.plugin_client_settings and key in self.plugin_client_settings["user"]:
+                return self.plugin_client_settings["user"][key]
+            if 'default' in self.plugin_client_settings and key in self.plugin_client_settings["default"]:
+                return self.plugin_client_settings["default"][key]
+        return default
 
     #retrieves metadata from server, creates local project
     def new_project(self, params, **kwargs):
@@ -150,12 +148,7 @@ class MavensMatePluginConnection(object):
 
             if json.loads(result)['success'] == True:
                 #opens project based on the client
-                if self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
-                    if self.platform == 'darwin':
-                        os.system("'/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl' --project '{0}'".format(self.project.location+"/"+self.project.project_name+".sublime-project"))
-                elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
-                    if self.platform == 'darwin':
-                        os.system("'/Applications/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{0}'".format(self.project.location+"/"+self.project.project_name+".sublime-project"))
+                mm_app_location = self.get_plugin_client_setting('mm_app_location')
 
             return result
         except BaseException, e:
@@ -183,11 +176,6 @@ class MavensMatePluginConnection(object):
         # else:
         #     return self.plugin_client_settings['default']['mm_api_version']
 
-    def get_plugin_client_setting(self, setting_name):
-        if setting_name in self.plugin_client_settings['user'] and self.plugin_client_settings['user'][setting_name] != None:
-            return self.plugin_client_settings['user'][setting_name]
-        else:
-            return self.plugin_client_settings['default'][setting_name]
 
     # tooling_api_extensions = ['.cls', '.trigger', '.page', '.component']
 

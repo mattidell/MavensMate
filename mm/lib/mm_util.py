@@ -15,6 +15,7 @@ import threading
 import sys
 import re
 import xmltodict
+import codecs
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -50,10 +51,14 @@ env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
 def parse_json_from_file(location):
     try:
-        json_data = open(location)
-        data = json.load(json_data)
-        json_data.close()
-        return data
+        if os.path.exists(location):
+            json_data = open(location)
+            if json_data:
+                data = json.load(json_data)
+                json_data.close()
+                return data
+        else:
+            return {}
     except:
         return parse_json(location)
 
@@ -75,10 +80,16 @@ def get_sfdc_endpoint(url):
     return endpoint
 
 def get_endpoint_type_by_url(endpoint):
-    return URL_TO_ENDPOINT_TYPE[endpoint]
+    if endpoint in URL_TO_ENDPOINT_TYPE: 
+        return URL_TO_ENDPOINT_TYPE[endpoint] 
+    else: 
+        return ""
 
 def get_sfdc_endpoint_by_type(type):
-    return ENDPOINTS[type]
+    if type in ENDPOINTS: 
+        return ENDPOINTS[type] 
+    else: 
+        return ""
 
 def put_project_directory_on_disk(project_name, **kwargs):
     if 'force' in kwargs and kwargs['force'] == True:
@@ -113,10 +124,14 @@ def get_file_extension(path):
     return os.path.splitext(path)[1]
 
 def get_file_as_string(file_path):
-    f = open(file_path, "r")
-    file_body = f.read()
-    f.close()
-    return file_body
+    try:
+        f = codecs.open(file_path, "r", "utf8")
+        file_body = f.read()
+        f.close()
+        return file_body
+    except Exception, e:
+        print "Couldn't open "+str(file_path)+" because: "+e.message
+    return ""
 
 def parse_rest_response(body):
     rjson = json.loads(body)
@@ -260,31 +275,29 @@ def get_meta_type_by_name(name):
             return item
 
 def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='default', apex_trigger_object_api_name=''):
-    template_map = {
-        'ApexClass' : 
-        {
-            'test'          : 'UnitTestApexClass.html',
-            'batch'         : 'BatchApexClass.html',
-            'schedulable'   : 'SchedulableApexClass.html',
-            'email'         : 'EmailServiceApexClass.html',
-            'url'           : 'UrlRewriterApexClass.html',
-            'empty'         : 'ApexClassNoConstructor.html',
-            'default'       : 'ApexClass.html',
-            'base'          : 'ApexClass.html'
-        },
-        'ApexTrigger'   : 'ApexTrigger.html',
-        'ApexComponent' : 'ApexComponent.html',
-        'ApexPage'      : 'ApexPage.html'
-    }
+    template_map = config.connection.get_plugin_client_setting('mm_default_apex_templates_map', {})
+    custom_templates = config.connection.get_plugin_client_setting('mm_apex_templates_map', {})
+    #merge custom and default template maps
+    for apextype in template_map:
+        if apextype in custom_templates:
+            template_map[apextype] = dict(template_map[apextype], **custom_templates[apextype])
+    #get the template name
     template_name = ''
-    if metadata_type == 'ApexClass':
-        try:
-            template_name = template_map[metadata_type][apex_class_type]
-        except:
-            template_name = template_map[metadata_type]['default']
-    else:
-        template_name = template_map[metadata_type]
-    template = env.get_template(template_name)
+    try:
+        template_name = template_map[metadata_type][apex_class_type]
+    except:
+        template_name = template_map[metadata_type]['default']
+    try:
+        custom_template_path = config.connection.get_plugin_client_setting('mm_apex_templates_dir', config.connection.get_plugin_settings_path("User", "templates"))
+        if os.path.exists(os.path.join(custom_template_path, template_name)):
+            custom_env = Environment(loader=FileSystemLoader(custom_template_path),trim_blocks=True)
+            #try to load custom
+            template = custom_env.get_template(template_name)
+        else:
+            raise Exception("Template does not exist")
+    except:
+        #load default template
+        template = env.get_template(template_name)
     file_body = template.render(api_name=api_name,object_name=apex_trigger_object_api_name)
     metadata_type = get_meta_type_by_name(metadata_type)
     os.makedirs("{0}/{1}".format(where, metadata_type['directoryName']))
@@ -354,10 +367,15 @@ def generate_ui(operation,params={}):
                         apex_classes.append(f.split(".")[0])
                 except:
                     continue
+        if "selected" in params:
+            selected = params["selected"]
+        else:
+            selected = []
         file_body = template.render(
             base_path=config.base_path,
             name=config.connection.project.project_name,
             classes=apex_classes,
+            selected=selected,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'deploy':
         tree_body = ''
@@ -558,11 +576,18 @@ def process_unit_test_result(result):
 
     results_normal = {}
     #{"foo"=>[{:name = "foobar"}{:name = "something else"}], "bar"=>[]}
-    
+    pass_fail = {}
     if 'successes' in result:
         if type(result['successes']) is not list:
             result['successes'] = [result['successes']]
         for success in result['successes']:
+            if success['name'] not in pass_fail:
+                pass_fail[success['name']] = {
+                    'fail': 0,
+                    'pass': 1
+                }
+            else:
+                pass_fail[success['name']]['pass'] += 1
             if success['name'] not in results_normal: #key isn't there yet, put it in        
                 results_normal[success['name']] = [success]
             else: #key is there, let's add metadata to it
@@ -574,6 +599,13 @@ def process_unit_test_result(result):
         if type(result['failures']) is not list:
             result['failures'] = [result['failures']]
         for failure in result['failures']:
+            if failure['name'] not in pass_fail:
+                pass_fail[failure['name']] = {
+                    'fail': 1,
+                    'pass': 0
+                }
+            else:
+                pass_fail[failure['name']]['fail'] += 1
             if failure['name'] not in results_normal: #key isn't there yet, put it in        
                 results_normal[failure['name']] = [failure]
             else: #key is there, let's add metadata to it
@@ -581,10 +613,7 @@ def process_unit_test_result(result):
                 arr.append(failure) #add the new piece of metadata
                 results_normal[failure['name']] = arr #replace the key
 
-    #TODO:
-    # failing_tests = tests.count {|test| test[:stack_trace] } || 0
-    # passing_tests = tests.count {|test| !test[:stack_trace] } || 0
-    # total_tests = passing_tests + failing_tests
+    result['pass_fail'] = pass_fail
 
     result['results_normal'] = results_normal
 
