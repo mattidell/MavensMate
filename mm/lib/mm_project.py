@@ -227,7 +227,7 @@ class MavensMateProject(object):
             mm_compile_rollback_on_error = config.connection.get_plugin_client_setting("mm_compile_rollback_on_error", False)
             deploy_params = {
                 "zip_file"          : zip_file,
-                "rollback_on_error" : False,
+                "rollback_on_error" : mm_compile_rollback_on_error,
                 "ret_xml"           : True
             }
             deploy_result = self.sfdc_client.deploy(deploy_params)
