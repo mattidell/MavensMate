@@ -243,15 +243,11 @@ class MavensMateProject(object):
                     dictionary["runTestResult"] = y
                 if(x == "success"):
                     dictionary["success"] = y
-                for a in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['messages']:
-                    #print "+++", x
-                    for key, value in a.iteritems():
-                        #print "===", a 
-                        #print "***", key, value
-                        if(key == 'problemType' and value == 'Error'):
-                            #print "### In here",  key, value
-                            dictionary2.append(a)
-                dictionary["Messages"] = dictionary2 
+            for a in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['messages']:
+                for key, value in a.iteritems():
+                    if(key == 'problemType' and value == 'Error'):
+                        dictionary2.append(a)
+            dictionary["Messages"] = dictionary2 
 
             shutil.rmtree(tmp)
             return json.dumps(dictionary, sort_keys=True, indent=2, separators=(',', ': '))
