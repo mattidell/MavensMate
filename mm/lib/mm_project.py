@@ -325,28 +325,38 @@ class MavensMateProject(object):
                 #when compiling a single class, check to see if it is newer on the server
                 if len(files) == 1 and config.connection.get_plugin_client_setting('mm_check_conflicts_on_save', False) == True:
                     apex_file_properties = self.get_apex_file_properties();
+                    filename = os.path.basename(files[0])
+
+                    error_result = {
+                        'success': False,
+                        'line': '0',
+                        'column': '0',
+                    }
+
+                    if filename not in apex_file_properties:
+                        error_result['problem'] = "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
+                        return json.dumps(error_result)
+                    elif 'conflict' in apex_file_properties[filename] and apex_file_properties[filename]['conflict'] == True:
+                        error_result['problem'] = "Uh oh, the file " + filename + " is currently marked as in conflict with the server, last updated by " + apex_file_properties[filename]['conflictLastModifiedByName'] + " on " + apex_file_properties[filename]['conflictLastModifiedDate'] + ". Please refresh this file or synchronize with the server and mark it as merged."
+                        return json.dumps(error_result)
+
                     retrieve_result = self.get_retrieve_result(params)
                     for props in retrieve_result.fileProperties:
                         if props.type != 'Package':
-                            filename = props.fileName.split('/')[-1]
                             if filename in apex_file_properties:
-                                if apex_file_properties[filename]['lastModifiedDate'] != str(props.lastModifiedDate):
-                                    result = {
-                                        'success': False,
-                                        'line': '0',
-                                        'column': '0',
-                                        'problem': "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + apex_file_properties[filename]['lastModifiedDate']
-                                    }
+                                if 'lastModifiedDate' in apex_file_properties[filename]:
+                                    lastModifiedDate = apex_file_properties[filename]['lastModifiedDate']
+                                else:
+                                    lastModifiedDate = ''
 
-                                    return json.dumps(result)
-                            else:
-                                result = {
-                                    'success': False,
-                                    'line': '0',
-                                    'column': '0',
-                                    'problem': "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
-                                }
-                                return json.dumps(result)
+                                if lastModifiedDate != str(props.lastModifiedDate):
+                                    error_result['problem'] = "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + lastModifiedDate
+                                    # mark this file as in conflict
+                                    apex_file_properties[filename]['conflict'] = True
+                                    apex_file_properties[filename]['conflictLastModifiedDate'] = str(props.lastModifiedDate)
+                                    apex_file_properties[filename]['conflictLastModifiedByName'] = str(props.lastModifiedByName)
+                                    self.write_apex_file_properties(apex_file_properties)
+                                    return json.dumps(error_result)
 
                 if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
 
@@ -366,10 +376,10 @@ class MavensMateProject(object):
                     else:
                         result = body["compileClassesResponse"]["result"]
 
-                    if result['success'] == true:
+                    if result['success'] == True:
                         self.refresh_selected_properties(params)
 
-                    return result
+                    return json.dumps(result)
             except UnicodeDecodeError:
                 #decode error, let's use the metadata api
                 pass
@@ -639,14 +649,14 @@ class MavensMateProject(object):
     def refresh_selected_properties(self, params):
         retrieve_result = self.get_retrieve_result(params)
         #take this opportunity to freshen the cache
-        self.cache_file_properties(retrieve_result.fileProperties)
+        self.cache_apex_file_properties(retrieve_result.fileProperties)
 
     #refreshes file(s) from the server
     def refresh_selected_metadata(self, params):
         try:
             retrieve_result = self.get_retrieve_result(params)
             #take this opportunity to freshen the cache
-            self.cache_file_properties(retrieve_result.fileProperties)
+            self.cache_apex_file_properties(retrieve_result.fileProperties)
             mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
 
             #TODO: handle exception that could render the project unusable bc of lost files
@@ -676,7 +686,7 @@ class MavensMateProject(object):
             apex_file_properties = {}
         return apex_file_properties
         
-    def cache_file_properties(self, properties):
+    def cache_apex_file_properties(self, properties):
         if not len(properties):
             return;
         
@@ -700,9 +710,11 @@ class MavensMateProject(object):
                 if 'manageableState' in prop:
                     fileprop['manageableState'] = prop.manageableState
                 apex_file_properties[filename] = fileprop
+        self.write_apex_file_properties(apex_file_properties)
 
+    def write_apex_file_properties(self, json_data):
         src = open(self.apex_file_properties_path, "w")
-        json_data = json.dumps(apex_file_properties, sort_keys=False, indent=4)
+        json_data = json.dumps(json_data, sort_keys=True, indent=4)
         src.write(json_data)
         src.close()
 
