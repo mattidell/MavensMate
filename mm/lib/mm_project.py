@@ -323,7 +323,7 @@ class MavensMateProject(object):
             #print retrieve_result
             try:
                 #when compiling a single class, check to see if it is newer on the server
-                if len(files) == 1 and config.connection.get_plugin_client_setting('mm_check_conflicts_on_save', False) == True:
+                if len(files) == 1 and config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False) == True:
                     apex_file_properties = self.get_apex_file_properties();
                     filename = os.path.basename(files[0])
 
