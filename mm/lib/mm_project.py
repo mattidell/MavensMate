@@ -17,6 +17,8 @@ import threading
 import time
 import collections
 import webbrowser
+import tempfile
+import subprocess
 from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
@@ -47,6 +49,7 @@ class MavensMateProject(object):
             self.project_name           = self.settings.get('project_name', os.path.basename(self.location))
             self.sfdc_session           = self.__get_sfdc_session()
             self.package                = self.location + "/src/package.xml"
+            self.apex_file_properties_path = self.location + "/config/.apex_file_properties"
             self.is_metadata_indexed    = self.get_is_metadata_indexed()
 
             config.logger.debug(self.sfdc_session)
@@ -263,12 +266,90 @@ class MavensMateProject(object):
                 pass
             return mm_util.generate_error_response(e.message)
 
+    def synchronize_selected_metadata(self, params):
+        files = params.get('files', None)
+        directories = params.get('directories', None)
+        if (len(files) != 1 and len(directories) != 1) or (len(files) ==1 and len(directories)==1):
+            return mm_util.generate_error_response("You may only synchronize one file or at a time");
+
+        is_file, is_dir = False, False
+        if len(files)==1:
+            is_file = True
+            projectpath = files[0]
+            destination = tempfile.mkstemp()
+        else:
+            is_dir = True
+            projectpath = directories[0]
+            destination = tempfile.mkdtemp()
+        #shutil.rmtree(destination+'/*')
+            
+        diffmerge = "/Applications/DiffMerge.app/Contents/Resources/diffmerge.sh"
+        if not os.path.exists(diffmerge):
+            return mm_util.generate_error_response("You must have DiffMerge installed to synchronize.");
+
+        retrieve_result = self.get_retrieve_result(params)
+        mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
+       
+        #TODO: handle exception that could render the project unusable bc of lost files
+        #replace project metadata with retrieved metadata
+        for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
+            for filename in filenames:
+                full_file_path = os.path.join(dirname, filename)
+                if '/unpackaged/package.xml' in full_file_path:
+                    continue
+
+                current_destination = destination
+                if os.path.basename(projectpath) == 'src':
+                    subdir = full_file_path.split('/')[-2]
+                    current_destination = os.path.join(destination, subdir)
+                    if not os.path.exists(current_destination):
+                        os.makedirs(current_destination)
+                elif is_file and '-meta.xml' in full_file_path:
+                    continue
+
+                shutil.move(full_file_path, current_destination)
+                projectfile = full_file_path.replace('/unpackaged', '/src')
+
+        shutil.rmtree(self.location+"/unpackaged")
+
+        subprocess.call([diffmerge, destination, projectpath])
+        return mm_util.generate_success_response("Launched diff tool")
+
     #compiles metadata
     def compile_selected_metadata(self, params):
         try:
             files = params.get('files', None)
+
+            #print retrieve_result
             try:
+                #when compiling a single class, check to see if it is newer on the server
+                if len(files) == 1 and config.connection.get_plugin_client_setting('mm_check_conflicts_on_save', False) == True:
+                    apex_file_properties = self.get_apex_file_properties();
+                    retrieve_result = self.get_retrieve_result(params)
+                    for props in retrieve_result.fileProperties:
+                        if props.type != 'Package':
+                            filename = props.fileName.split('/')[-1]
+                            if filename in apex_file_properties:
+                                if apex_file_properties[filename]['lastModifiedDate'] != str(props.lastModifiedDate):
+                                    result = {
+                                        'success': False,
+                                        'line': '0',
+                                        'column': '0',
+                                        'problem': "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + apex_file_properties[filename]['lastModifiedDate']
+                                    }
+
+                                    return json.dumps(result)
+                            else:
+                                result = {
+                                    'success': False,
+                                    'line': '0',
+                                    'column': '0',
+                                    'problem': "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
+                                }
+                                return json.dumps(result)
+
                 if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
+
                     file_path = files[0]
                     file_ext = file_path.split('.')[-1]
                     metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
@@ -278,11 +359,17 @@ class MavensMateProject(object):
                     file_body = file_body.decode("utf-8")
                     result = self.sfdc_client.compile_apex(metadata_type['xmlName'], file_body, retXml=True)
                     d = xmltodict.parse(result,postprocessor=mm_util.xmltodict_postprocessor)
-                   # print(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['changed'])
+                    body = d["soapenv:Envelope"]["soapenv:Body"]
+                    # print(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['changed'])
                     if file_ext == 'trigger':
-                        return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileTriggersResponse"]["result"])
+                        result = body["compileTriggersResponse"]["result"]
                     else:
-                        return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["compileClassesResponse"]["result"])
+                        result = body["compileClassesResponse"]["result"]
+
+                    if result['success'] == true:
+                        self.refresh_selected_properties(params)
+
+                    return result
             except UnicodeDecodeError:
                 #decode error, let's use the metadata api
                 pass
@@ -324,11 +411,13 @@ class MavensMateProject(object):
                 "ret_xml"           : True
             }
             deploy_result = self.sfdc_client.deploy(deploy_params)
+
             d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
             shutil.rmtree(tmp)
-            return json.dumps(
-                    d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
-                )
+            if result['success'] == True:
+                self.refresh_selected_properties(params)
+            return json.dumps(result)
         except Exception, e:
             print traceback.print_exc()
             try:
@@ -480,71 +569,84 @@ class MavensMateProject(object):
             #raise e
             return mm_util.generate_error_response(e.message)
 
+    def get_retrieve_result(self, params):
+
+        if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
+            self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
+        
+        if 'directories' in params and len(params['directories']) > 0 and 'files' in params and len(params['files']) > 0:
+            raise MMException("Please select either directories or files to refresh, not both")
+        elif 'directories' in params and len(params['directories']) > 0:
+            metadata = {}
+            types = []
+            for d in params['directories']:
+                basename = os.path.basename(d)
+                # refresh all if it's the project base or src directory
+                if basename == config.connection.project_name or basename == "src":
+                    data = mm_util.get_default_metadata_data();
+                    for item in data["metadataObjects"]: 
+                        if 'directoryName' in item:
+                            types.append(item['xmlName'])
+                else:
+                    metadata_type = mm_util.get_meta_type_by_dir(basename)
+                    if metadata_type:
+                        types.append(metadata_type['xmlName'])
+                        if 'childXmlNames' in metadata_type:
+                            for child in metadata_type['childXmlNames']:
+                                types.append(child)
+          
+            custom_fields = []
+            for val in self.get_package_types():
+                package_type = val['name']
+                members = val['members']
+                if package_type not in types:
+                    continue;
+
+                metadata[package_type] = members
+
+                if package_type == 'CustomObject':
+                    for member in members:
+                        if members == "*":
+                            for item in self.get_org_metadata():
+                               if item['xmlName'] == 'CustomObject':
+                                    for child in item['children']:
+                                        if not child['key'].endswith("__c"):
+                                            for props in child['children']:
+                                                if props['key'] == 'fields':
+                                                    for field in props['children']:
+                                                        custom_fields.append(child['key']+'.'+field['key'])
+                                                    break
+                                            if member != "*":
+                                                break
+                                    break
+
+                    if len(custom_fields):
+                        if 'CustomField' not in metadata:
+                            metadata['CustomField'] = []
+                        metadata['CustomField'] = list(set(metadata['CustomField']+custom_fields))
+
+            if len(metadata) == 0:
+                raise MMException("Could not find metadata types to refresh")
+        elif 'files' in params and len(params['files']) > 0:
+            metadata = mm_util.get_metadata_hash(params['files'])
+        else:
+            raise MMException("Please provide either an array of 'directories' or an array of 'files'")
+
+        #retrieves a fresh set of metadata based on the files that have been requested
+        retrieve_result = self.sfdc_client.retrieve(package=metadata)
+        return retrieve_result
+
+    def refresh_selected_properties(self, params):
+        retrieve_result = self.get_retrieve_result(params)
+        #take this opportunity to freshen the cache
+        self.cache_file_properties(retrieve_result.fileProperties)
+
     #refreshes file(s) from the server
     def refresh_selected_metadata(self, params):
         try:
-            if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
-                self.sfdc_client = MavensMateClient(credentials=self.get_creds(), override_session=True)  
-            
-            if 'directories' in params and len(params['directories']) > 0 and 'files' in params and len(params['files']) > 0:
-                raise MMException("Please select either directories or files to refresh, not both")
-            elif 'directories' in params and len(params['directories']) > 0:
-                metadata = {}
-                types = []
-                for d in params['directories']:
-                    basename = os.path.basename(d)
-                    # refresh all if it's the project base or src directory
-                    if basename == config.connection.project_name or basename == "src":
-                        data = mm_util.get_default_metadata_data();
-                        for item in data["metadataObjects"]: 
-                            if 'directoryName' in item:
-                                types.append(item['xmlName'])
-                    else:
-                        metadata_type = mm_util.get_meta_type_by_dir(basename)
-                        if metadata_type:
-                            types.append(metadata_type['xmlName'])
-                            if 'childXmlNames' in metadata_type:
-                                for child in metadata_type['childXmlNames']:
-                                    types.append(child)
-              
-                custom_fields = []
-                for val in self.get_package_types():
-                    package_type = val['name']
-                    members = val['members']
-                    if package_type in types:
-                        metadata[package_type] = members
-
-                    if package_type == 'CustomObject':
-                        for member in members:
-                            if members == "*":
-                                for item in self.get_org_metadata():
-                                   if item['xmlName'] == 'CustomObject':
-                                        for child in item['children']:
-                                            if not child['key'].endswith("__c"):
-                                                for props in child['children']:
-                                                    if props['key'] == 'fields':
-                                                        for field in props['children']:
-                                                            custom_fields.append(child['key']+'.'+field['key'])
-                                                        break
-                                                if member != "*":
-                                                    break
-                                        break
-
-                        if len(custom_fields):
-                            if 'CustomField' not in metadata:
-                                metadata['CustomField'] = []
-                            metadata['CustomField'] = list(set(metadata['CustomField']+custom_fields))
-                
-                if len(metadata) == 0:
-                    raise MMException("Could not find metadata types to refresh")
-            elif 'files' in params and len(params['files']) > 0:
-                metadata = mm_util.get_metadata_hash(params['files'])
-            else:
-                raise MMException("Please provide either an array of 'directories' or an array of 'files'")
-
-            #retrieves a fresh set of metadata based on the files that have been requested
-            retrieve_result = self.sfdc_client.retrieve(package=metadata)
-
+            retrieve_result = self.get_retrieve_result(params)
+            #take this opportunity to freshen the cache
+            self.cache_file_properties(retrieve_result.fileProperties)
             mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
 
             #TODO: handle exception that could render the project unusable bc of lost files
@@ -564,6 +666,46 @@ class MavensMateProject(object):
         except Exception, e:
             return mm_util.generate_error_response(e.message)
 
+    def get_apex_file_properties(self):
+        apex_file_properties = None
+        try:
+            apex_file_properties = mm_util.parse_json_from_file(self.apex_file_properties_path)
+        except:
+            pass
+        if apex_file_properties == None:
+            apex_file_properties = {}
+        return apex_file_properties
+        
+    def cache_file_properties(self, properties):
+        if not len(properties):
+            return;
+        
+        apex_file_properties = self.get_apex_file_properties()
+
+        for prop in properties:
+            if prop.type != "Package":
+                filename = prop.fileName.split('/')[-1];
+                fileprop = {
+                    'createdById': prop.createdById,
+                    'createdByName': prop.createdByName,
+                    'createdDate': str(prop.createdDate),
+                    'fileName': prop.fileName,
+                    'fullName': prop.fullName,
+                    'id': prop.id,
+                    'lastModifiedById': prop.lastModifiedById,
+                    'lastModifiedByName': prop.lastModifiedByName,
+                    'lastModifiedDate': str(prop.lastModifiedDate),
+                    'type': prop.type
+                }
+                if 'manageableState' in prop:
+                    fileprop['manageableState'] = prop.manageableState
+                apex_file_properties[filename] = fileprop
+
+        src = open(self.apex_file_properties_path, "w")
+        json_data = json.dumps(apex_file_properties, sort_keys=False, indent=4)
+        src.write(json_data)
+        src.close()
+
     # Open selected file on SFDC
     def open_selected_metadata(self, params):
         try:
@@ -574,22 +716,27 @@ class MavensMateProject(object):
                     open_type = "edit"
                 files = params.get("files", None)
                 if len(files) > 0:
+                    apex_file_properties = self.get_apex_file_properties()
                     opened = []
                     for fileabs in files:
+                        basename = os.path.basename(fileabs)
 
-                        # make sure we have meta data and then get the object type
-                        if os.path.isfile(fileabs+"-meta.xml"):
-                            xmldoc = minidom.parse(fileabs+"-meta.xml")
-                            root = xmldoc.firstChild
-                            object_type = root.nodeName
+                        if basename not in apex_file_properties: 
+                            # make sure we have meta data and then get the object type
+                            if os.path.isfile(fileabs+"-meta.xml"):
+                                xmldoc = minidom.parse(fileabs+"-meta.xml")
+                                root = xmldoc.firstChild
+                                object_type = root.nodeName
+                            else:
+                                continue
+
+                            object_id = self.sfdc_client.get_apex_entity_id_by_name(object_type=object_type, name=basename)
+                            if not object_id: 
+                                continue
                         else:
-                            continue
-
-                        # attempting to handle file types we don't know about yet.
-                        path = fileabs.split("/")
-                        filefull = path[-1].split(".")
-                        extension = filefull.pop()
-                        filename = ".".join(filefull)
+                            props = apex_file_properties[basename]
+                            object_type = props['type']
+                            object_id = props['id']
 
                         # only ApexClasses that are global and have webservice scope have WSDL files
                         if open_type == "wsdl":
@@ -604,20 +751,21 @@ class MavensMateProject(object):
                                 if not p.search(content): 
                                     continue
 
-                        object_id = self.sfdc_client.get_apex_entity_id_by_name(object_type=object_type, name=filename)
-                        if not object_id: 
-                            continue
-
                         # get the server instance url and set the redirect url
                         frontdoor = "https://" + self.sfdc_client.server_url.split('/')[2] + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL="
                         if open_type == "wsdl":
-                            ret_url = "/services/wsdl/class/" + filename
+                            ret_url = "/services/wsdl/class/" + basename
                         else:
-                            ret_url = "/" + object_id
+                            f, ext = os.path.splitext(basename)
+                            if object_type == "CustomObject" and not f.endswith('__c'):
+                                # standard object?
+                                ret_url = "/p/setup/layout/LayoutFieldList?type=" + f + "%23CustomFieldRelatedList_target"                             
+                            else:
+                                ret_url = "/" + object_id
 
                         # open the browser window for this file and track it
                         webbrowser.open(frontdoor+ret_url, new=2)
-                        opened.append(filename+"."+extension)
+                        opened.append(basename)
                     if len(opened) == 0:
                         return mm_util.generate_error_response("There were no valid files to open.")
                     return mm_util.generate_success_response("Opened "+(", ".join(opened))+" on server.")
@@ -779,7 +927,9 @@ class MavensMateProject(object):
             #return_list = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
             #end for testing only
 
-            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
+            # we select metadata every time, no need to do it here
+            #metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
+            
             file_body = json.dumps(metadata_with_selected_flags)
             #file_body = json.dumps(metadata_with_selected_flags, sort_keys=False, indent=4)
             src = open(self.location+"/config/.org_metadata", "w")
@@ -804,29 +954,35 @@ class MavensMateProject(object):
                             if 'children' in gchild:
                                 for ggchild in gchild['children']:
                                     ggchild['selected'] = False
-
         
         #expand standard "custombjects" to customfields
         custom_fields = []
         for val in package_types:
             metadata_type = val['name']
+            # If CustomObject is set in package.xml, look at it's members
             if metadata_type == 'CustomObject' and 'members' in val:
                 for member in val['members']:
+                    # Standard objects don't end with __c, or it's everything
                     if not member.endswith("__c") or member == "*":
-                        #standard object
+                        # We need to look up the fields for this standard object in the org metadata
                         for item in return_list:
-                           if item['xmlName'] == 'CustomObject':
+                            # CustomField is a child of CustomObject
+                            if item['xmlName'] == 'CustomObject':
+                                # Loop through all the CustomObject metadata
                                 for child in item['children']:
+                                    # Currently the standard object from the loop or everything
                                     if child['key'] == member or member == "*":
                                         for props in child['children']:
-                                            if props['key'] == 'fields':
-                                                for field in props['children']:
-                                                    custom_fields.append(child['key']+'.'+field['key'])
-                                                break
+                                            for field in props['children']:
+                                                custom_fields.append(child['key']+'.'+field['key'])
+                                        # we can break unless we want to add every field to CustomField for *
                                         if member != "*":
                                             break
+                                # we only need to look at CustomObject
                                 break
-        
+                        # go on to the next standard object
+                        continue
+
         if len(custom_fields):
             custom_field = None
             new_packages = []
