@@ -18,7 +18,7 @@ import time
 import collections
 import webbrowser
 import tempfile
-from subprocess import Popen
+import subprocess
 from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
@@ -309,7 +309,8 @@ class MavensMateProject(object):
 
         #compare retrieved metadata to local metadata
         #subprocess.call([diffmerge, destination, projectpath])
-        p = Popen([diffmerge, destination, projectpath])
+        #os.system(diffmerge+" "+destination+" "+projectpath)
+        p = subprocess.Popen([diffmerge, destination, projectpath], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return mm_util.generate_success_response("Launched diff tool")
 
     #compiles metadata
