@@ -45,7 +45,7 @@ function hideElement(id) {
 }
 
 function showLoading(message) {
-	$(".alert-message").hide();
+	//$(".alert-message").hide();
 	$("#loading_message").html(message)
 	$(".loading").fadeIn();
 }
