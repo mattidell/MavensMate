@@ -18,7 +18,7 @@ import time
 import collections
 import webbrowser
 import tempfile
-import subprocess
+from subprocess import Popen
 from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
@@ -269,19 +269,15 @@ class MavensMateProject(object):
     def synchronize_selected_metadata(self, params):
         files = params.get('files', None)
         directories = params.get('directories', None)
-        if (len(files) != 1 and len(directories) != 1) or (len(files) ==1 and len(directories)==1):
-            return mm_util.generate_error_response("You may only synchronize one file or at a time");
 
-        is_file, is_dir = False, False
         if len(files)==1:
-            is_file = True
             projectpath = files[0]
-            destination = tempfile.mkstemp()
-        else:
-            is_dir = True
+            destination = tempfile.mktemp()
+        elif len(directories)==1:
             projectpath = directories[0]
             destination = tempfile.mkdtemp()
-        #shutil.rmtree(destination+'/*')
+        else:
+            return mm_util.generate_error_response("You may only synchronize one file or at a time");
             
         diffmerge = "/Applications/DiffMerge.app/Contents/Resources/diffmerge.sh"
         if not os.path.exists(diffmerge):
@@ -290,8 +286,7 @@ class MavensMateProject(object):
         retrieve_result = self.get_retrieve_result(params)
         mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
        
-        #TODO: handle exception that could render the project unusable bc of lost files
-        #replace project metadata with retrieved metadata
+        # get metadata and copy to temp file or folder as necessary
         for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
             for filename in filenames:
                 full_file_path = os.path.join(dirname, filename)
@@ -304,7 +299,7 @@ class MavensMateProject(object):
                     current_destination = os.path.join(destination, subdir)
                     if not os.path.exists(current_destination):
                         os.makedirs(current_destination)
-                elif is_file and '-meta.xml' in full_file_path:
+                elif len(files)==1 and '-meta.xml' in full_file_path:
                     continue
 
                 shutil.move(full_file_path, current_destination)
@@ -312,7 +307,9 @@ class MavensMateProject(object):
 
         shutil.rmtree(self.location+"/unpackaged")
 
-        subprocess.call([diffmerge, destination, projectpath])
+        #compare retrieved metadata to local metadata
+        #subprocess.call([diffmerge, destination, projectpath])
+        p = Popen([diffmerge, destination, projectpath])
         return mm_util.generate_success_response("Launched diff tool")
 
     #compiles metadata
