@@ -15,3 +15,5 @@ platforms/osx/MavensMate/release/MavensMate.zip
 platforms/osx/MavensMate/build/upload_release.py
 
 mm/build/build_settings.json
+
+platforms/osx/MavensMate/MavensMate.xcodeproj/project.xcworkspace/xcuserdata/josephferraro.xcuserdatad/UserInterfaceState.xcuserstate
