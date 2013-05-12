@@ -148,7 +148,15 @@ class MavensMatePluginConnection(object):
 
             if json.loads(result)['success'] == True:
                 #opens project based on the client
-                mm_app_location = self.get_plugin_client_setting('mm_app_location')
+                client_location = self.get_plugin_client_setting('mm_plugin_client_location')
+                if client_location == None:
+                    client_location = '/Applications'
+                if self.plugin_client == self.PluginClients.SUBLIME_TEXT_2:
+                    if self.platform == 'darwin':
+                        os.system("'{0}/Sublime Text 2.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
+                elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
+                    if self.platform == 'darwin':
+                        os.system("'{1}/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
 
             return result
         except BaseException, e:
