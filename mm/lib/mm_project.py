@@ -142,7 +142,7 @@ class MavensMateProject(object):
     #creates a new piece of metadata
     def new_metadata(self, params):
         try:
-            metadata_type                   = params.get('metadata_type', 'None')
+            metadata_type                   = params.get('metadata_type', None)
             api_name                        = params.get('api_name', None)
             apex_class_type                 = params.get('apex_class_type', None)
             apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
@@ -550,12 +550,11 @@ class MavensMateProject(object):
                     if '/src/package.xml' not in full_file_path:
                         os.remove(full_file_path)
 
-            #TODO: handle exception that could render the project unusable bc of lost files
-            #replace project metadata with retrieved metadata
+            #replaces with retrieved metadata
             for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
                 for filename in filenames:
                     full_file_path = os.path.join(dirname, filename)
-                    if '/unpackaged/package.xml' in full_file_path and ('overwrite_package_xml' not in kwargs or kwargs['overwrite_package_xml'] != True):
+                    if '/unpackaged/package.xml' in full_file_path:
                         continue
                     destination = full_file_path.replace('/unpackaged/', '/src/')
                     destination_directory = os.path.dirname(destination)
@@ -563,8 +562,19 @@ class MavensMateProject(object):
                         os.makedirs(destination_directory)
                     shutil.move(full_file_path, destination)
            
-            shutil.rmtree(self.location+"/unpackaged")
+            #remove empty directories
+            for dirname, dirnames, filenames in os.walk(self.location+"/src"):
+                if dirname == self.location+"/src":
+                    continue
+                files = os.listdir(dirname)
+                if len(files) == 0:
+                    os.rmdir(dirname) 
+                    
 
+            if 'overwrite_package_xml' in kwargs and kwargs['overwrite_package_xml'] == True:
+                os.remove(self.location+"/src/package.xml")
+                shutil.move(self.location+"/unpackaged/package.xml", self.location+"/src")
+            shutil.rmtree(self.location+"/unpackaged")
             return mm_util.generate_success_response('Project Cleaned Successfully')
         except Exception, e:
             #TODO: if the clean fails, we need to have a way to ensure the project is returned to its original state
@@ -880,6 +890,8 @@ class MavensMateProject(object):
     #returns a list of all org connections for this project
     def get_org_connections(self, json=True):
         try:
+            if not os.path.exists(self.location+"/config/.org_connections"):
+                return []
             if json:
                 return open(self.location+"/config/.org_connections", "r").read()
             else:
@@ -934,7 +946,7 @@ class MavensMateProject(object):
             #end for testing only
 
             # we select metadata every time, no need to do it here
-            #metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
+            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
             
             file_body = json.dumps(metadata_with_selected_flags)
             #file_body = json.dumps(metadata_with_selected_flags, sort_keys=False, indent=4)

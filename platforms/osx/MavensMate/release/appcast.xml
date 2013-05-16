@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>MavensMate Changelog</title>
+      <link>http://joe-ferraro.com/mavensmate/appcast.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 0.33</title>
+						<description><![CDATA[
+                <h2>Version 0.33</h2>
+                <p>This update, which contains various bug fixes, is highly recommended.</p>
+            ]]>
+            </description>
+            <pubDate>Thu, 16 May 2013 06:55:30 +0000</pubDate>
+            <enclosure url="http://joe-ferraro.com/mavensmate/MavensMate.zip" sparkle:version="0.33" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFAo73coZgMFSjMTbE08fmaRuWFyVAhQPXAxDl8iNm1uyM59dZO3ZVUZ6mA==" />
+         </item>
+   </channel>
+</rss>

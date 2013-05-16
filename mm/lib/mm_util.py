@@ -50,19 +50,20 @@ template_path = config.base_path + "/lib/templates"
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
 def parse_json_from_file(location):
+    if not os.path.exists(location):
+        return {}
     try:
-        if os.path.exists(location):
-            json_data = open(location)
-            if json_data:
-                data = json.load(json_data)
-                json_data.close()
-                return data
-        else:
-            return {}
+        json_data = open(location)
+        if json_data:
+            data = json.load(json_data)
+            json_data.close()
+            return data
     except:
         return parse_json(location)
 
 def parse_xml_from_file(location):
+    if not os.path.exists(location):
+        return {}
     try:
         xml_data = open(location)
         data = xmltodict.parse(xml_data,postprocessor=xmltodict_postprocessor)

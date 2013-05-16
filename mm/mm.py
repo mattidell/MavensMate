@@ -127,7 +127,7 @@ def setup_connection(args):
             params=request_payload,
             operation=args.operation)
 
-# echo '{ "username" : "joeferraro4@force.com", "password" : "352198", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
+# echo '{ "username" : "", "password" : "", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():
     client = MavensMateClient(credentials={
         "sid"                   : request_payload.get('sid', None),
