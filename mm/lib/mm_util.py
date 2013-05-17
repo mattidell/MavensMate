@@ -146,14 +146,17 @@ def zip_directory(directory_to_zip, where_to_put_zip_file=tempfile.gettempdir(),
         return base64_zip
 
 def extract_base64_encoded_zip(encoded, where_to_extract):
+    zip_path = os.path.join(where_to_extract,"metadata.zip")
     #write file to disk
     data = base64.b64decode(encoded)
-    src = open(where_to_extract+"/metadata.zip", "w")
+    src = open(zip_path, "w")
     src.write(data)
     src.close()
-    #extract file from disk
-    with zipfile.ZipFile(where_to_extract+"/metadata.zip", "r") as z:
-        z.extractall(where_to_extract)
+    #extract file from disk - z.extractall(where_to_extract) fails with non ascii chars
+    f = zipfile.ZipFile(zip_path, 'r')
+    for fileinfo in f.infolist():
+        outputfile = open(os.path.join(where_to_extract, fileinfo.filename.decode('utf8')), "wb")
+        shutil.copyfileobj(f.open(fileinfo.filename), outputfile)
     #remove zip file
     os.remove(where_to_extract+"/metadata.zip")
 
