@@ -16,6 +16,7 @@ class MavensMatePluginConnection(object):
     PluginClients = enum(SUBLIME_TEXT_2='SUBLIME_TEXT_2', SUBLIME_TEXT_3='SUBLIME_TEXT_3', NOTEPAD_PLUS_PLUS='NOTEPAD_PLUS_PLUS', TEXTMATE='TEXTMATE')
     
     def __init__(self, params={}, **kwargs):
+        config.connection = self
         params = dict(params.items() + kwargs.items())
         self.operation              = params.get('operation', None)
         self.platform               = sys.platform
