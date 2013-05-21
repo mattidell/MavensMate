@@ -478,6 +478,8 @@ class MavensMateProject(object):
                         metapath = os.path.join(config.connection.project_location, "src", directory, f + '-meta.xml')
                         os.remove(filepath)
                         os.remove(metapath)
+                        # remove the entry in file properties
+                        self.remove_apex_file_property(f)
                         removed.append(f)
                     except Exception, e:
                         print e.message
@@ -523,6 +525,7 @@ class MavensMateProject(object):
                 return mm_util.generate_error_response(clean_result['body'])
         except Exception as e:
             return mm_util.generate_error_response(e.message)
+
 
     #reverts a project to the server state based on the existing package.xml
     def clean(self, **kwargs):
@@ -689,6 +692,12 @@ class MavensMateProject(object):
         if apex_file_properties == None:
             apex_file_properties = {}
         return apex_file_properties
+
+    def remove_apex_file_property(self, apex_file):
+        props = self.get_apex_file_properties();
+        if apex_file in props:
+            del props[apex_file]
+        self.write_apex_file_properties(props)    
         
     def cache_apex_file_properties(self, properties):
         if not len(properties):
@@ -1157,7 +1166,6 @@ class MavensMateProject(object):
                 self.__put_overlays_file(overlays)
                 return mm_util.generate_success_response('Apex Execution Overlays Successfully Indexed to config/.overlays')
         except BaseException, e:
-            raise e
             return mm_util.generate_error_response(e.message)
 
     def new_apex_overlay(self, payload):
