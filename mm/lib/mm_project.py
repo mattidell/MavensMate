@@ -175,18 +175,31 @@ class MavensMateProject(object):
             }
             deploy_result = self.sfdc_client.deploy(deploy_params)
             d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+            meta_dir = ""
+            params['files'] = []
+            path = None
             for dirname, dirnames, filenames in os.walk(tmp_unpackaged):
                 for filename in filenames:
                     if 'package.xml' in filename:
                         continue
                     full_file_path = os.path.join(dirname, filename)
-                    extension = filename.split(".")[1]
+                    extension = filename.split(".")[-1]
                     mt = mm_util.get_meta_type_by_suffix(extension)
-                    if not os.path.exists(self.location+"/src/"+mt['directoryName']):
-                        os.makedirs(self.location+"/src/"+mt['directoryName'])
-                    shutil.copy(full_file_path, self.location+"/src/"+mt['directoryName'])
+                    if mt != None: 
+                        meta_dir = mt['directoryName']
+                        path = os.path.join(self.location, 'src', meta_dir)
+                        if not os.path.exists(path):
+                            os.makedirs(path)
+                        params['files'].append(os.path.join(path, filename))
+                    elif extension != "xml":
+                        continue;
+                    # only apex files and meta.xml files should make it to here
+                    shutil.copy(full_file_path, path)
             shutil.rmtree(tmp)
+            
             self.__update_package_xml_with_metadata(metadata_type, api_name)
+            self.refresh_selected_properties(params)
+
             return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'])
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
@@ -245,21 +258,26 @@ class MavensMateProject(object):
 
             dictionary = collections.OrderedDict()
             dictionary2 = []
+
+            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
             
-            for x, y in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'].iteritems():
+            for x, y in result.iteritems():
                 if(x == "id"):
                     dictionary["id"] = y
                 if(x == "runTestResult"):
                     dictionary["runTestResult"] = y
                 if(x == "success"):
                     dictionary["success"] = y
-            for a in d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['messages']:
+            for a in result['messages']:
                 for key, value in a.iteritems():
                     if(key == 'problemType' and value == 'Error'):
                         dictionary2.append(a)
             dictionary["Messages"] = dictionary2 
 
             shutil.rmtree(tmp)
+
+            self.refresh_selected_properties({'project_name':self.project_name, 'directories': [os.path.join(self.location, 'src')]})
+
             return json.dumps(dictionary, sort_keys=True, indent=2, separators=(',', ': '))
             #return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'], sort_keys=True, indent=2, separators=(',', ': '))
         except BaseException, e:
@@ -311,8 +329,6 @@ class MavensMateProject(object):
         shutil.rmtree(self.location+"/unpackaged")
 
         #compare retrieved metadata to local metadata
-        #subprocess.call([diffmerge, destination, projectpath])
-        #os.system(diffmerge+" "+destination+" "+projectpath)
         p = subprocess.Popen([diffmerge, destination, projectpath], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return mm_util.generate_success_response("Launched diff tool")
 
@@ -359,8 +375,8 @@ class MavensMateProject(object):
                                     self.write_apex_file_properties(apex_file_properties)
                                     return json.dumps(error_result)
 
+                #no conflicts, compile
                 if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
-
                     file_path = files[0]
                     file_ext = file_path.split('.')[-1]
                     metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
@@ -377,6 +393,7 @@ class MavensMateProject(object):
                     else:
                         result = body["compileClassesResponse"]["result"]
 
+                    # Get new properties for the files we just compiled
                     if result['success'] == True:
                         self.refresh_selected_properties(params)
 
@@ -426,11 +443,14 @@ class MavensMateProject(object):
             d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
             result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
             shutil.rmtree(tmp)
+
+            # Get new properties for the files we just compiled
             if result['success'] == True:
                 self.refresh_selected_properties(params)
+
             return json.dumps(result)
+
         except Exception, e:
-            print traceback.print_exc()
             try:
                 shutil.rmtree(tmp)
             except:
