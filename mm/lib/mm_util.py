@@ -155,7 +155,14 @@ def extract_base64_encoded_zip(encoded, where_to_extract):
     #extract file from disk - z.extractall(where_to_extract) fails with non ascii chars
     f = zipfile.ZipFile(zip_path, 'r')
     for fileinfo in f.infolist():
-        outputfile = open(os.path.join(where_to_extract, fileinfo.filename.decode('utf8')), "wb")
+        path = where_to_extract
+        directories = fileinfo.filename.decode('utf8').split('/')
+        for directory in directories:
+            path = os.path.join(path, directory)
+            if directory == directories[-1]: break # the file
+            if not os.path.exists(path):
+                os.makedirs(path)
+        outputfile = open(path, "wb")
         shutil.copyfileobj(f.open(fileinfo.filename), outputfile)
     #remove zip file
     os.remove(where_to_extract+"/metadata.zip")
