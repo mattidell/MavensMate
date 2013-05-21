@@ -770,7 +770,8 @@ class MavensMateProject(object):
                         # get the server instance url and set the redirect url
                         frontdoor = "https://" + self.sfdc_client.server_url.split('/')[2] + "/secur/frontdoor.jsp?sid=" + self.sfdc_client.sid + "&retURL="
                         if open_type == "wsdl":
-                            ret_url = "/services/wsdl/class/" + basename
+                            f, e = os.path.splitext(basename)
+                            ret_url = "/services/wsdl/class/" + f
                         else:
                             f, ext = os.path.splitext(basename)
                             if object_type == "CustomObject" and not f.endswith('__c'):
