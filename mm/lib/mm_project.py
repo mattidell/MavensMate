@@ -154,7 +154,14 @@ class MavensMateProject(object):
                 return mm_util.generate_error_response("You must provide a name for the new metadata.")
 
             if self.sfdc_client.does_metadata_exist(object_type=metadata_type, name=api_name) == True:
-                return mm_util.generate_error_response("This API name is already in use in your org")      
+                mt = mm_util.get_meta_type_by_name(metadata_type)
+                filepath = os.path.join(self.location, 'src', mt['directoryName'], api_name+'.'+mt['suffix'])
+                fetched = ""
+                if not os.path.exists(filepath):
+                    params['files'] = [filepath]
+                    self.refresh_selected_metadata(params)
+                    fetched = ", fetched metadata file from server"
+                return mm_util.generate_error_response("This API name is already in use in your org" + fetched + ".")      
 
             tmp, tmp_unpackaged = mm_util.put_tmp_directory_on_disk(True)
             mm_util.put_skeleton_files_on_disk(metadata_type, api_name, tmp_unpackaged, apex_class_type, apex_trigger_object_api_name)
