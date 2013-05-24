@@ -1414,15 +1414,25 @@ class MavensMateProject(object):
             creds['server_url']             = self.sfdc_session.get('server_url', None)
         return creds
 
+
+    def __log_anonymous_apex(self, apex_body):
+        if not os.path.exists(os.path.join(self.location, "apex-scripts")):
+            os.makedirs(os.path.join(self.location, "apex-scripts"))
+        src = open(os.path.join(self.location, "apex-scripts", mm_util.get_timestamp()), "w")
+        src.write(apex_body)
+        src.close()
+
     #write a file containing the MavensMate settings for the project
-    def __put_settings_file(self):
-        settings = {
-            "project_name"  : self.project_name,
-            "username"      : self.username,
-            "environment"   : self.org_type,
-            "namespace"     : self.sfdc_client.get_org_namespace(),
-            "id"            : self.id
-        }
+    def __put_settings_file(self, settings=None):
+        if settings == None:
+            settings = {
+                "project_name"          : self.project_name,
+                "username"              : self.username,
+                "environment"           : self.org_type,
+                "namespace"             : self.sfdc_client.get_org_namespace(),
+                "id"                    : self.id,
+                "metadata_container"    : self.sfdc_client.get_metadata_container_id()
+            }
         src = open(config.connection.workspace+"/"+self.project_name+"/config/.settings", "w")
         json_data = json.dumps(settings, sort_keys=False, indent=4)
         src.write(json_data)
