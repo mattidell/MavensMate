@@ -310,11 +310,30 @@ class MavensMateProject(object):
         return mm_util.generate_success_response("Launched diff tool")
 
     #compiles metadata
-    def compile_selected_metadata(self, params):
-        try:
-            files = params.get('files', None)
+    def compile_selected_metadata(self, params):        
+        files = params.get('files', None)
 
-            #print retrieve_result
+        use_tooling_api = config.connection.get_plugin_client_setting('mm_compile_with_tooling_api', False)
+        
+        if use_tooling_api == True:
+            if 'metadata_container' not in self.settings:
+                container_id = self.sfdc_client.get_metadata_container_id()
+                new_settings = self.settings
+                new_settings['metadata_container'] = container_id
+                self.__put_settings_file(new_settings)
+            else:
+                container_id = self.settings['metadata_container']
+            
+            file_ext = files[0].split('.')[-1]
+
+            #use tooling api here, if possible
+            if len(files) == 1 and file_ext in mm_util.TOOLING_API_EXTENSIONS:
+                result = self.sfdc_client.compile_with_tooling_api(files[0], container_id)
+                if 'Id' in result and 'State' in result:
+                    return mm_util.generate_response(result)
+
+        try:
+            #this first try goes to the apex api
             try:
                 #when compiling a single class, check to see if it is newer on the server
                 if len(files) == 1 and config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False) == True:
@@ -807,6 +826,10 @@ class MavensMateProject(object):
             }
             if 'log' in execute_result:
                 result['log'] = execute_result['log']
+            if result['success']:
+                log_apex = config.connection.get_plugin_client_setting('mm_log_anonymous_apex', False)
+                if log_apex:
+                    self.__log_anonymous_apex(params['body'])
             return mm_util.generate_response(result)
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
