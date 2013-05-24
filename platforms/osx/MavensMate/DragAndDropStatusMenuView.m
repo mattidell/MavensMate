@@ -48,7 +48,7 @@
                                                            operation:NSCompositeSourceOver
                                                             fraction:1];
     } else {
-        [[NSImage imageNamed:@"MavensMateMenuBarIconNew"] drawInRect:dirtyRect
+        [[NSImage imageNamed:@"mm-2-triangle"] drawInRect:dirtyRect
                                                             fromRect:rect
                                                            operation:NSCompositeSourceOver
                                                             fraction:1];

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */; };
 		461E5B8916FCA9CF000DA2DD /* StatusMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8816FCA9CF000DA2DD /* StatusMenu.xib */; };
 		461E5B8D16FCAAA6000DA2DD /* Loading.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8C16FCAAA6000DA2DD /* Loading.xib */; };
 		461E5B8F16FCAAC6000DA2DD /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 461E5B8E16FCAAC6000DA2DD /* Alert.xib */; };
@@ -25,10 +24,11 @@
 		46A3909916EDE46A008B5C2C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3909816EDE46A008B5C2C /* AppDelegate.m */; };
 		46A390C316EDF386008B5C2C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 46A390C216EDF386008B5C2C /* Credits.rtf */; };
 		46A390C516EDF392008B5C2C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 46A390C416EDF392008B5C2C /* InfoPlist.strings */; };
-		46A390CD16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46A390CC16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png */; };
 		46A390D116EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46A390D016EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png */; };
-		46A3929516EE3669008B5C2C /* MavensMateWindowServer.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46A3929416EE3669008B5C2C /* MavensMateWindowServer.icns */; };
 		46A392A016EE4BFE008B5C2C /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 46A3929F16EE4BFE008B5C2C /* dsa_pub.pem */; };
+		46CF1690174C0AE9002DC516 /* mm-3-osx.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46CF168F174C0AE9002DC516 /* mm-3-osx.icns */; };
+		46CF169A174C0E41002DC516 /* mm-2-triangle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46CF1699174C0E41002DC516 /* mm-2-triangle@2x.png */; };
+		46CF16A6174CAFF5002DC516 /* mm-2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46CF16A5174CAFF5002DC516 /* mm-2.icns */; };
 		46DC902816F12F25005ED324 /* mmserver in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902716F12F25005ED324 /* mmserver */; };
 		46DC902A16F12F32005ED324 /* mm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902916F12F32005ED324 /* mm */; };
 		46DC902C16F12F79005ED324 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46DC902B16F12F79005ED324 /* Sparkle.framework */; };
@@ -63,7 +63,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MavensMateIcon@2x.png"; sourceTree = "<group>"; };
 		461E5B8816FCA9CF000DA2DD /* StatusMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StatusMenu.xib; sourceTree = "<group>"; };
 		461E5B8C16FCAAA6000DA2DD /* Loading.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loading.xib; sourceTree = "<group>"; };
 		461E5B8E16FCAAC6000DA2DD /* Alert.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
@@ -93,10 +92,11 @@
 		46A3909816EDE46A008B5C2C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		46A390C216EDF386008B5C2C /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		46A390C416EDF392008B5C2C /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = "<group>"; };
-		46A390CC16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MavensMateMenuBarIconNew@2x.png"; sourceTree = "<group>"; };
 		46A390D016EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MavensMateMenuBarIconHighlightedWhite@2x.png"; sourceTree = "<group>"; };
-		46A3929416EE3669008B5C2C /* MavensMateWindowServer.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = MavensMateWindowServer.icns; sourceTree = "<group>"; };
 		46A3929F16EE4BFE008B5C2C /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
+		46CF168F174C0AE9002DC516 /* mm-3-osx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "mm-3-osx.icns"; sourceTree = "<group>"; };
+		46CF1699174C0E41002DC516 /* mm-2-triangle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mm-2-triangle@2x.png"; sourceTree = "<group>"; };
+		46CF16A5174CAFF5002DC516 /* mm-2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "mm-2.icns"; sourceTree = "<group>"; };
 		46DC902716F12F25005ED324 /* mmserver */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mmserver; path = ../../../mmserver/dist/mmserver; sourceTree = "<group>"; };
 		46DC902916F12F32005ED324 /* mm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mm; path = ../../../mm/dist/mm; sourceTree = "<group>"; };
 		46DC902B16F12F79005ED324 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
@@ -166,6 +166,7 @@
 		46A3907916EDE46A008B5C2C = {
 			isa = PBXGroup;
 			children = (
+				46CF168F174C0AE9002DC516 /* mm-3-osx.icns */,
 				461E5B8716FCA9A5000DA2DD /* Controller */,
 				461E5B8616FCA998000DA2DD /* View */,
 				461E5B8516FCA98F000DA2DD /* Model */,
@@ -233,10 +234,9 @@
 		46A390A316EDEC07008B5C2C /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				461E5B8316FA6180000DA2DD /* MavensMateIcon@2x.png */,
+				46CF1699174C0E41002DC516 /* mm-2-triangle@2x.png */,
 				462388AB16FA21C800826160 /* Sublime_Text_Logo.png */,
 				46A390D016EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png */,
-				46A390CC16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png */,
 			);
 			name = Graphics;
 			sourceTree = "<group>";
@@ -244,8 +244,8 @@
 		46A3925716EE061E008B5C2C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				46CF16A5174CAFF5002DC516 /* mm-2.icns */,
 				46A3929F16EE4BFE008B5C2C /* dsa_pub.pem */,
-				46A3929416EE3669008B5C2C /* MavensMateWindowServer.icns */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -305,18 +305,18 @@
 			files = (
 				46A390C316EDF386008B5C2C /* Credits.rtf in Resources */,
 				46A390C516EDF392008B5C2C /* InfoPlist.strings in Resources */,
-				46A390CD16EDF4E5008B5C2C /* MavensMateMenuBarIconNew@2x.png in Resources */,
 				46A390D116EDF5CC008B5C2C /* MavensMateMenuBarIconHighlightedWhite@2x.png in Resources */,
-				46A3929516EE3669008B5C2C /* MavensMateWindowServer.icns in Resources */,
 				46A392A016EE4BFE008B5C2C /* dsa_pub.pem in Resources */,
 				462388AC16FA21C800826160 /* Sublime_Text_Logo.png in Resources */,
-				461E5B8416FA6180000DA2DD /* MavensMateIcon@2x.png in Resources */,
 				461E5B8916FCA9CF000DA2DD /* StatusMenu.xib in Resources */,
 				461E5B8D16FCAAA6000DA2DD /* Loading.xib in Resources */,
 				461E5B8F16FCAAC6000DA2DD /* Alert.xib in Resources */,
 				461E5BA016FCBA3A000DA2DD /* MainMenu.xib in Resources */,
 				467592DC170039D1007BC4D4 /* About.xib in Resources */,
 				46FEB9521707019A00515A23 /* PluginViews.xib in Resources */,
+				46CF1690174C0AE9002DC516 /* mm-3-osx.icns in Resources */,
+				46CF169A174C0E41002DC516 /* mm-2-triangle@2x.png in Resources */,
+				46CF16A6174CAFF5002DC516 /* mm-2.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
