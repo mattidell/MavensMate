@@ -12,6 +12,8 @@ import urllib
 from suds.client import Client
 from lib.mm_connection import MavensMatePluginConnection
 from lib.mm_client import MavensMateClient
+from lib.mm_exceptions import MMException
+
 
 request_payload = util.get_request_payload()
 #config.logger.debug('\n\n\n>>>>>>>>\nhandling request with payload >>>>>')
@@ -222,6 +224,13 @@ def deploy_to_server(args):
 # echo '{ "username" : "mm@force.com", "password" : "force", "org_type" : "developer" }' | joey2 mavensmate.py -o 'get_active_session'
 def get_active_session():
     try:
+        if 'username' not in request_payload or request_payload['username'] == None or request_payload['username'] == '':
+            raise MMException('Please enter a Salesforce.com username')
+        if 'password' not in request_payload or request_payload['password'] == None or request_payload['password'] == '':
+            raise MMException('Please enter a Salesforce.com password')
+        if 'org_type' not in request_payload or request_payload['org_type'] == None or request_payload['org_type'] == '':
+            raise MMException('Please select an org type')
+
         client = MavensMateClient(credentials={
             "username" : request_payload['username'],
             "password" : request_payload['password'],
