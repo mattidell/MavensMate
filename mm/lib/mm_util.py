@@ -11,6 +11,7 @@ import random
 import base64
 import zipfile
 import time
+import datetime
 import threading
 import sys
 import re
@@ -22,7 +23,9 @@ import jinja2.ext
 import jinja2htmlcompress
 from jinja2htmlcompress import HTMLCompress
 
-SFDC_API_VERSION = "26.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
+TOOLING_API_EXTENSIONS = ['cls', 'trigger', 'page', 'component']
+
+SFDC_API_VERSION = "27.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
 
 PRODUCTION_ENDPOINT = "https://www.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
 SANDBOX_ENDPOINT    = "https://test.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
@@ -48,6 +51,11 @@ URL_TO_ENDPOINT_TYPE = {
 template_path = config.base_path + "/lib/templates"
 
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
+
+
+def get_timestamp():
+    ts = time.time()
+    return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H:%M:%S')
 
 def parse_json_from_file(location):
     if not os.path.exists(location):
@@ -318,6 +326,7 @@ def parse_manifest(location):
 def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
+    env.globals['play_sounds'] = play_sounds
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -451,6 +460,9 @@ def generate_html_response(operation, obj, params):
         html = template.render(metadata=org_metadata)
     return html
 
+def play_sounds():
+    return config.connection.get_plugin_client_setting('mm_play_sounds', False)
+
 def does_file_exist(api_name, metadata_type_name):
     metadata_type = get_meta_type_by_name(metadata_type_name)
     if os.path.isfile(config.connection.project.location+"/src/"+metadata_type['directoryName']+"/"+api_name+"."+metadata_type['suffix']):
@@ -547,13 +559,13 @@ def process_unit_test_result(result):
                     percent_covered = int(round(100 * ((float(locations) - float(locations_not_covered)) / locations)))
                 coverage_result['percentCovered'] = percent_covered
                 if percent_covered < 40:
-                    coverage_result['coverageLevel'] = 'low'
+                    coverage_result['coverageLevel'] = 'danger'
                 elif percent_covered >= 40 and percent_covered < 75:
-                    coverage_result['coverageLevel'] = 'medium'
+                    coverage_result['coverageLevel'] = 'warning'
                 elif percent_covered >= 75:
-                    coverage_result['coverageLevel'] = 'high'
+                    coverage_result['coverageLevel'] = 'success'
                 else:
-                    coverage_result['coverageLevel'] = ''
+                    coverage_result['coverageLevel'] = 'info'
 
             if 'type' in coverage_result:
                 if coverage_result['type'] == 'Trigger':
