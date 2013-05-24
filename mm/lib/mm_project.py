@@ -388,7 +388,7 @@ class MavensMateProject(object):
                     continue
                 file_ext = f.split('.')[-1]
                 metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
-                if metadata_type['metaFile'] == True:
+                if metadata_type != None and 'metaFile' in metadata_type and metadata_type['metaFile'] == True:
                     corresponding_file = f + '-meta.xml'
                     if corresponding_file not in files:
                         files.append(corresponding_file)
