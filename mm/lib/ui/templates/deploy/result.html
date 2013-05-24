@@ -1,15 +1,16 @@
-<ul class="tabs deploy_wrapper_tabs">
+<ul class="nav nav-tabs nav-append-content tabs-below deploy_wrapper_tabs">
 	{% for destination in args['destinations'] %}
 		{% if loop.first == True  %}
-		<li class="active"><a href="#result-{{ loop.index0 }}">{{ destination['username'] }}</a></li>
+		<li class="active"><a href="#result-{{ loop.index0 }}" data-toggle="tab">{{ destination['username'] }}</a></li>
 		{% else %}
-		<li class=""><a href="#result-{{ loop.index0 }}">{{ destination['username'] }}</a></li>
+		<li class=""><a href="#result-{{ loop.index0 }}" data-toggle="tab">{{ destination['username'] }}</a></li>
 		{% endif %}
 	{% endfor %}
 </ul>
-<div class="pill-content" id="deploy_result_wrapper">
+
+<div class="tab-content tab-content-nested" id="deploy_result_wrapper">
 {% for result in deploy_results %}
-<div class="result_wrapper" style="padding:10px;">
+<div class="tab-pane result_wrapper" style="padding:10px;">
 	{% if result['success'] == True %}
 		<div class="alert-message success">
 			{% if args['is_check_only'] == True %}
@@ -63,7 +64,7 @@
 							{% if message['success'] == False %}
 								{{ message['problem'] }} 
 								{% if 'lineNumber' in message %}
-									[Line: {{ message['lineNumber'] }}, Column: {{ message['columnNumber'] }}]
+									[Line: {{ message['lineNumber'] }}, Column: {% if 'columnNumber' in message %}{{ message['columnNumber'] }}{% endif %}]
 								{% endif %}
 							{% endif %}
 						</td>
@@ -180,5 +181,10 @@
 		i++
 	})
 	$('#deploy_result_wrapper div').first().addClass("active")
-	$('.tabs.deploy_wrapper_tabs').tabs()
+	//$('.tabs.deploy_wrapper_tabs').tabs()
+
+	$('.deploy_wrapper_tabs a').click(function (e) {
+		e.preventDefault();
+	  	$(this).tab('show');
+	})
 </script>

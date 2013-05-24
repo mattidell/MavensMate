@@ -31,6 +31,10 @@ function hideElement(id) {
 	$("#"+id).hide();
 }
 
+function toggleRunningIndicator() {
+	$(".running_indicator").toggle();
+}
+
 function showLoading(message) {
 	$(".twipsy").height($(window).height())
 	$(".twipsy").width($(window).width())
