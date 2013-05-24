@@ -23,9 +23,7 @@ from sforce.metadata import SforceMetadataClient
 from sforce.apex import SforceApexClient
 from sforce.tooling import SforceToolingClient
 
-wsdl_path = config.base_path + "/lib/wsdl"
-#if config.frozen:
-#   wsdl_path = config.base_path
+#wsdl_path = config.base_path + "/lib/wsdl"
 
 class MavensMateClient(object):
 
@@ -548,8 +546,15 @@ class MavensMateClient(object):
         return "https://{0}.salesforce.com/services/data/v{1}/tooling".format(pod, mm_util.SFDC_API_VERSION)
 
     def __get_partner_client(self):
+        wsdl_location = os.path.join(mm_util.WSDL_PATH, 'partner.xml')
+        try:
+            if os.path.exists(os.path.join(config.connection.project.location,'config','partner.xml')):
+                wsdl_location = os.path.join(config.connection.project.location,'config','partner.xml')
+        except:
+            pass
+
         return SforcePartnerClient(
-            wsdl_path+'/partner.xml', 
+            wsdl_location, 
             apiVersion=mm_util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
@@ -557,8 +562,15 @@ class MavensMateClient(object):
             server_url=self.endpoint)
 
     def __get_metadata_client(self):
+        wsdl_location = os.path.join(mm_util.WSDL_PATH, 'metadata.xml')
+        try:
+           if os.path.exists(os.path.join(config.connection.project.location,'config','metadata.xml')):
+               wsdl_location = os.path.join(config.connection.project.location,'config','metadata.xml')
+        except:
+           pass
+
         return SforceMetadataClient(
-            wsdl_path+'/metadata.xml', 
+            wsdl_location, 
             apiVersion=mm_util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
@@ -566,8 +578,15 @@ class MavensMateClient(object):
             server_url=self.endpoint)
 
     def __get_apex_client(self):
+        wsdl_location = os.path.join(mm_util.WSDL_PATH, 'apex.xml')
+        try:
+            if os.path.exists(os.path.join(config.connection.project.location,'config','apex.xml')):
+                wsdl_location = os.path.join(config.connection.project.location,'config','apex.xml')
+        except:
+            pass
+
         return SforceApexClient(
-            wsdl_path+'/apex.xml', 
+            wsdl_location, 
             apiVersion=mm_util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
@@ -575,8 +594,15 @@ class MavensMateClient(object):
             server_url=self.endpoint)
 
     def __get_tooling_client(self):
+        wsdl_location = os.path.join(mm_util.WSDL_PATH, 'tooling.xml')
+        try:
+            if os.path.exists(os.path.join(config.connection.project.location,'config','tooling.xml')):
+                wsdl_location = os.path.join(config.connection.project.location,'config','tooling.xml')
+        except:
+            pass
+
         return SforceToolingClient(
-            wsdl_path+'/tooling.xml', 
+            wsdl_location, 
             apiVersion=mm_util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 

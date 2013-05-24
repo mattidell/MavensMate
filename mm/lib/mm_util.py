@@ -35,6 +35,8 @@ PRODUCTION_ENDPOINT_SHORT = "https://www.salesforce.com"
 SANDBOX_ENDPOINT_SHORT    = "https://test.salesforce.com"
 PRERELEASE_ENDPOINT_SHORT = "https://prerellogin.pre.salesforce.com"
 
+WSDL_PATH = config.base_path + "/lib/wsdl" #this can be overridden by client settings or request parameter
+
 ENDPOINTS = {
     "production" : PRODUCTION_ENDPOINT,
     "developer"  : PRODUCTION_ENDPOINT,

@@ -19,6 +19,7 @@ import sys
 import os.path
 import re
 import lib.config as config
+import lib.mm_util as mm_util
 from suds.plugin import MessagePlugin
 from suds.client import Client
 from suds.xsd.doctor import Import, ImportDoctor
@@ -130,7 +131,7 @@ class SforceBaseClient(object):
         api_version = kwargs['apiVersion']
       self._apiVersion = api_version
     else:
-      self._apiVersion = 26.0
+      self._apiVersion = 27.0
 
     # Set HTTP headers
     headers = {'User-Agent': 'Salesforce/' + self._product + '/' + '.'.join(str(x) for x in self._version)}
@@ -139,7 +140,7 @@ class SforceBaseClient(object):
     # 'Accept-Encoding': 'gzip, deflate'
 
     if kwargs.has_key('environment') and 'sandbox' in kwargs['environment']:
-      self._setEndpoint("https://test.salesforce.com/services/Soap/u/25.0")
+      self._setEndpoint("https://test.salesforce.com/services/Soap/u/"+mm_util.SFDC_API_VERSION)
     
 
     self._sforce.set_options(headers = headers)
