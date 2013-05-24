@@ -53,6 +53,9 @@
 	display: none;
 }
 
+.ace_print-margin-layer {
+	display: none;
+}
 
 #mmlogo {
 	margin-left: 0;
