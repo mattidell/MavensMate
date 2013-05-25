@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
-		<string key="IBDocument.SystemVersion">12C3012</string>
+		<string key="IBDocument.SystemVersion">12D78</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1187.34</string>
-		<string key="IBDocument.HIToolboxVersion">625.00</string>
+		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			<string key="NS.object.0">3084</string>
@@ -90,7 +90,7 @@
 					</object>
 					<object class="NSMenuItem" id="276061610">
 						<reference key="NSMenu" ref="259411960"/>
-						<string key="NSTitle">About MavensMate</string>
+						<string key="NSTitle">About mavensmate</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="1042213074"/>
@@ -98,7 +98,7 @@
 					</object>
 					<object class="NSMenuItem" id="658429942">
 						<reference key="NSMenu" ref="259411960"/>
-						<string key="NSTitle">Quit MavensMate</string>
+						<string key="NSTitle">Quit mavensmate</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="1042213074"/>

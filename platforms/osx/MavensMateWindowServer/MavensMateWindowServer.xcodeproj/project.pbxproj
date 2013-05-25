@@ -13,8 +13,8 @@
 		46A3927D16EE2B6A008B5C2C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 46A3927B16EE2B6A008B5C2C /* Credits.rtf */; };
 		46A3928016EE2B6A008B5C2C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A3927F16EE2B6A008B5C2C /* AppDelegate.m */; };
 		46A3928316EE2B6A008B5C2C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 46A3928116EE2B6A008B5C2C /* MainMenu.xib */; };
-		46A3928B16EE2C83008B5C2C /* MavensMateWindowServer.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46A3928A16EE2C83008B5C2C /* MavensMateWindowServer.icns */; };
 		46A3928D16EE2E45008B5C2C /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46A3928C16EE2E45008B5C2C /* WebKit.framework */; };
+		46CF16A4174CABF6002DC516 /* mm-2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46CF16A3174CABF6002DC516 /* mm-2.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,8 +31,8 @@
 		46A3927E16EE2B6A008B5C2C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		46A3927F16EE2B6A008B5C2C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		46A3928216EE2B6A008B5C2C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		46A3928A16EE2C83008B5C2C /* MavensMateWindowServer.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = MavensMateWindowServer.icns; sourceTree = "<group>"; };
 		46A3928C16EE2E45008B5C2C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		46CF16A3174CABF6002DC516 /* mm-2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "mm-2.icns"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,7 +112,7 @@
 		46A3928916EE2C76008B5C2C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				46A3928A16EE2C83008B5C2C /* MavensMateWindowServer.icns */,
+				46CF16A3174CABF6002DC516 /* mm-2.icns */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -171,7 +171,7 @@
 				46A3927716EE2B6A008B5C2C /* InfoPlist.strings in Resources */,
 				46A3927D16EE2B6A008B5C2C /* Credits.rtf in Resources */,
 				46A3928316EE2B6A008B5C2C /* MainMenu.xib in Resources */,
-				46A3928B16EE2C83008B5C2C /* MavensMateWindowServer.icns in Resources */,
+				46CF16A4174CABF6002DC516 /* mm-2.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
