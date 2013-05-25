@@ -30,29 +30,30 @@ class MavensMateProject(object):
     def __init__(self, params={}, **kwargs):
         params = dict(params.items() + kwargs.items())
 
-        self.sfdc_session   = None
-        self.id             = params.get('id', None)
-        self.project_name   = params.get('project_name', None)
-        self.username       = params.get('username', None)
-        self.password       = params.get('password', None)
-        self.org_type       = params.get('org_type', None)
-        self.package        = params.get('package', None)
-        self.ui             = params.get('ui', False)
-        self.directory      = params.get('directory', False)
-        self.sfdc_client    = None
+        self.sfdc_session       = None
+        self.id                 = params.get('id', None)
+        self.project_name       = params.get('project_name', None)
+        self.username           = params.get('username', None)
+        self.password           = params.get('password', None)
+        self.org_type           = params.get('org_type', None)
+        self.package            = params.get('package', None)
+        self.ui                 = params.get('ui', False)
+        self.directory          = params.get('directory', False)
+        self.sfdc_client        = None
         self.defer_connection   = params.get('defer_connection', False)
 
         if 'location' in params and os.path.exists(params['location']): #=> existing project on the disk
             
-            self.location               = params.get('location', None)
-            self.settings               = self.__get_settings()
-            self.project_name           = self.settings.get('project_name', os.path.basename(self.location))
-            self.sfdc_session           = self.__get_sfdc_session()
-            self.package                = self.location + "/src/package.xml"
-            self.apex_file_properties_path = self.location + "/config/.apex_file_properties"
-            self.is_metadata_indexed    = self.get_is_metadata_indexed()
+            self.location                   = params.get('location', None)
+            self.settings                   = self.__get_settings()
+            self.project_name               = self.settings.get('project_name', os.path.basename(self.location))
+            self.sfdc_session               = self.__get_sfdc_session()
+            self.package                    = os.path.join(self.location,"src","package.xml")
+            self.apex_file_properties_path  = os.path.join(self.location,"config",".apex_file_properties")
+            self.is_metadata_indexed        = self.get_is_metadata_indexed()
 
             config.logger.debug(self.sfdc_session)
+            config.logger.debug(self.get_creds())
 
             if self.ui == False and self.defer_connection == False:
                 self.sfdc_client        = MavensMateClient(credentials=self.get_creds())
@@ -76,7 +77,7 @@ class MavensMateProject(object):
     #used to create a new project in a workspace
     def retrieve_and_write_to_disk(self,action='new'):
         try:
-            if os.path.isdir(config.connection.workspace+"/"+self.project_name) and action == 'new':
+            if os.path.isdir(os.path.join(config.connection.workspace,self.project_name)) and action == 'new':
                 return mm_util.generate_error_response("A project with this name already exists in your workspace.")
             
             if action == 'existing':
@@ -84,7 +85,7 @@ class MavensMateProject(object):
                 existing_is_in_workspace = True
                 if existing_parent_directory != config.connection.workspace:
                     existing_is_in_workspace = False
-                if os.path.isdir(config.connection.workspace+"/"+self.project_name) and existing_is_in_workspace == False and action == 'existing':
+                if os.path.isdir(os.path.join(config.connection.workspace,self.project_name)) and existing_is_in_workspace == False and action == 'existing':
                     raise MMException("A project with this name already exists in your workspace.")   
 
             self.sfdc_client = MavensMateClient(credentials={"username":self.username,"password":self.password,"org_type":self.org_type})             
@@ -93,11 +94,11 @@ class MavensMateProject(object):
                 project_metadata = self.sfdc_client.retrieve(package=self.package)
                 mm_util.put_project_directory_on_disk(self.project_name, force=True)
                 mm_util.extract_base64_encoded_zip(project_metadata.zipFile, config.connection.workspace+"/"+self.project_name)
-                mm_util.rename_directory(config.connection.workspace+"/"+self.project_name+"/unpackaged", config.connection.workspace+"/"+self.project_name+"/src")
+                mm_util.rename_directory(os.path.join(config.connection.workspace,self.project_name,"unpackaged"), os.path.join(config.connection.workspace,self.project_name,"src"))
             elif action == 'existing' and existing_is_in_workspace == False:
                 shutil.move(self.directory, config.connection.workspace)
 
-            self.location = config.connection.workspace+"/"+self.project_name
+            self.location = os.path.join(config.connection.workspace,self.project_name)
             self.__put_project_file()
             self.__put_base_config()
             self.__set_sfdc_session()
@@ -130,10 +131,10 @@ class MavensMateProject(object):
             self.__set_sfdc_session()
             mm_util.put_password_by_key(self.id, self.password)
             self.sfdc_session = self.__get_sfdc_session() #hacky...need to fix
-            if os.path.exists(self.location+"/config/settings.yaml"):
-                os.remove(self.location+"/config/settings.yaml")
-            if os.path.exists(self.location+"/config/.org_metadata"):
-                os.remove(self.location+"/config/.org_metadata")
+            if os.path.exists(os.path.join(self.location,"config","settings.yaml")):
+                os.remove(os.path.join(self.location,"config","settings.yaml"))
+            if os.path.exists(os.path.join(self.location,"config",".org_metadata")):
+                os.remove(os.path.join(self.location,"config",".org_metadata"))
             return mm_util.generate_success_response("Project Upgraded Successfully")
         except Exception, e:
             #print traceback.print_exc()
@@ -301,7 +302,7 @@ class MavensMateProject(object):
                 shutil.move(full_file_path, current_destination)
                 projectfile = full_file_path.replace('/unpackaged', '/src')
 
-        shutil.rmtree(self.location+"/unpackaged")
+        shutil.rmtree(os.path.join(self.location,"unpackaged"))
 
         #compare retrieved metadata to local metadata
         #subprocess.call([diffmerge, destination, projectpath])
@@ -1295,7 +1296,7 @@ class MavensMateProject(object):
             mm_util.generate_error_response(e.message)
 
     def __get_package_as_dict(self):
-        return mm_util.parse_xml_from_file(self.location+"/src/package.xml")
+        return mm_util.parse_xml_from_file(os.path.join(self.location,"src","package.xml"))
 
     def get_package_types(self):
         project_package = self.__get_package_as_dict()
@@ -1306,8 +1307,8 @@ class MavensMateProject(object):
 
     def get_is_metadata_indexed(self):
         try:
-            if os.path.exists(self.location+"/config/.org_metadata"):
-                json_data = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+            if os.path.exists(os.path.join(self.location,"config",".org_metadata")):
+                json_data = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
                 return True
             else:
                 return False
@@ -1339,7 +1340,7 @@ class MavensMateProject(object):
 
     def get_org_metadata(self):
         if self.get_is_metadata_indexed() == True:
-            cached_metadata = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+            cached_metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
             for item in cached_metadata:
                 if 'selected' in item:
                     item['selected'] = False
@@ -1354,24 +1355,23 @@ class MavensMateProject(object):
             
             metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(cached_metadata)
             file_body = json.dumps(metadata_with_selected_flags)
-            src = open(self.location+"/config/.org_metadata", "w")
+            src = open(os.path.join(self.location,"config",".org_metadata"), "w")
             src.write(file_body)
             src.close()
             return metadata_with_selected_flags
         else:
             self.index_metadata()
-            return mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
+            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
 
     def __get_settings(self):
-
         #returns settings for this project (handles legacy yaml format)
-        if os.path.isfile(self.location + "/config/settings.yaml"):
-            f = open(self.location + "/config/settings.yaml")
+        if os.path.isfile(os.path.join(self.location,"config","settings.yaml")):
+            f = open(os.path.join(self.location,"config","settings.yaml"))
             settings = yaml.safe_load(f)
             f.close()
             return settings
-        elif os.path.isfile(self.location + "/config/.settings"):
-            return mm_util.parse_json_from_file(self.location + "/config/.settings")
+        elif os.path.isfile(os.path.join(self.location,"config",".settings")):
+            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".settings"))
         else:
             return {}
 
@@ -1433,7 +1433,7 @@ class MavensMateProject(object):
                 "id"                    : self.id,
                 "metadata_container"    : self.sfdc_client.get_metadata_container_id()
             }
-        src = open(config.connection.workspace+"/"+self.project_name+"/config/.settings", "w")
+        src = open(os.path.join(config.connection.workspace,self.project_name,"config",".settings"), "w")
         json_data = json.dumps(settings, sort_keys=False, indent=4)
         src.write(json_data)
         src.close()
@@ -1441,7 +1441,7 @@ class MavensMateProject(object):
     #write a file containing the dynamic describe information for the org
     def __put_describe_file(self):
         file_name = ".describe"
-        src = open(config.connection.workspace+"/"+self.project_name+"/config/"+file_name, "w")
+        src = open(os.path.join(config.connection.workspace,self.project_name,"config",file_name), "w")
         describe_result = self.sfdc_client.describeMetadata()
         d = xmltodict.parse(describe_result,postprocessor=mm_util.xmltodict_postprocessor)
         json_data = json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"], sort_keys=True, indent=4)
@@ -1451,27 +1451,29 @@ class MavensMateProject(object):
     #write a file containing the dynamic describe information for the org
     def __put_overlays_file(self, overlays):
         file_name = ".overlays"
-        src = open(config.connection.workspace+"/"+self.project_name+"/config/"+file_name, "w")
+        src = open(os.path.join(config.connection.workspace,self.project_name,"config",file_name), "w")
         src.write(overlays)
         src.close()   
 
     #returns metadata types for this org, or default types
     def __get_org_describe(self):
         try:
-            return mm_util.parse_json_from_file(self.location+"/config/.describe")
+            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".describe"))
         except:
             return mm_util.get_default_metadata_data()
 
     def __put_base_config(self):
-        if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/config") == False:
-            os.makedirs(config.connection.workspace+"/"+self.project_name+"/config")
+        if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"config")) == False:
+            os.makedirs(os.path.join(config.connection.workspace,self.project_name,"config"))
         self.__put_settings_file()
         self.__put_describe_file()
 
     def __put_project_file(self):
         if config.connection.plugin_client == 'SUBLIME_TEXT_2' or config.connection.plugin_client == 'SUBLIME_TEXT_3':
-            src = open(config.connection.workspace+"/"+self.project_name+"/"+self.project_name+".sublime-project", "w")
-            src.write('{"folders":[{"path": "'+config.connection.workspace+"/"+self.project_name+'"}]}')
+            sublime_project_file_path = os.path.join(config.connection.workspace,self.project_name,self.project_name+".sublime-project")
+            project_path = os.path.join(config.connection.workspace,self.project_name)
+            src = open(sublime_project_file_path, "w")
+            src.write('{"folders":[{"path": "'+project_path+'"}]}')
             src.close()
 
     #returns the cached session information (handles yaml [legacy] & json)
@@ -1479,10 +1481,10 @@ class MavensMateProject(object):
         session = None
         try:
             try:
-                session = mm_util.parse_json_from_file(self.location + "/config/.session")
+                session = mm_util.parse_json_from_file(os.path.join(self.location,"config",".session"))
             except:
                 try:
-                    f = open(self.location + "/config/.session")
+                    f = open(os.path.join(self.location,"config",".session"))
                     session = yaml.safe_load(f)
                     f.close()
                 except:
@@ -1502,7 +1504,7 @@ class MavensMateProject(object):
                 "endpoint"              : self.sfdc_client.endpoint
             }
             file_body = json.dumps(session)
-            src = open(self.location+"/config/.session", "w")
+            src = open(os.path.join(self.location,"config",".session"), "w")
             src.write(file_body)
             src.close()
         except:
