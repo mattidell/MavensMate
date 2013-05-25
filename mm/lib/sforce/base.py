@@ -159,6 +159,9 @@ Salesforce will use HTTPS.')
     if kwargs.has_key('password'):
       self._sforce.set_options(password = kwargs['password'])
 
+    #set the timeout from a setting
+    self._sforce.set_options(timeout=config.connection.get_plugin_client_setting('mm_timeout', 3600))
+
   # Toolkit-specific methods
 
   def generateHeader(self, sObjectType):
