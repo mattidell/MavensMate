@@ -81,8 +81,12 @@ print 'sign response: ' + sign_response_body
 pub_date = datetime.now().strftime("%a, %d %B %Y %H:%M:%S +0000")
 
 ##write new appcast.xml
-appcast = open(mavensmate_app_path+"/release/appcast.xml", "w")
+release_notes_template = env.get_template('release_notes.html')
+release_notes = release_notes_template.render(version_number=version_number)
+
 template = env.get_template('appcast.html')
-file_body = template.render(version_number=version_number,signature=sign_response_body,pub_date=pub_date)
+file_body = template.render(version_number=version_number,signature=sign_response_body,pub_date=pub_date,release_notes=release_notes)
+
+appcast = open(mavensmate_app_path+"/release/appcast.xml", "w")
 appcast.write(file_body)
 appcast.close()
