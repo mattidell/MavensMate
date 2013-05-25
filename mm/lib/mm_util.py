@@ -560,6 +560,9 @@ def process_unit_test_result(result):
     classes = []
 
     if 'codeCoverage' in result:
+        # for single results we don't get a list back
+        if type(result['codeCoverage']) is not list:
+            result['codeCoverage'] = [result['codeCoverage']]
         for coverage_result in result['codeCoverage']:
             if 'locationsNotCovered' in coverage_result and type(coverage_result['locationsNotCovered']) is not list:
                 coverage_result['locationsNotCovered'] = [coverage_result['locationsNotCovered']]
@@ -591,10 +594,10 @@ def process_unit_test_result(result):
                 else:
                     classes.append(coverage_result)
 
-    if 'codeCoverageWarnings' in result and type(result['codeCoverageWarnings']) is not list:
-        result['codeCoverageWarnings'] = [result['codeCoverageWarnings']]
-
     if 'codeCoverageWarnings' in result:
+        # for single results we don't get a list back
+        if type(result['codeCoverageWarnings']) is not list:
+            result['codeCoverageWarnings'] = [result['codeCoverageWarnings']]
         for warning in result['codeCoverageWarnings']:
             if 'name' in warning and type(warning['name']) is not str and type(warning['name']) is not unicode:
                warning['name'] = None 
@@ -603,6 +606,7 @@ def process_unit_test_result(result):
     #{"foo"=>[{:name = "foobar"}{:name = "something else"}], "bar"=>[]}
     pass_fail = {}
     if 'successes' in result:
+        # for single results we don't get a list back
         if type(result['successes']) is not list:
             result['successes'] = [result['successes']]
         for success in result['successes']:
@@ -621,6 +625,7 @@ def process_unit_test_result(result):
                 results_normal[success['name']] = arr #replace the key
     
     if 'failures' in result:
+        # for single results we don't get a list back
         if type(result['failures']) is not list:
             result['failures'] = [result['failures']]
         for failure in result['failures']:
