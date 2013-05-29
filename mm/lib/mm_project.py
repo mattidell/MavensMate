@@ -573,7 +573,6 @@ class MavensMateProject(object):
         except Exception as e:
             return mm_util.generate_error_response(e.message)
 
-
     #reverts a project to the server state based on the existing package.xml
     def clean(self, **kwargs):
         try:
@@ -730,6 +729,35 @@ class MavensMateProject(object):
         except Exception, e:
             return mm_util.generate_error_response(e.message)
 
+    def index_apex_file_properties(self):
+        directories = []
+        if os.path.exists(os.path.join(self.location, 'src', 'classes')):
+            directories.append(os.path.join(self.location, 'src', 'classes'))
+
+        if os.path.exists(os.path.join(self.location, 'src', 'triggers')):
+            directories.append(os.path.join(self.location, 'src', 'triggers'))
+
+        params = {
+            'files'         : [],
+            'directories'   : directories
+        }
+        retrieve_result = self.get_retrieve_result(params)
+        apex_file_properties = self.cache_apex_file_properties(retrieve_result.fileProperties, False)
+        apex_ids = []
+        for p in apex_file_properties.keys():
+            apex_ids.append(apex_file_properties[p]["id"])
+        symbol_table_result = self.sfdc_client.get_symbol_table(apex_ids)
+
+        if 'records' in symbol_table_result and len(symbol_table_result['records']) > 0:
+            for r in symbol_table_result['records']:
+                for p in apex_file_properties.keys():
+                    if r["ContentEntityId"] == apex_file_properties[p]["id"]:
+                        apex_file_properties[p]["symbolTable"] = r["SymbolTable"]
+                        break
+
+        self.write_apex_file_properties(apex_file_properties)
+        return mm_util.generate_success_response("Apex file properties cached successfully")
+
     def get_apex_file_properties(self):
         apex_file_properties = None
         try:
@@ -746,7 +774,7 @@ class MavensMateProject(object):
             del props[apex_file]
         self.write_apex_file_properties(props)    
         
-    def cache_apex_file_properties(self, properties):
+    def cache_apex_file_properties(self, properties, write=True):
         if not len(properties):
             return;
         
@@ -770,7 +798,9 @@ class MavensMateProject(object):
                 if 'manageableState' in prop:
                     fileprop['manageableState'] = prop.manageableState
                 apex_file_properties[filename] = fileprop
-        self.write_apex_file_properties(apex_file_properties)
+        if write:
+            self.write_apex_file_properties(apex_file_properties)
+        return apex_file_properties
 
     def write_apex_file_properties(self, json_data):
         src = open(self.apex_file_properties_path, "w")
@@ -1401,15 +1431,23 @@ class MavensMateProject(object):
 
     def __get_settings(self):
         #returns settings for this project (handles legacy yaml format)
-        if os.path.isfile(os.path.join(self.location,"config","settings.yaml")):
-            f = open(os.path.join(self.location,"config","settings.yaml"))
-            settings = yaml.safe_load(f)
-            f.close()
-            return settings
-        elif os.path.isfile(os.path.join(self.location,"config",".settings")):
-            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".settings"))
-        else:
-            return {}
+        try:
+            if os.path.isfile(os.path.join(self.location,"config","settings.yaml")):
+                f = open(os.path.join(self.location,"config","settings.yaml"))
+                settings = yaml.safe_load(f)
+                f.close()
+                if settings == None:
+                    raise MMException('Unable to read settings file for this project.')
+                return settings
+            elif os.path.isfile(os.path.join(self.location,"config",".settings")):
+                settings = mm_util.parse_json_from_file(os.path.join(self.location,"config",".settings"))
+                if settings == None:
+                    raise MMException('Unable to read settings file for this project.')
+                return settings
+            else:
+                return {}
+        except:
+            raise MMException('Unable to read settings file for this project.')
 
     def get_creds(self): 
         #initialize variables so it doesn't bomb if any are missing
