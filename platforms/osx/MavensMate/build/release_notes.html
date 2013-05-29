@@ -1,3 +1,19 @@
- <h2>Version {{ version_number }}</h2>
+<h2>Version {{ version_number }}</h2>
 
- <p></p>
+<p>
+	This is a major release in that: 1) several open issues have been resolved and 2) we're introducing a new UI (that we hope you'll like). Be sure to update MavensMate.app <strong>AND ALSO</strong> the plugin you're using.
+</p>
+<p>
+	<h4>Rundown of changes</h4>
+	<ul>
+		<li>Set "mm_play_sounds" to true to enable notification sounds in MavensMate.app. The sound resembles the Facebook web interface notification.</li>
+		<li>Set "mm_log_anonymous_apex" to true to log Apex execute anonymous scripts. This is especially helpful for scripts you run regularly. Scripts are stored in a new project directory called "apex-scripts" and are named by timestamp.</li>
+		<li>Set "mm_use_tooling_api" to true to use the Salesforce.com Tooling API to compile single Apex Classes, Apex Triggers, Apex Pages, and Apex Components. Compiling with the Tooling API yields up to a 50-60% performance boost. This is beta functionality.</li>
+		<li>Set "mm_wsdl_path" to define a local path where you can store Salesforce.com WSDLs</li>
+		<li>On a project basis, you can now override the WSDLs MavensMate uses by putting them in your project's config directory (partner.xml, apex.xml, metadata.xml, tooling.xml). This is especially helpful in instances where an org has been upgraded to a major release, but MavensMate's WSDLs have not been updated.</li>
+		<li>Set "mm_plugin_client_location" to the location where your plugin client resides. For example, for Sublime Text users, you may have Sublime Text installed in /Applications/Development instead of /Applications.</li>
+		<li>Set "mm_compile_check_conflicts" to true to make MavensMate smarter about conflicts when compiling to the server. The .apex_file_properties configuration file maintains a local history of modstamps which MavensMate uses to compare to server versions.</li>
+		<li>Execute Apex text editor (Ace.js) has been updated to fix some lingering issues, including the inability to detect a double tap on the mousepad and disappearing text when toggling tabs. Oh, and it's also a lot prettier now, too :)</li>
+	</ul>	
+</p>
+
