@@ -1,19 +1,6 @@
 {% extends "layouts/base.html" %}
 {% block yield %}
 <style>
-	.bordered-table, .bordered-table td {
-	    -webkit-border-radius: 0px !important;
-		border-radius: 0px !important;
-	}
-
-	.bordered-table {
-		border-bottom:1px solid #ccc !important;
-	}
-
-	.chzn-choices {
-		border-radius: 3px !important;
-	}
-
 	.deploy_options label, .deploy_options div.divlabel {
 		width:180px;
 		font-weight: bold;
@@ -41,17 +28,7 @@
 		cursor: pointer;
 	}	
 	
-	.block-message-custom {
-        background-image: none;
-        background-color: #F2F2F2;
-        filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-        padding: 14px;
-        border-color: #CCC;
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
-        box-shadow: none;
-    }    
-
+  
 	table.test_result {
 		border-top:none;
 	}
@@ -64,20 +41,18 @@
 		display: none;
 	}
 
+	ul.nav .dropdown-menu {
+		width:300px;
+	}
+
 </style>
 <div id="result_output">
 	
 </div>
 
 <div class="content">
-	
-	<div class="alert alert-info" style="display:none;" data-alert="alert" id="cred_alert">
-		<a class="close" href="#"> x </a>
-		<p><strong>Error!</strong> You need to provide valid Salesforce.com credentials in Project Details.</p>
-	</div>
-
-	
-	<ul class="nav nav-tabs nav-append-content">
+		
+	<ul class="nav nav-tabs nav-append-content" id="main-tabs">
 		<li class="active"><a href="#form" data-toggle="tab">Deploy Options</a></li>
 		<li><a href="#connections" data-toggle="tab">Org Connections</a></li>
 		<li>
@@ -86,8 +61,16 @@
 				<span onclick="refresh_index()" class="label" style="line-height:15px;cursor:pointer;">Refresh <i class="icon-refresh"></i></span> 	
 			</a>
 		</li>
-		<li><a href="#result" id="result_tab" data-toggle="tab">Result</a></li>
 		<li><a href="#arcade" id="arcade_tab" data-toggle="tab">Arcade</a></li>
+		<li class="results_hidden dropdown active">
+      		<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        		Deploy Results
+        		<b class="caret"></b>
+      		</a>
+      		<ul class="dropdown-menu" id="dropdown-destinations">
+
+      		</ul>
+    	</li>
 	</ul>
 	
 	<div class="tab-content" id="main-tab-content">
@@ -107,7 +90,6 @@
 										{{ c['username'] }}
 									</option>
 								{% endfor %} 
-								<!-- <option value="new">-- Custom Connection --</option> -->
 							</select>	
 					</div>			
 				</fieldset>
@@ -247,7 +229,7 @@
 			</div>
 			
 			<div class="alert alert-info">
-	        	<span><strong>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.</strong></span>
+	        	<i class="icon-exchange icon-2x pull-left"></i>A deployment connection is a Salesforce.com org that you wish to deploy to from this MavensMate project.
 	      	</div>
 			
 	      	<div class="row-fluid">
@@ -309,28 +291,15 @@
 		</div>
 
 		<div id="metadata" class="tab-pane">
-			<script>
-				$("#ptype").change(function() {
-					if (this.value == "Custom") {
-						$("#project_wrapper").show();
-						$("#changesetwrapper").hide();
-					} else {
-						$("#project_wrapper").hide();
-						$("#changesetwrapper").show();
-					}
-				})
-			</script>
+			
 			<div class="alert alert-info" id="filter">
 				<input type="text" placeholder="Search for metadata" id="txtFilter" style="width:300px;height:35px;" />
 				<div class="select-wrapper">
 					<select id="meta_type" class="">
 						
 					</select>
-
-					<!-- <a href="#" id="btnSelectAll" class="btn btn-mini btn-info" style="font-weight:normal;padding:4px 7px 4px;">All</a>
-					<a href="#" id="btnDeselectAll" class="btn btn-mini btn-danger" style="font-weight:normal;padding:4px 7px 4px;">None</a>
-					<a href="javascript:void(0)" id="btnRefresh" style="font-weight:normal;padding:4px 7px 4px;" class="btn btn-mini btn-success" onclick="refresh_index()">Refresh</a> -->
 				</div>
+				<a href="#" class="btn btn-success" id="search-btn"><i class="icon-search"></i></a>
 			</div>
 			<div id="project_wrapper">
 								
@@ -345,37 +314,21 @@
 			</div>
 		</div>
 		
-		<!-- ARCADE -->
-		<div class="tab-pane" id="arcade">
-			<ul class="nav nav-tabs nav-append-content tabs-below">
-				<li class="game" class="active"><a href="#game_pacman" data-toggle="tab">Pacman</a></li>
-				<li class="game"><a href="#game_tetris" data-toggle="tab" data-toggle="tab">Tetris</a></li>
-				<li class="game"><a href="#game_donkey">Donkey Kong</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="game_pacman">
-					<embed src="http://www.classicgamesarcade.com/games/pacman.swf" width="100%" height="75%" autostart="true" loop="false" controller="true" id="pacman" class="flash_game"></embed>
-				</div>
-				<div id="tab-pane game_tetris">
-					<embed src="http://www.classicgamesarcade.com/games/flash-tetris.swf" width="100%" height="75%" autostart="true" loop="false" controller="true" id="tetris" class="flash_game"></embed>
-				</div>
-				<div id="tab-pane game_donkey">
-					<embed src="http://www.classicgamesarcade.com/games/donkeykong.swf" width="100%" height="75%" autostart="true" loop="false" controller="true" id="donkey" class="flash_game"></embed>
-				</div>
-			</div>
-		</div>
-
-		<div id="result" class="tab-pane">
-			
-		</div>		
+		{% include 'snippets/arcade.html' %}
+	
 	</div>
 </div> 
+
+<div id="result" style="display:none;">
+
+</div>
+
 
 {% endblock %}
 
 
 {% block buttons %}					
-	<input id="btnDeploy" type="button" class="btn btn-info" value="Deploy to Server"  onclick='deploy()'>
+	<input id="btnDeploy" type="button" class="btn btn-info" value="Deploy to Server" onclick='deploy()'>
 	{% include 'snippets/cancel_button.html' %}
 	{% include 'snippets/running_indicator.html' %}
 {% endblock %}
@@ -384,7 +337,6 @@
 <script type="text/javascript">
 	var has_indexed_metadata = {{ has_indexed_metadata|lower }};
 	var operation;
-	document.title = "Deploy To Server";
 
 	function isValidateOnly() {
 		if ($("#check_only").is(":checked")) {
@@ -437,17 +389,27 @@
 				$("#un").val(this.value);
 			}
 		});
+
+		$("ul.nav-tabs li a span").hover(
+			function() {
+				$(this).addClass("label-success")
+			},
+			function() {
+				$(this).removeClass("label-success")
+			}
+		)
 		
 		if ($("#un_list").val() != 'new') {
 			$("#un").val($("#un_list").val());
 		}  
 
+		$('#meta_type').html('')
 		$("#tree ul > li.level1").each(function() {
 			$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
 		});
 		
 		$(window).resize(function() {
-			resize_games()
+			resize_arcade()
 			resizeProjectWrapper()
 		});
 
@@ -455,22 +417,27 @@
 		$("#txtFilter").bind('keyup', function(e) {
 			var code = (e.keyCode ? e.keyCode : e.which);
 			if (code == 13) {
-				var filter = $("#txtFilter").val();
-				if (filter && filter.length > 2) {
-					filter_tree(filter, $('#meta_type').val());
-				}
+				submitSearch()
 			}
 		})
 		.change(function() {
 			var filter = $("#txtFilter").val();
 			if (!filter) {
-				clearFilter();	
+				clearFilter();
+				scrollToTop("#project_wrapper");	
 			}
 		})
 		.keyup(function() {
 	        $(this).change();
 	    });
-		
+
+	    $("#search-btn").click(function() {
+	    	if ($(this).hasClass('btn-success')) {
+	    		submitSearch()
+	    	} else {
+	    		clearFilter()
+	    	}
+	    })
 		
 		if (!has_indexed_metadata) {
 				index_org();
@@ -488,8 +455,8 @@
 
 		$('label.checkbox input').checkbox();
 
-		
-		window.resizeTo(780, 720)
+		resize_games()
+		window.resizeTo(900, 720)
 		centerWindow()
 		resizeProjectWrapper()
 	});
@@ -502,8 +469,6 @@
 			connHtml += conns[c]['username']
 			connHtml += '</option>'
 		}
-		//$("#no-connections").hide()
-		console.log(connHtml)
 		$("#un_list").html(connHtml)
 		$('#un_list').trigger("liszt:updated");
 	}
@@ -547,19 +512,36 @@
 
 	function handle_response(response) {
 		if (operation == "deploy") {
+			$(".result_wrapper").remove()
+
 			$("#result").html(response["body"]);
+
+			$("#dropdown-destinations").html($("#destination_options ul").html());
+			$("#destination_options").remove()
+
+			$("#check_only").attr('checked', false);
+			$("#check_only").parent().removeClass('checked')
+			$("#btnDeploy").val('Deploy to Server');
+
+			$("#main-tab-content").append($("#extra_tabs").html());
+			$("#extra_tabs").remove()
+
+			$('.nav-tabs a').click(function (e) {
+			  e.preventDefault();
+			  $(this).tab('show');
+			})
+
+			$(".results_hidden").show();
+			if ($("#arcade").css("display") == "none") {
+				$("ul#main-tabs > li.active").removeClass('active')
+				$("div#main-tab-content > div.active").removeClass('active')
+				$("#result-0").addClass('active')
+				$('li.dropdown ul li a.test_result_link').tab('show');
+				$(".results_hidden").addClass('active');
+			}
 
 			toggleRunningIndicator();
 			$("#btnDeploy").show();
-
-			$(".result_table_class").height($("#main-tab-content").height() - 150)
-			$(window).resize(function() {
-		        $(".result_table_class").height($("#main-tab-content").height() - 150)
-		    });
-
-			if ($("#arcade").css("display") == "none") {
-				$("#result_tab").click();
-			}
 			notify_sound()
 		} else if (operation == "index") {
 			if (response["success"] == false) {
@@ -567,9 +549,8 @@
 			} else {
 				$("#tree").dynatree("destroy")
 				$("#tree ul").html(response["body"]);
-				
+				$('#meta_type').html('')
 				$("#tree ul > li.level1").each(function() {
-					$('#meta_type').html('')
 					$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
 				});
 				
@@ -583,6 +564,7 @@
 	    		});  
 				rootNode = $("#tree").dynatree("getRoot");
 			}
+			resizeProjectWrapper();
 			notify_sound();
 			hideLoading();
 		}
@@ -622,8 +604,6 @@
 			},
 			beforeSend: function() { showLoading('Listing connections'); },
 			complete: function(data){
-				//need to replace html here with list of connections
-				//AND repopulate chosen multipicklist
 				var connHtml = ''
 				console.log(data)				
 				var conns = JSON.parse(data.responseText)

@@ -61,11 +61,8 @@
 					<select id="meta_type" class="">
 						
 					</select>
-
-					<!-- <a href="#" id="btnSelectAll" class="btn btn-mini btn-info" style="font-weight:normal;padding:4px 7px 4px;">All</a>
-					<a href="#" id="btnDeselectAll" class="btn btn-mini btn-danger" style="font-weight:normal;padding:4px 7px 4px;">None</a>
-					<a href="javascript:void(0)" id="btnRefresh" style="font-weight:normal;padding:4px 7px 4px;" class="btn btn-mini btn-success" onclick="refresh_index()">Refresh</a> -->
 				</div>
+				<a href="#" class="btn btn-success" id="search-btn"><i class="icon-search"></i></a>
 			</div>
 			<div id="project_wrapper">
 				<div id="treewrapper" style="height:100%; padding-bottom:100px;">
@@ -164,8 +161,8 @@
 				} else {
 					$("#tree").dynatree("destroy")
 					$("#tree ul").html(response["body"]);
+					$('#meta_type').html('')
 					$("#tree ul > li.level1").each(function() {
-						$('#meta_type').html('')
 						$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
 					});
 					$("#tree").dynatree({
@@ -202,7 +199,7 @@
 			$("#org_type").val("{{ org_type }}");
 			
 			$("#pn").prop('disabled', true);  
-			
+			$('#meta_type').html('')
 			$("#tree ul > li.level1").each(function() {
 				$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
 			});
@@ -210,6 +207,15 @@
 			$(window).resize(function() {
 				resizeProjectWrapper()
 			});
+
+			$("ul.nav-tabs li a span").hover(
+				function() {
+					$(this).addClass("label-success")
+				},
+				function() {
+					$(this).removeClass("label-success")
+				}
+			)
 
 		    window.resizeTo(700, 750)
 		    centerWindow()
@@ -244,21 +250,27 @@
 			$("#txtFilter").bind('keyup', function(e) {
 				var code = (e.keyCode ? e.keyCode : e.which);
 				if (code == 13) {
-					var filter = $("#txtFilter").val();
-					if (filter && filter.length > 2) {
-						filter_tree(filter, $('#meta_type').val());
-					}
+					submitSearch()
 				}
 			})
 			.change(function() {
 				var filter = $("#txtFilter").val();
 				if (!filter) {
-					clearFilter();	
+					clearFilter();
+					scrollToTop("#project_wrapper");	
 				}
 			})
 			.keyup(function() {
 		        $(this).change();
 		    });
+
+		    $("#search-btn").click(function() {
+		    	if ($(this).hasClass('btn-success')) {
+		    		submitSearch()
+		    	} else {
+		    		clearFilter()
+		    	}
+		    })
 
 			//brief pause
 			setTimeout(function(){	
@@ -281,7 +293,6 @@
 			}, 200);
 
 		});
-
 	</script>
 
 {% endblock %}

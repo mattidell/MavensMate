@@ -20,8 +20,12 @@ child_metadata = [
 ]
 
 $(function() {
-		
+	
 });
+
+function scrollToTop(selector) {
+	$(selector).animate({ scrollTop: 0 }, 300);
+}
 
 function showElement(id) {
 	$("#"+id).show();
@@ -284,6 +288,11 @@ function hide_message(message) {
 	resizeElements()
 }
 
+function resize_arcade() {
+	$(".flash_game").css("width", $(".tab-content").width() - 45)
+	$(".flash_game").css("height", $(window).height() - 270)
+}
+
 function resizeElements() {
     // if ($("#result_output").css('display') != 'none') {
     //     if ($(".tab-content").hasClass('tab-content-nested')) {
@@ -409,11 +418,21 @@ function collapseAll() {
 	});
 }
 
+function submitSearch() {
+	var filter = $("#txtFilter").val();
+	if (filter && filter.length > 2) {
+		filter_tree(filter, $('#meta_type').val());
+		scrollToTop("#project_wrapper");
+		$("#search-btn").removeClass('btn-success').addClass('btn-danger').html('<i class="icon-remove"></i>')
+	}
+}
+
 function clearFilter() {
 	$('#txtFilter').val('');
 	collapseAll();
 	$(".dynatree-container li").show(); 
 	$('#txtFilter').focus();
+	$("#search-btn").removeClass('btn-danger').addClass('btn-success').html('<i class="icon-search"></i>')
 }
 
 $.expr[':'].Contains = function(a, i, m) {
