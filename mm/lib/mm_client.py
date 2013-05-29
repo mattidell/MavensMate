@@ -472,6 +472,15 @@ class MavensMateClient(object):
         r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
         return mm_util.parse_rest_response(r.text)    
 
+    #pass a list of apex class/trigger ids and return the symbol tables
+    def get_symbol_table(self, ids=[]):        
+        id_string = "','".join(ids)
+        id_string = "'"+id_string+"'"
+        query_string = "Select ContentEntityId, SymbolTable From ApexClassMember Where ContentEntityId IN (" + id_string + ")"
+        payload = { 'q' : query_string }
+        r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
     def create_trace_flag(self, payload):
         if 'ScopeId' not in payload:
             payload['ScopeId'] = self.user_id
