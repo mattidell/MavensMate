@@ -4,6 +4,7 @@ import os.path
 import sys
 import argparse
 import traceback
+import inspect
 import json
 import lib.config as config
 import lib.mm_util as util
@@ -13,7 +14,6 @@ from suds.client import Client
 from lib.mm_connection import MavensMatePluginConnection
 from lib.mm_client import MavensMateClient
 from lib.mm_exceptions import MMException
-
 
 request_payload = util.get_request_payload()
 #config.logger.debug('\n\n\n>>>>>>>>\nhandling request with payload >>>>>')
@@ -47,67 +47,15 @@ def main():
         util.launch_ui(tmp_html_file)
         print util.generate_success_response('UI Generated Successfully')
     else:        
-        if operation == 'new_project':
-            new_project()
-        elif operation == 'edit_project':
-            edit_project()    
-        elif operation == 'upgrade_project':
-            upgrade_project()     
-        elif operation == 'checkout_project':
-            checkout_project()
-        elif operation == 'compile_project':
-            compile_project()
-        elif operation == 'new_metadata':
-            new_metadata()
-        elif operation == 'clean_project':
-            clean_project()
-        elif operation == 'synchronize':
-            synchronize()
-        elif operation == 'refresh':
-            refresh()
-        elif operation == 'refresh_properties':
-            refresh_properties()
-        elif operation == 'compile':
-            compile_selected_metadata()
-        elif operation == 'delete':
-            delete_selected_metadata()
-        elif operation == 'get_active_session':
-            get_active_session()
-        elif operation == 'update_credentials':
-            update_credentials()
-        elif operation == 'execute_apex':
-            execute_apex()
-        elif operation == 'deploy_to_server' or operation == 'deploy':
-            deploy_to_server(args)
-        elif operation == 'unit_test' or operation == 'test':
-            run_unit_tests(args)
-        elif operation == 'list_metadata':
-            list_metadata()
-        elif operation == 'index_metadata':
-            index_metadata(args)    
-        elif operation == 'list_connections':
-            list_connections()
-        elif operation == 'new_connection':
-            new_connection()
-        elif operation == 'delete_connection':
-            delete_connection()
-        elif operation == 'index_apex_overlays':
-            index_apex_overlays()
-        elif operation == 'new_apex_overlay':
-            new_apex_overlay()
-        elif operation == 'delete_apex_overlay':
-            delete_apex_overlay()
-        elif operation == 'fetch_logs':
-            fetch_logs()
-        elif operation == 'new_project_from_existing_directory':
-            new_project_from_existing_directory()
-        elif operation == 'debug_log':
-            TODO()
-        elif operation == 'open_sfdc_url':
-            open_sfdc_url()
-        else:
+        requested_function = operation_dict[operation]
+        fspec = inspect.getargspec(requested_function)
+        if type(fspec.args) is list and len(fspec.args) == 1 and fspec.args[0] == 'args':
+            requested_function(eval(fspec.args[0]))
+        elif type(fspec.args) is list and len(fspec.args) > 0:
             print util.generate_error_response('Invalid operation requested')
-
+        else:
+            requested_function()
+        
     if args.callback != None:
         os.system(args.callback)
 
@@ -267,6 +215,50 @@ def update_credentials():
         print util.generate_success_response('Your credentials were updated successfully')
     except BaseException, e:
         print util.generate_error_response(e.message)
+
+
+def get_symbol_table():
+    print config.connection.project.get_symbol_table(request_payload)
+
+def index_apex_file_properties():
+    print config.connection.project.index_apex_file_properties()
+
+operation_dict = {
+    'new_project'                           : new_project,
+    'edit_project'                          : edit_project,
+    'upgrade_project'                       : upgrade_project,
+    'checkout_project'                      : checkout_project,
+    'compile_project'                       : compile_project,
+    'new_metadata'                          : new_metadata,
+    'synchronize'                           : synchronize,
+    'refresh'                               : refresh,
+    'clean_project'                         : clean_project,
+    'refresh_properties'                    : refresh_properties,
+    'compile'                               : compile_selected_metadata,
+    'delete'                                : delete_selected_metadata,
+    'get_active_session'                    : get_active_session,
+    'update_credentials'                    : update_credentials,
+    'execute_apex'                          : execute_apex,
+    'deploy_to_server'                      : deploy_to_server,
+    'deploy'                                : deploy_to_server,
+    'unit_test'                             : run_unit_tests,
+    'test'                                  : run_unit_tests,
+    'list_metadata'                         : list_metadata,
+    'index_metadata'                        : index_metadata,
+    'list_connections'                      : list_connections,
+    'new_connection'                        : new_connection,
+    'delete_connection'                     : delete_connection,
+    'index_apex_overlays'                   : index_apex_overlays,
+    'new_apex_overlay'                      : new_apex_overlay,
+    'delete_apex_overlay'                   : delete_apex_overlay,
+    'fetch_logs'                            : fetch_logs,
+    'new_project_from_existing_directory'   : new_project_from_existing_directory,
+    'open_sfdc_url'                         : open_sfdc_url,
+    'get_symbols'                           : get_symbol_table,
+    'index_apex_file_properties'            : index_apex_file_properties,
+    'index_apex'                            : index_apex_file_properties
+    #'debug_log' : todo
+}
 
 if  __name__ == '__main__':
     main()
