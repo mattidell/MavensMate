@@ -17,6 +17,9 @@ import sys
 import re
 import xmltodict
 import codecs
+import traceback
+import plistlib
+import platform
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -526,6 +529,31 @@ def generate_success_response(message, type="text"):
     return json.dumps(res)
 
 def generate_error_response(message):
+    # hide path info from build
+    trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
+    message = message.strip()
+    # if message = e.message just use the trace
+    if len(trace):
+        if trace.endswith(message):
+            message = ''
+        message += '\n' + '[STACKTRACE]: ' + trace
+    message += '\n'+'[ENVIRONMENT]: '
+    # get OS info
+    try:
+        if sys.platform == 'darwin':
+            release, versioninfo, machine = platform.mac_ver()
+            message += 'MacOS ' + release
+        #todo: support windows and linux
+    except:
+        pass
+    # try to get the executable version
+    try:
+        dic = plistlib.readPlist('/Applications/MavensMate.app/Contents/Info.plist')
+        if 'CFBundleVersion' in dic:
+            message += ', MavensMate ' + dic['CFBundleVersion']
+    except:
+        pass
+
     config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
     res = {
         "success"   : False,
