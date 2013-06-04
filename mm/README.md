@@ -137,18 +137,39 @@ $ mm -o compile_project <<< '{ "project_name" : "myproject" }'
 
 ```
 {
-     "project_name"    : "my project name"
-     "log_level"       : "DEBUG",
-     "log_category"    : "APEX_CODE",
-     "body"            : "String foo = 'bar';",
+    "project_name"    : "my project name"
+	"debug_categories": [
+     	{
+       		"category": "Apex_code",
+       		"level": "DEBUG"
+     	},
+     	{
+       		"category": "Apex_profiling",
+       		"level": "DEBUG"
+     	}
+	],
+	"body"            : "String foo = 'bar';"
 }
 ```
+
+list of categories supported by MavensMate: 
+
+```
+'Db', 'Workflow', 'Validation', 'Callout', 'Apex_code', 'Apex_profiling'
+```
+
+list of levels supported by MavensMate: 
+
+```
+'None', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'FINE', 'FINER', 'FINEST'
+```
+
 
 #### update_credentials
 
 ```
 {
-	"project_name"	: "myproject",
+	"project_name"	        : "myproject",
 	"username"		: "username@domain.com",
 	"password" 		: "password123",
 	"org_type" 		: "developer"
