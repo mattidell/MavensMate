@@ -532,7 +532,7 @@ def generate_error_response(message):
     # hide path info from build
     trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
     message = message.strip()
-    if trace != None and trace != 'None':
+    if trace != None and trace != 'None' and 'raise MMException' not in trace:
         # if message = e.message just use the trace
         if len(trace):
             if trace.endswith(message):
