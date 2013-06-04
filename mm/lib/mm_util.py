@@ -530,38 +530,46 @@ def generate_success_response(message, type="text"):
 
 def generate_error_response(message):
     # hide path info from build
-    trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
-    message = message.strip()
-    if trace != None and trace != 'None' and 'raise MMException' not in trace:
-        # if message = e.message just use the trace
-        if len(trace):
-            if trace.endswith(message):
-                message = ''
-            message += '\n' + '[STACKTRACE]: ' + trace
-        message += '\n'+'[ENVIRONMENT]: '
-        # get OS info
-        try:
-            if sys.platform == 'darwin':
-                release, versioninfo, machine = platform.mac_ver()
-                message += 'MacOS ' + release
-            #todo: support windows and linux
-        except:
-            pass
-        # try to get the executable version
-        try:
-            dic = plistlib.readPlist('/Applications/MavensMate.app/Contents/Info.plist')
-            if 'CFBundleVersion' in dic:
-                message += ', MavensMate ' + dic['CFBundleVersion']
-        except:
-            pass
+    try:
+        trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
+        message = message.strip()
+        if trace != None and trace != 'None' and 'raise MMException' not in trace:
+            # if message = e.message just use the trace
+            if len(trace):
+                if trace.endswith(message):
+                    message = ''
+                message += '\n' + '[STACKTRACE]: ' + trace
+            message += '\n'+'[ENVIRONMENT]: '
+            # get OS info
+            try:
+                if sys.platform == 'darwin':
+                    release, versioninfo, machine = platform.mac_ver()
+                    message += 'MacOS ' + release
+                #todo: support windows and linux
+            except:
+                pass
+            # try to get the executable version
+            try:
+                dic = plistlib.readPlist('/Applications/MavensMate.app/Contents/Info.plist')
+                if 'CFBundleVersion' in dic:
+                    message += ', MavensMate ' + dic['CFBundleVersion']
+            except:
+                pass
 
-    config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
-    res = {
-        "success"   : False,
-        "body_type" : "text",
-        "body"      : message
-    }
-    return json.dumps(res)
+        config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
+        res = {
+            "success"   : False,
+            "body_type" : "text",
+            "body"      : message
+        }
+        return json.dumps(res)
+    except:
+        res = {
+            "success"   : False,
+            "body_type" : "text",
+            "body"      : message
+        }
+        return json.dumps(res)
 
 def get_request_payload():
     try:
