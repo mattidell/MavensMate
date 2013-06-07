@@ -4571,10 +4571,6 @@ input.search-query {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
-  -webkit-transition: 0.25s;
-  -moz-transition: 0.25s;
-  -o-transition: 0.25s;
-  transition: 0.25s;
   -webkit-backface-visibility: hidden;
 }
 .open > .dropdown-menu {
