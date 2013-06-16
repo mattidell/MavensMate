@@ -197,8 +197,7 @@ class MavensMateClient(object):
     def list_metadata_basic(self, request):
         if self.mclient == None:
             self.mclient = self.__get_metadata_client()
-        list_response = self.mclient.listMetadata(request, True, config.connection.sfdc_api_version) 
-        return list_response
+        return self.mclient.listMetadata(request, True, config.connection.sfdc_api_version) 
 
     def list_metadata(self, metadata_type):
         try:
@@ -301,8 +300,7 @@ class MavensMateClient(object):
                                 "children"  : gchildren,
                                 "selected"  : False
                             })
-                            children = sorted(children, key=itemgetter('title')) 
-
+                            
                 #if this type has folders, run queries to grab all metadata in the folders
                 if is_folder_metadata == True:
                     if element["manageableState"] != "unmanaged":
@@ -324,8 +322,7 @@ class MavensMateClient(object):
                             "isFolder"  : False,
                             "selected"  : False
                         })
-                        children = sorted(children, key=itemgetter('title')) 
-
+                children = sorted(children, key=itemgetter('title')) 
                 return_elements.append({
                     "title"     : element['fullName'],
                     "key"       : element['fullName'],
@@ -334,8 +331,18 @@ class MavensMateClient(object):
                     "children"  : children,
                     "selected"  : False
                 })
-                return_elements = sorted(return_elements, key=itemgetter('title')) 
 
+                children = sorted(children, key=itemgetter('title')) 
+                return_elements.append({
+                    "title"     : element['fullName'],
+                    "key"       : element['fullName'],
+                    "isLazy"    : is_folder_metadata or has_children_metadata,
+                    "isFolder"  : is_folder_metadata or has_children_metadata,
+                    "children"  : children,
+                    "selected"  : False
+                })
+
+            return_elements = sorted(return_elements, key=itemgetter('title')) 
             # if list_response == []:
             #     return list_response
 
@@ -345,7 +352,6 @@ class MavensMateClient(object):
             if 'INVALID_TYPE: Unknown type' in e.message:
                 return None
             else:
-                #print traceback.print_exc()
                 raise e
 
     def compile_with_tooling_api(self, file_path, container_id):

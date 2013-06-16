@@ -41,13 +41,12 @@ class SforceMetadataClient(SforceBaseClient):
         # obj = { 'type': 'ApexClass' }
         # response = mclient.service.listMetadata(obj, 25.0)
         self._sforce.set_options(retxml=retXml)
-        if type(metadata_type) is not dict:
+        if type(metadata_type) is not dict and type(metadata_type) is not list:
             obj = { 'type' : metadata_type }
         else:
             obj = metadata_type
         list_result = self._handleResultTyping(self._sforce.service.listMetadata(obj, version))
         self._sforce.set_options(retxml=False)
-        #print self.getLastRequest()
         if retXml == True:
             try:
                 list_result_dict = xmltodict.parse(list_result,postprocessor=mm_util.xmltodict_postprocessor)

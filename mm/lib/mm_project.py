@@ -1009,6 +1009,7 @@ class MavensMateProject(object):
 
     #compiles a list of all metadata in the org and places in .org_metadata file
     def index_metadata(self):
+        startThread = time.clock()
         try:    
             return_list = []
             if self.sfdc_client == None or self.sfdc_client.is_connection_alive() == False:
@@ -1017,30 +1018,51 @@ class MavensMateProject(object):
 
             data = self.__get_org_describe()
 
+            use_threading = True
             threads = []
-            creds = self.get_creds()
-            for metadata_type in data["metadataObjects"]:
-                thread_client = MavensMateClient(credentials=creds)
-                thread = IndexCall(thread_client, metadata_type)
-                threads.append(thread)
-                thread.start()
-
             thread_results = []
+            creds = self.get_creds()
+            thread_client = MavensMateClient(credentials=creds)
+
+            for metadata_type in data["metadataObjects"]:
+                if use_threading:
+                    thread = IndexCall(thread_client, metadata_type)
+                    threads.append(thread)
+                    thread.start()
+                else:
+                    children = thread_client.list_metadata(metadata_type['xmlName'])
+                    if children == None:
+                        children = []
+                    thread_results.apend({
+                        "xmlName"   : metadata_type['xmlName'],
+                        "type"      : metadata_type,
+                        "children"  : children
+                    })
+
             for thread in threads:
-                thread.join()  
+                thread.join()
                 if thread.result != None:
                     thread_results.append(thread.result)
             return_list = sorted(thread_results, key=itemgetter('xmlName')) 
-            
+
             #for testing only
             #return_list = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
             #end for testing only
 
-            # we select metadata every time, no need to do it here
-            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(return_list)
-            
-            file_body = json.dumps(metadata_with_selected_flags)
-            #file_body = json.dumps(metadata_with_selected_flags, sort_keys=False, indent=4)
+            # unselect all metadata, it is dynamically selected later.
+            for item in return_list:
+                if 'selected' in item:
+                    item['selected'] = False
+                if 'children' in item:
+                    for child_item in item['children']:
+                        if 'selected' in child_item:
+                            child_item['selected'] = False
+                        if 'children' in child_item['children']:
+                            for grand_child_item in child_item['children']:
+                                if 'selected' in grand_child_item:
+                                    grand_child_item['selected'] = False
+
+            file_body = json.dumps(return_list, sort_keys=False, indent=4)
             src = open(self.location+"/config/.org_metadata", "w")
             src.write(file_body)
             src.close()
@@ -1051,19 +1073,6 @@ class MavensMateProject(object):
     def __select_metadata_based_on_package_xml(self, return_list):
         #process package and select only the items the package has specified
         package_types = self.get_package_types();
-
-        for item in return_list:
-            item['selected'] = False
-            if 'children' in item:
-                for child in item['children']:
-                    child['selected'] = False
-                    if 'children' in child:
-                        for gchild in child['children']:
-                            gchild['selected'] = False
-                            if 'children' in gchild:
-                                for ggchild in gchild['children']:
-                                    ggchild['selected'] = False
-        
         #expand standard "custombjects" to customfields
         custom_fields = []
         for val in package_types:
@@ -1091,7 +1100,7 @@ class MavensMateProject(object):
                                 break
                         # go on to the next standard object
                         continue
-
+        custom_fields = [] 
         if len(custom_fields):
             custom_field = None
             new_packages = []
@@ -1111,7 +1120,6 @@ class MavensMateProject(object):
             custom_field['members'] = list(set(members+custom_fields))
             new_packages.append(custom_field)
             package_types = new_packages
-            
 
         for val in package_types:
             metadata_type = val['name']
@@ -1145,6 +1153,12 @@ class MavensMateProject(object):
 
             if members == "*": #if package is subscribed to all
                 server_metadata_item['selected'] = True
+                if 'children' in server_metadata_item:
+                    for child in server_metadata_item['children']:
+                        child['selected'] = True
+                        if 'children' in child:
+                            for gchild in child['children']:
+                                gchild['selected'] = True
                 continue
             else: #package has specified members (members => ['Account', 'Lead'])
             
@@ -1204,7 +1218,7 @@ class MavensMateProject(object):
                                         gchild['selected'] = True
                                         for ggchild in gchild['children']:
                                             ggchild['selected'] = True
-
+        
         return return_list
 
     def index_apex_overlays(self, payload):
@@ -1404,27 +1418,26 @@ class MavensMateProject(object):
         else:
             return []
 
-    def get_org_metadata(self):
+    def get_org_metadata(self, selected=None):
         if self.get_is_metadata_indexed() == True:
-            cached_metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
-            for item in cached_metadata:
-                if 'selected' in item:
-                    item['selected'] = False
-                if 'children' in item:
-                    for child_item in item['children']:
-                        if 'selected' in child_item:
-                            child_item['selected'] = False
-                        if 'children' in child_item:
-                            for grand_child_item in child_item['children']:
-                                if 'selected' in grand_child_item:
-                                    grand_child_item['selected'] = False
+            metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
             
-            metadata_with_selected_flags = self.__select_metadata_based_on_package_xml(cached_metadata)
-            file_body = json.dumps(metadata_with_selected_flags)
-            src = open(os.path.join(self.location,"config",".org_metadata"), "w")
-            src.write(file_body)
-            src.close()
-            return metadata_with_selected_flags
+            if selected != None and len(selected) > 0:
+                for p in selected:
+                    for item in metadata:
+                        for child in item['children']:
+                            if child['title'] == p:
+                                child['selected'] = True
+                            else:
+                                child['selected'] = False
+            else:
+                metadata = self.__select_metadata_based_on_package_xml(metadata)
+            #metadata = None
+            #file_body = json.dumps(metadata)
+            #src = open(os.path.join(self.location,"config",".org_metadata"), "w")
+            #src.write(file_body)
+            #src.close()
+            return metadata
         else:
             self.index_metadata()
             return mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
@@ -1629,6 +1642,7 @@ class IndexCall(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        startThread = time.clock()
         try:
             result = self.client.list_metadata(self.metadata_type['xmlName'])
             if result == None:
@@ -1638,6 +1652,7 @@ class IndexCall(threading.Thread):
                 "type"      : self.metadata_type,
                 "children"  : result
             }
+            elapsed =  (time.clock() - startThread)
         except BaseException, e:
             #print 'ERROR: %s\n' % str(e)
             #print 'error when listing: ', e.message

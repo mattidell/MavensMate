@@ -1,7 +1,10 @@
 import logging
 import os.path
 import sys
+import time
 import tempfile
+
+mm_start = time.clock()
 
 logging.raiseExceptions = False
 logging.basicConfig(level=logging.INFO)
