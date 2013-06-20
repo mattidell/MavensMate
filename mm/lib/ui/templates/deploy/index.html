@@ -300,6 +300,7 @@
 					</select>
 				</div>
 				<a href="#" class="btn btn-success" id="search-btn"><i class="icon-search"></i></a>
+				<a href="#" class="btn btn-select" id="select-btn"><i class="icon-check"></i></a>
 			</div>
 			<div id="project_wrapper">
 								
@@ -339,45 +340,26 @@
 	var operation;
 
 	function isValidateOnly() {
-		if ($("#check_only").is(":checked")) {
-			return true;
-		} else {
-			return false;
-		}
+		return $("#check_only").is(":checked")
 	}
 
 	function isRunTests() {
-		if ($("#run_tests").is(":checked")) {
-			return true;
-		} else {
-			return false;
-		}
+		return $("#run_tests").is(":checked")
 	}
 
 	function isRollbackOnError() {
-		if ($("#rollback").is(":checked")) {
-			return true;
-		} else {
-			return false;
-		}
+		return $("#rollback").is(":checked")
 	}
 
 	$("#save_changeset").click(function() {
-		if (this.checked) {
-			$("#changeset_name_wrapper").show();			
-		} else {
-			$("#changeset_name_wrapper").hide();
-		}
+		$("#changeset_name_wrapper").toggle(this.checked)
 	});
 
 	$(function() {
  		
 		$("#check_only").change(function() {
-			if (!this.checked) {
-				$("#btnDeploy").val('Deploy to Server');
-			} else {
-				$("#btnDeploy").val('Validate Deployment');
-			}
+			var text = (this.checked)? 'Validate Deployment' : 'Deploy to Server';
+			$("#btnDeploy").val(text);
 		});
 		
 		$("#un_list").change(function() {
@@ -391,12 +373,7 @@
 		});
 
 		$("ul.nav-tabs li a span").hover(
-			function() {
-				$(this).addClass("label-success")
-			},
-			function() {
-				$(this).removeClass("label-success")
-			}
+			$(this).toggleClass("label-success")
 		)
 		
 		if ($("#un_list").val() != 'new') {
@@ -431,13 +408,27 @@
 	        $(this).change();
 	    });
 
-	    $("#search-btn").click(function() {
+	    $("#search-btn").on('click', function() {
 	    	if ($(this).hasClass('btn-success')) {
 	    		submitSearch()
 	    	} else {
 	    		clearFilter()
 	    	}
 	    })
+
+		$("#select-btn").on('click', function(){
+			icon = $(this).find("i");
+			$("#tree").dynatree("getRoot").visit(function(node){
+				node.select(icon.hasClass('icon-check'));
+			});
+			icon.toggleClass('icon-check');
+			icon.toggleClass('icon-check-empty');
+			return false;
+		});
+
+		$('#txtFilter, #meta_type').on('change', function(){
+			clearFilter();
+		});
 		
 		if (!has_indexed_metadata) {
 				index_org();
