@@ -165,7 +165,14 @@ def deploy_to_server(args):
     deploy_result = config.connection.project.deploy_to_server(request_payload)
     if args.respond_with_html == True:
         html = util.generate_html_response(args.operation, deploy_result, request_payload)
-        print util.generate_success_response(html, "html")
+        response = json.loads(util.generate_success_response(html, "html"))
+        response['deploy_success'] = True
+        # if deployment to one org fails, the entire deploy was not successful
+        for result in deploy_result:
+            if result['success'] == False:
+                response['deploy_success'] = False
+                break
+        print json.dumps(response)
     else:
         print deploy_result
 

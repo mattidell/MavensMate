@@ -462,11 +462,17 @@ def generate_html_response(operation, obj, params):
         template = env.get_template('/deploy/result.html')
         deploy_results = []
         for result in obj:
+            if 'messages' in result:
+                for m in result['messages']:
+                    if m['success'] == False:
+                        result['success'] = False
+                        break
             if 'runTestResult' in result and 'codeCoverage' in result['runTestResult']:
                 result['parsedTestResults'] = process_unit_test_result(result['runTestResult'])
                 deploy_results.append(result)
             else:
                 deploy_results.append(result)
+        config.logger.debug(obj)
         config.logger.debug(deploy_results)
         html = template.render(deploy_results=deploy_results,args=params)
     elif operation == 'index_metadata':
