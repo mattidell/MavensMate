@@ -1098,10 +1098,8 @@ class MavensMateProject(object):
                                             break
                                 # we only need to look at CustomObject
                                 break
-                        # go on to the next standard object
-                        continue
-        custom_fields = [] 
-        if len(custom_fields):
+
+        if len(custom_fields) > 0:
             custom_field = None
             new_packages = []
             for val in package_types:
@@ -1159,6 +1157,9 @@ class MavensMateProject(object):
                         if 'children' in child:
                             for gchild in child['children']:
                                 gchild['selected'] = True
+                                if 'children' in gchild:
+                                    for ggchild in gchild['children']:
+                                        ggchild['selected'] = True
                 continue
             else: #package has specified members (members => ['Account', 'Lead'])
             
@@ -1379,11 +1380,14 @@ class MavensMateProject(object):
         return mm_util.parse_xml_from_file(os.path.join(self.location,"src","package.xml"))
 
     def get_package_types(self):
-        project_package = self.__get_package_as_dict()
-        package_types = project_package['Package']['types']
-        if not isinstance(package_types, (list, tuple)):
-            package_types = [package_types]
-        return package_types
+        try:
+            project_package = self.__get_package_as_dict()
+            package_types = project_package['Package']['types']
+            if not isinstance(package_types, (list, tuple)):
+                package_types = [package_types]
+            return package_types
+        except:
+            return []
 
     def get_is_metadata_indexed(self):
         try:

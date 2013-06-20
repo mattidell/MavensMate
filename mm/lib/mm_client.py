@@ -261,7 +261,6 @@ class MavensMateClient(object):
                 shutil.rmtree(tmp)
 
             return_elements = []
-
             for element in list_response:
                 children = []
                 full_name = element['fullName']
@@ -300,7 +299,7 @@ class MavensMateClient(object):
                                 "children"  : gchildren,
                                 "selected"  : False
                             })
-                            
+                                            
                 #if this type has folders, run queries to grab all metadata in the folders
                 if is_folder_metadata == True:
                     if element["manageableState"] != "unmanaged":
@@ -322,16 +321,7 @@ class MavensMateClient(object):
                             "isFolder"  : False,
                             "selected"  : False
                         })
-                children = sorted(children, key=itemgetter('title')) 
-                return_elements.append({
-                    "title"     : element['fullName'],
-                    "key"       : element['fullName'],
-                    "isLazy"    : is_folder_metadata or has_children_metadata,
-                    "isFolder"  : is_folder_metadata or has_children_metadata,
-                    "children"  : children,
-                    "selected"  : False
-                })
-
+                    
                 children = sorted(children, key=itemgetter('title')) 
                 return_elements.append({
                     "title"     : element['fullName'],
