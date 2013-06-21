@@ -228,8 +228,8 @@ def get_symbol_table():
     print config.connection.project.get_symbol_table(request_payload)
 
 def index_apex_file_properties():
-    print util.generate_error_response("Operation not currently supported")
-    #print config.connection.project.index_apex_file_properties()
+    #print util.generate_error_response("Operation not currently supported")
+    print config.connection.project.index_apex_file_properties()
 
 operation_dict = {
     'new_project'                           : new_project,

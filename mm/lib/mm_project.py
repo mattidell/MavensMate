@@ -360,40 +360,34 @@ class MavensMateProject(object):
             #this first try goes to the apex api
             try:
                 #when compiling a single class, check to see if it is newer on the server
-                if len(files) == 1 and config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False) == True:
-                    apex_file_properties = self.get_apex_file_properties();
-                    filename = os.path.basename(files[0])
+                # if len(files) == 1 and config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False) == True:
+                #     if 'override' not in params or params['override'] == False:
+                #         apex_file_properties = self.get_apex_file_properties();
+                #         filename = os.path.basename(files[0])
 
-                    error_result = {
-                        'success': False,
-                        'line': '0',
-                        'column': '0',
-                    }
+                #         error_result = {
+                #             'success': False,
+                #             'line': '0',
+                #             'column': '0',
+                #             'conflict' : True
+                #         }
 
-                    if filename not in apex_file_properties:
-                        error_result['problem'] = "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
-                        return json.dumps(error_result)
-                    elif 'conflict' in apex_file_properties[filename] and apex_file_properties[filename]['conflict'] == True:
-                        error_result['problem'] = "Uh oh, the file " + filename + " is currently marked as in conflict with the server, last updated by " + apex_file_properties[filename]['conflictLastModifiedByName'] + " on " + apex_file_properties[filename]['conflictLastModifiedDate'] + ". Please refresh this file or synchronize with the server and mark it as merged."
-                        return json.dumps(error_result)
+                #         if filename not in apex_file_properties:
+                #             error_result['problem'] = "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
+                #             return json.dumps(error_result)
+                       
+                #         retrieve_result = self.get_retrieve_result(params)
+                #         for props in retrieve_result.fileProperties:
+                #             if props.type != 'Package':
+                #                 if filename in apex_file_properties:
+                #                     if 'lastModifiedDate' in apex_file_properties[filename]:
+                #                         lastModifiedDate = apex_file_properties[filename]['lastModifiedDate']
+                #                     else:
+                #                         lastModifiedDate = ''
 
-                    retrieve_result = self.get_retrieve_result(params)
-                    for props in retrieve_result.fileProperties:
-                        if props.type != 'Package':
-                            if filename in apex_file_properties:
-                                if 'lastModifiedDate' in apex_file_properties[filename]:
-                                    lastModifiedDate = apex_file_properties[filename]['lastModifiedDate']
-                                else:
-                                    lastModifiedDate = ''
-
-                                if lastModifiedDate != str(props.lastModifiedDate):
-                                    error_result['problem'] = "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + lastModifiedDate
-                                    # mark this file as in conflict
-                                    apex_file_properties[filename]['conflict'] = True
-                                    apex_file_properties[filename]['conflictLastModifiedDate'] = str(props.lastModifiedDate)
-                                    apex_file_properties[filename]['conflictLastModifiedByName'] = str(props.lastModifiedByName)
-                                    self.write_apex_file_properties(apex_file_properties)
-                                    return json.dumps(error_result)
+                #                     if lastModifiedDate != str(props.lastModifiedDate):
+                #                         error_result['problem'] = "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + lastModifiedDate
+                #                         return json.dumps(error_result)
 
                 #no conflicts, compile
                 if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
