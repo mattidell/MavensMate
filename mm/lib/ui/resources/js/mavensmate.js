@@ -428,7 +428,6 @@ function submitSearch() {
 }
 
 function clearFilter() {
-	$('#txtFilter').val('');
 	collapseAll();
 	$(".dynatree-container li").show(); 
 	$('#txtFilter').focus();
