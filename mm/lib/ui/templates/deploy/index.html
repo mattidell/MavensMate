@@ -519,9 +519,11 @@
 			$("#dropdown-destinations").html($("#destination_options ul").html());
 			$("#destination_options").remove()
 
-			$("#check_only").attr('checked', false);
-			$("#check_only").parent().removeClass('checked')
-			$("#btnDeploy").val('Deploy to Server');
+			if (response["deploy_success"] == true){
+				$("#check_only").attr('checked', false);
+				$("#check_only").parent().removeClass('checked')
+				$("#btnDeploy").val('Deploy to Server');
+			}
 
 			$("#main-tab-content").append($("#extra_tabs").html());
 			$("#extra_tabs").remove()
