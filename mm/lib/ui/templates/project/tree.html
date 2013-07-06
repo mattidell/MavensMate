@@ -1,4 +1,3 @@
-{{ operation }}
 {% for item in metadata %}
      {% if 'children' in item and item['children']|length > 0 %}
           {% set class_name = "folder" %}
@@ -9,11 +8,6 @@
           {% set has_child_types = True %}
      {% else %}
           {% set has_child_types = False %}
-     {% endif %}
-     {% if operation != 'deploy' and 'selected' in item and item['selected'] == True %}
-          {% set level_1_selected = "selected" %}
-     {% else %}
-          {% set level_1_selected = "" %}
      {% endif %}
      <li data="level: 1, hasChildTypes: {{ has_child_types|lower }}, inFolder: {{ item['type']['inFolder']|lower }}" id="{{ item['type']['xmlName'] }}" class="{{ level_1_selected }}{{ " " }}folder{{ " " }}level1">{{ item['type']['xmlName'] }}                        
           {% if item['children'] %}
