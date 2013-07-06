@@ -345,6 +345,10 @@ ul.dynatree-container {
 	display:none;
 }
 
+.x-tree-checkbox {
+	width:15px !important;
+}
+
 /* BIG CIRCLE */
 
 #floatingCirclesG{
