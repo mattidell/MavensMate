@@ -20,6 +20,7 @@ import codecs
 import traceback
 import plistlib
 import platform
+import itertools
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -73,6 +74,12 @@ def parse_json_from_file(location):
             return data
     except:
         return parse_json(location)
+
+def filter_json(json_source, keyword):
+    for mt in json_source:
+        for k, v in mt.iteritems():
+            print k
+            print v
 
 def parse_xml_from_file(location):
     if not os.path.exists(location):
@@ -359,10 +366,10 @@ def generate_ui(operation,params={}):
         ).encode('UTF-8')
     elif operation == 'edit_project':
         tree_body = ''
-        if config.connection.project.is_metadata_indexed == True:
-            template = env.get_template('/project/tree.html')
-            org_metadata = config.connection.project.get_org_metadata()
-            tree_body = template.render(metadata=org_metadata)
+        # if config.connection.project.is_metadata_indexed == True:
+        #     template = env.get_template('/project/tree.html')
+        #     org_metadata = config.connection.project.get_org_metadata()
+        #     tree_body = template.render(metadata=org_metadata)
         template = env.get_template('/project/edit.html')
         creds = config.connection.project.get_creds()
         file_body = template.render(
@@ -371,9 +378,9 @@ def generate_ui(operation,params={}):
             username=creds['username'],
             password=creds['password'],
             org_type=creds['org_type'],
-            has_indexed_metadata=config.connection.project.is_metadata_indexed,
+            # has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
-            tree_body=tree_body,
+            # tree_body=tree_body,
             client=config.connection.plugin_client
         ).encode('UTF-8')
     elif operation == 'unit_test':
@@ -822,6 +829,11 @@ def parse_run_test_result(res):
         })
     return_result['codeCoverage'] = code_coverage_return
     return return_result
+
+def grouper(n, iterable, fillvalue=None):
+    "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return itertools.izip_longest(fillvalue=fillvalue, *args)
 
 # def get_creds(project_directory): 
 #     f = open(project_directory + "/config/settings.yaml")

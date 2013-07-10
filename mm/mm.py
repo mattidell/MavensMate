@@ -105,12 +105,18 @@ def delete_selected_metadata():
     print config.connection.project.delete_selected_metadata(request_payload)
 
 def index_metadata(args):
-    index_result = config.connection.project.index_metadata()
+    if 'metadata_type' in request_payload:
+        index_result = config.connection.project.index_metadata(request_payload['metadata_type'])
+    else:
+        index_result = config.connection.project.index_metadata()
     if args.respond_with_html == True:
         html = util.generate_html_response(args.operation, index_result, request_payload)
         print util.generate_success_response(html, "html")
     else:
         print util.generate_success_response(index_result)
+
+def get_metadata_index():
+    print config.connection.project.get_org_metadata(None, True)
 
 def new_project():
     print config.connection.new_project(request_payload,action='new')
@@ -253,6 +259,7 @@ operation_dict = {
     'test'                                  : run_unit_tests,
     'list_metadata'                         : list_metadata,
     'index_metadata'                        : index_metadata,
+    'get_indexed_metadata'                  : get_metadata_index,
     'list_connections'                      : list_connections,
     'new_connection'                        : new_connection,
     'delete_connection'                     : delete_connection,

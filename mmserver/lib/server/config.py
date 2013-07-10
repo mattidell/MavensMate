@@ -205,6 +205,23 @@ def metadata_list_request(request_handler):
     response = worker_thread.response
     respond(request_handler, response)
 
+def get_metadata_index(request_handler):
+    '''
+        GET /project/index
+        {
+            "project_name"  : "my project name"
+        }
+        call to get the metadata index for a project
+    '''
+    print 'FUCK'
+    request_id = util.generate_request_id()
+    params, json_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('get_indexed_metadata', params, False, request_id, json_body, plugin_client)
+    worker_thread.start()
+    worker_thread.join()
+    response = worker_thread.response
+    respond(request_handler, response)    
+
 ##########################
 ## END REQUEST HANDLERS ##
 ##########################
@@ -341,6 +358,7 @@ mappings = {
     '/project/creds'        : { 'POST'  : update_credentials_request },
     '/project/deploy'       : { 'POST'  : deploy_request },
     '/project/unit_test'    : { 'POST'  : unit_test_request },
+    '/project/get_index'    : { 'GET'   : get_metadata_index },
     '/project/index'        : { 'POST'  : metadata_index_request },
     '/project/conns/list'   : { 'GET'   : connections_list_request },
     '/project/conns/new'    : { 'POST'  : connections_new_request },

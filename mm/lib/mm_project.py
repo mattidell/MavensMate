@@ -19,6 +19,8 @@ import collections
 import webbrowser
 import tempfile
 import subprocess
+import traceback
+
 from xml.dom import minidom
 from mm_exceptions import MMException
 from operator import itemgetter
@@ -1002,7 +1004,7 @@ class MavensMateProject(object):
             return mm_util.generate_error_response(e.message)
 
     #compiles a list of all metadata in the org and places in .org_metadata file
-    def index_metadata(self):
+    def index_metadata(self, mtype=None):
         startThread = time.clock()
         try:    
             return_list = []
@@ -1016,45 +1018,38 @@ class MavensMateProject(object):
             threads = []
             thread_results = []
             creds = self.get_creds()
-            thread_client = MavensMateClient(credentials=creds)
 
-            for metadata_type in data["metadataObjects"]:
-                if use_threading:
-                    thread = IndexCall(thread_client, metadata_type)
+            if mtype == None:
+                metadata_chunks = list(mm_util.grouper(5, data["metadataObjects"]))
+                for chunk in metadata_chunks:                    
+                    thread_client = MavensMateClient(credentials=creds)
+                    thread = IndexCall(thread_client, chunk)
                     threads.append(thread)
                     thread.start()
-                else:
-                    children = thread_client.list_metadata(metadata_type['xmlName'])
-                    if children == None:
-                        children = []
-                    thread_results.apend({
-                        "xmlName"   : metadata_type['xmlName'],
-                        "type"      : metadata_type,
-                        "children"  : children
-                    })
+            else:
+                mtype_def = None
+                for md in data["metadataObjects"]:
+                    if md['xmlName'] == mtype:
+                        mtype_def = md
+                        break
+                thread_client = MavensMateClient(credentials=creds)
+                thread = IndexCall(thread_client, [mtype_def])
+                threads.append(thread)
+                thread.start()
+               
 
             for thread in threads:
                 thread.join()
-                if thread.result != None:
-                    thread_results.append(thread.result)
-            return_list = sorted(thread_results, key=itemgetter('xmlName')) 
-
+                if len(thread.results) == len(thread.metadata_types):
+                    thread_results.extend(thread.results)
+                    #del thread.client
+            
+            #print thread_results
+            return_list = sorted(thread_results, key=itemgetter('text')) 
+            #return_list = thread_results
             #for testing only
             #return_list = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
             #end for testing only
-
-            # unselect all metadata, it is dynamically selected later.
-            for item in return_list:
-                if 'selected' in item:
-                    item['selected'] = False
-                if 'children' in item:
-                    for child_item in item['children']:
-                        if 'selected' in child_item:
-                            child_item['selected'] = False
-                        if 'children' in child_item['children']:
-                            for grand_child_item in child_item['children']:
-                                if 'selected' in grand_child_item:
-                                    grand_child_item['selected'] = False
 
             file_body = json.dumps(return_list, sort_keys=False, indent=4)
             src = open(self.location+"/config/.org_metadata", "w")
@@ -1416,26 +1411,29 @@ class MavensMateProject(object):
         else:
             return []
 
-    def get_org_metadata(self, selected=None):
+    def get_org_metadata(self, selected=None, raw=False):
         if self.get_is_metadata_indexed() == True:
-            metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
-            
-            if selected != None and len(selected) > 0:
-                for p in selected:
-                    for item in metadata:
-                        for child in item['children']:
-                            if child['title'] == p:
-                                child['selected'] = True
-                            else:
-                                child['selected'] = False
+            if raw:
+                return mm_util.get_file_as_string(os.path.join(self.location,"config",".org_metadata"))
             else:
-                metadata = self.__select_metadata_based_on_package_xml(metadata)
-            #metadata = None
-            #file_body = json.dumps(metadata)
-            #src = open(os.path.join(self.location,"config",".org_metadata"), "w")
-            #src.write(file_body)
-            #src.close()
-            return metadata
+                metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
+                # if selected != None and len(selected) > 0:
+                #     for p in selected:
+                #         for item in metadata:
+                #             for child in item['children']:
+                #                 if child['title'] == p:
+                #                     child['selected'] = True
+                #                 else:
+                #                     child['selected'] = False
+                # else:
+                #     metadata = self.__select_metadata_based_on_package_xml(metadata)
+                #     
+                #metadata = None
+                #file_body = json.dumps(metadata)
+                #src = open(os.path.join(self.location,"config",".org_metadata"), "w")
+                #src.write(file_body)
+                #src.close()
+                return metadata
         else:
             self.index_metadata()
             return mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
@@ -1633,29 +1631,54 @@ class DeploymentHandler(threading.Thread):
             self.result = mm_util.generate_error_response(e.message)
 
 class IndexCall(threading.Thread):
-    def __init__(self, client, metadata_type):
-        self.metadata_type  = metadata_type
+    def __init__(self, client, metadata_types):
+        self.metadata_types = metadata_types
         self.client         = client
-        self.result         = None
+        self.results        = []
         threading.Thread.__init__(self)
 
     def run(self):
         startThread = time.clock()
-        try:
-            result = self.client.list_metadata(self.metadata_type['xmlName'])
-            if result == None:
-                result = []
-            self.result = {
-                "xmlName"   : self.metadata_type['xmlName'],
-                "type"      : self.metadata_type,
-                "children"  : result
-            }
-            elapsed =  (time.clock() - startThread)
-        except BaseException, e:
-            #print 'ERROR: %s\n' % str(e)
-            #print 'error when listing: ', e.message
-            #self.result = mm_util.generate_error_response(e.message)
-            self.result = None
+        for mtype in self.metadata_types:
+            print mtype["xmlName"]
+            if mtype == None:
+                continue
+            try:
+                result = self.client.list_metadata(mtype['xmlName'])
+                if result == None:
+                    result = []
+                self.results.append({
+                    "text"      : mtype['xmlName'],
+                    "xmlName"   : mtype['xmlName'],
+                    "type"      : mtype,
+                    "cls"       : "folder",
+                    "expanded"  : False,
+                    "children"  : result,
+                    "checked"   : False,
+                    "level"     : 1
+                })
+                elapsed =  (time.clock() - startThread)
+            except BaseException, e:
+                #print 'ERROR: %s\n' % str(e)
+                #print self.result
+                print 'error when trying to index: ', mtype['xmlName']
+                print e.message
+                trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
+                print trace
+                #print self.metadata_type['xmlName']
+                #self.result = mm_util.generate_error_response(e.message)
+                #self.results.append({})
+                self.results.append({
+                    "text"      : mtype['xmlName'],
+                    "xmlName"   : mtype['xmlName'],
+                    "type"      : mtype,
+                    "cls"       : "folder",
+                    "expanded"  : False,
+                    "children"  : [],
+                    "checked"   : False,
+                    "level"     : 1
+                })
+                continue
 
 
 

@@ -283,31 +283,32 @@ class MavensMateClient(object):
                             gchildren = []
                             for gchild_el in object_detail[tag_name]:
                                 gchildren.append({
-                                    "title"       : gchild_el,
-                                    "key"         : gchild_el,
-                                    "isLazy"      : False,
-                                    "isFolder"    : False,
-                                    "selected"    : False
+                                    "text"      : gchild_el,
+                                    "key"       : gchild_el,
+                                    "isFolder"  : False,
+                                    "checked"   : False,
+                                    "level"     : 4
                                 })
-                                children = sorted(children, key=itemgetter('title')) 
+                                children = sorted(children, key=itemgetter('text')) 
                           
                             children.append({
-                                "title"     : child_type_def['tagName'],
+                                "text"      : child_type_def['tagName'],
                                 "key"       : child_type_def['tagName'],
-                                "isLazy"    : False,
                                 "isFolder"  : True,
+                                "cls"       : "folder",
                                 "children"  : gchildren,
-                                "selected"  : False
+                                "checked"   : False,
+                                "level"     : 3
                             })
                                             
                 #if this type has folders, run queries to grab all metadata in the folders
                 if is_folder_metadata == True:
                     if element["manageableState"] != "unmanaged":
                         continue
-
+                    #print element["fullName"]
                     list_basic_response = self.list_metadata_basic({
-                            "type"      : metadata_type,
-                            "folder"    : element["fullName"]
+                        "type"      : metadata_type,
+                        "folder"    : element["fullName"]
                     })
 
                     if type(list_basic_response) is not list:
@@ -315,24 +316,27 @@ class MavensMateClient(object):
 
                     for folder_element in list_basic_response:
                         children.append({
-                            "title"     : folder_element['fullName'].split("/")[1],
+                            "text"      : folder_element['fullName'].split("/")[1],
                             "key"       : folder_element['fullName'],
-                            "isLazy"    : False,
+                            "leaf"      : True,
                             "isFolder"  : False,
-                            "selected"  : False
+                            "checked"   : False,
+                            "level"     : 3
                         })
                     
-                children = sorted(children, key=itemgetter('title')) 
+                children = sorted(children, key=itemgetter('text')) 
                 return_elements.append({
-                    "title"     : element['fullName'],
+                    "text"      : element['fullName'],
                     "key"       : element['fullName'],
-                    "isLazy"    : is_folder_metadata or has_children_metadata,
                     "isFolder"  : is_folder_metadata or has_children_metadata,
+                    "cls"       : "folder" if is_folder_metadata or has_children_metadata else "",
+                    "leaf"      : not is_folder_metadata and not has_children_metadata,
                     "children"  : children,
-                    "selected"  : False
+                    "checked"   : False,
+                    "level"     : 2
                 })
 
-            return_elements = sorted(return_elements, key=itemgetter('title')) 
+            return_elements = sorted(return_elements, key=itemgetter('text')) 
             # if list_response == []:
             #     return list_response
 
