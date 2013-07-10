@@ -77,12 +77,26 @@ Ext.define('Ext.ux.grid.TriStateTree', {
     returnLeafsOnly: true,
     width: 350,
     height: 200,
+    selectedIds: [],
     selModel: new Ext.selection.TreeModel({
         mode: 'MULTI',
         ignoreRightMouseSelection: true
     }),
 
     listeners: {
+        load: function() {
+            for (var i = 0; i < this.selectedIds.length; i++) {
+                try {
+                    console.log('processing: ' + this.selectedIds[i])
+                    var node = this.store.getById(this.selectedIds[i])
+                    console.log(node)
+                    node.set('checked', true);
+                } catch(e) {
+
+                }
+            }
+            hideLoading()
+        },
         checkchange: function (node, check) {
             var me = this;
 
@@ -103,7 +117,14 @@ Ext.define('Ext.ux.grid.TriStateTree', {
                 });
             }
 
-
+            // console.log(node)
+            // console.log(check)
+            // if (check) {
+            //     this.selectedIds.push(node.get('id'))
+            // } else {
+            //     var index = this.selectedIds.indexOf(node.get('id'));
+            //     this.selectedIds.splice(index, 1);
+            // }
         },
         beforeitemclick: function(dv, record, item, index, e) {
             // if (isTreeFiltered) {
@@ -323,45 +344,4 @@ Ext.define('Ext.ux.grid.TriStateTree', {
 
 
     }
-
-    // initComponent: function () {
-    //     var me = this;
-
-    //     //debug('[ACCESS PANEL]');
-
-    //     var data = {
-    //         text: 'SELECT ALL (id'+me.ALL_ID + ')',
-    //         id: me.ALL_ID,
-    //         expanded: true,
-    //         checked: false,
-    //         children: [
-    //             { text: "id2 homework ",  checked: false,    expanded: true,
-    //                 id  : 2,
-    //                 children: [
-    //                 {       id  : 3,  checked: false, text: "id3 book report ",  leaf: true },
-    //                 {       id  : 4,   checked: false, text: "id4 algebra ", leaf: true}
-
-    //             ] },
-    //             {        id  : 5,  checked: false, text: "id5 food ", expanded: true, children: [
-    //                 {        id  : 6,  checked: false,   text: "id6 meat ", leaf: true },
-    //                 {        id  : 7,  checked: false,  text: "id7 milk ", leaf: true}
-    //             ] },
-    //             {        id  : 8,  checked: false,  text: "id8 plans ", expanded: true, children: [
-    //                 {        id  : 9, checked: false,   text: "id9 vacation ", leaf: true },
-    //                 {        id  : 10,  checked: false,  text: "id10 rule the world ", leaf: true}
-    //             ] }
-    //         ]
-    //     };
-
-
-    //     this.store = Ext.create('Ext.data.TreeStore', {
-    //         fields: ['text' , 'id'],
-    //         root: data
-
-    //     });
-
-    //     this.callParent(arguments);
-
-    // }
-
 });
