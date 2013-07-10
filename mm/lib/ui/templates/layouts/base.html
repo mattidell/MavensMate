@@ -60,9 +60,9 @@
         }
 
         function submitSearch() {
-            showLoading("Searching...")
             var filter = $("#txtFilter").val();
             if (filter && filter.length > 2) {
+                showLoading("Searching...")
                 tree_store.load({
                   params: {keyword: filter, project_name: '{{ name }}'},
                   callback:hideLoading
