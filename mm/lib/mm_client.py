@@ -287,7 +287,9 @@ class MavensMateClient(object):
                                     "key"       : gchild_el,
                                     "isFolder"  : False,
                                     "checked"   : False,
-                                    "level"     : 4
+                                    "level"     : 4,
+                                    "id"        : mm_util.get_random_string(20)
+
                                 })
                                 children = sorted(children, key=itemgetter('text')) 
                           
@@ -298,7 +300,8 @@ class MavensMateClient(object):
                                 "cls"       : "folder",
                                 "children"  : gchildren,
                                 "checked"   : False,
-                                "level"     : 3
+                                "level"     : 3,
+                                "id"        : mm_util.get_random_string(20)
                             })
                                             
                 #if this type has folders, run queries to grab all metadata in the folders
@@ -321,7 +324,8 @@ class MavensMateClient(object):
                             "leaf"      : True,
                             "isFolder"  : False,
                             "checked"   : False,
-                            "level"     : 3
+                            "level"     : 3,
+                            "id"        : mm_util.get_random_string(20)
                         })
                     
                 children = sorted(children, key=itemgetter('text')) 
@@ -333,7 +337,8 @@ class MavensMateClient(object):
                     "leaf"      : not is_folder_metadata and not has_children_metadata,
                     "children"  : children,
                     "checked"   : False,
-                    "level"     : 2
+                    "level"     : 2,
+                    "id"        : mm_util.get_random_string(20)
                 })
 
             return_elements = sorted(return_elements, key=itemgetter('text')) 
