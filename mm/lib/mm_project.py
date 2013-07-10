@@ -1661,7 +1661,8 @@ class IndexCall(threading.Thread):
                     "expanded"  : False,
                     "children"  : result,
                     "checked"   : False,
-                    "level"     : 1
+                    "level"     : 1,
+                    "id"        : mm_util.get_random_string(20)
                 })
                 elapsed =  (time.clock() - startThread)
             except BaseException, e:
@@ -1682,7 +1683,8 @@ class IndexCall(threading.Thread):
                     "expanded"  : False,
                     "children"  : [],
                     "checked"   : False,
-                    "level"     : 1
+                    "level"     : 1,
+                    "id"        : mm_util.get_random_string(20)
                 })
                 continue
 
