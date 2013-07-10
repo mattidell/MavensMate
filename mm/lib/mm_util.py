@@ -75,12 +75,6 @@ def parse_json_from_file(location):
     except:
         return parse_json(location)
 
-def filter_json(json_source, keyword):
-    for mt in json_source:
-        for k, v in mt.iteritems():
-            print k
-            print v
-
 def parse_xml_from_file(location):
     if not os.path.exists(location):
         return {}
