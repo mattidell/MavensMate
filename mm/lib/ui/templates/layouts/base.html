@@ -62,10 +62,13 @@
         function submitSearch() {
             var filter = $("#txtFilter").val();
             if (filter && filter.length > 2) {
+                var recs = tree.getView().getChecked()
+                Ext.Array.each(recs, function(rec){
+                    tree.selectedIds.push(rec.get('id'));
+                });
                 showLoading("Searching...")
                 tree_store.load({
-                  params: {keyword: filter, project_name: '{{ name }}'},
-                  callback:hideLoading
+                  params: {keyword: filter, project_name: '{{ name }}'}
                 })
                 $("#search-btn").removeClass('btn-success').addClass('btn-danger').html('<i class="icon-remove"></i>')
             }
