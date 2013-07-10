@@ -116,7 +116,10 @@ def index_metadata(args):
         print util.generate_success_response(index_result)
 
 def get_metadata_index():
-    print config.connection.project.get_org_metadata(None, True)
+    if 'keyword' in request_payload:
+        print config.connection.project.filter_indexed_metadata(request_payload)
+    else:
+        print config.connection.project.get_org_metadata(None, True)
 
 def new_project():
     print config.connection.new_project(request_payload,action='new')
@@ -228,7 +231,6 @@ def update_credentials():
         print util.generate_success_response('Your credentials were updated successfully')
     except BaseException, e:
         print util.generate_error_response(e.message)
-
 
 def get_symbol_table():
     print config.connection.project.get_symbol_table(request_payload)

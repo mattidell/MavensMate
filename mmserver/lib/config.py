@@ -26,8 +26,8 @@ base_path = __get_base_path()
 
 handler = logging.FileHandler(tempfile.gettempdir()+"/mmserver.log")
 #handler = logging.NullHandler()
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('mmserver')
 logging.getLogger('mmserver').propagate = False 
 logging.getLogger('mmserver').addHandler(handler)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.DEBUG)

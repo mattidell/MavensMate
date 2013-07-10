@@ -58,6 +58,29 @@
                 snd.play();  
             }
         }
+
+        function submitSearch() {
+            showLoading("Searching...")
+            var filter = $("#txtFilter").val();
+            if (filter && filter.length > 2) {
+                tree_store.load({
+                  params: {keyword: filter, project_name: '{{ name }}'},
+                  callback:hideLoading
+                })
+                $("#search-btn").removeClass('btn-success').addClass('btn-danger').html('<i class="icon-remove"></i>')
+            }
+        }
+
+        function clearFilter() {
+            showLoading("Loading...")
+            tree_store.load({
+              params: {project_name: '{{ name }}'},
+              callback:hideLoading
+            })
+            $('#txtFilter').val('');
+            $('#txtFilter').focus();
+            $("#search-btn").removeClass('btn-danger').addClass('btn-success').html('<i class="icon-search"></i>');
+        }
     </script>
 </head>
 <body id="body" class="{% block body_class %}{% endblock %}">

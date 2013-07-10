@@ -20,6 +20,7 @@ import webbrowser
 import tempfile
 import subprocess
 import traceback
+import crawlJson
 
 from xml.dom import minidom
 from mm_exceptions import MMException
@@ -1058,6 +1059,11 @@ class MavensMateProject(object):
             return file_body
         except BaseException, e:
             return mm_util.generate_error_response(e.message)
+
+    def filter_indexed_metadata(self, payload):
+        om = self.get_org_metadata()
+        crawlJson.startCrawl(om, payload["keyword"])
+        return json.dumps(om)
 
     def __select_metadata_based_on_package_xml(self, return_list):
         #process package and select only the items the package has specified

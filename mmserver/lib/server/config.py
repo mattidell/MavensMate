@@ -207,20 +207,21 @@ def metadata_list_request(request_handler):
 
 def get_metadata_index(request_handler):
     '''
-        GET /project/index
+        GET /project/get_index
         {
-            "project_name"  : "my project name"
+            "project_name"  : "my project name",
+            "keyword"       : "mykeyword" //optional
         }
         call to get the metadata index for a project
     '''
-    print 'FUCK'
     request_id = util.generate_request_id()
     params, json_body, plugin_client = get_request_params(request_handler)
     worker_thread = BackgroundWorker('get_indexed_metadata', params, False, request_id, json_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
-    respond(request_handler, response)    
+    respond(request_handler, response)  
+
 
 ##########################
 ## END REQUEST HANDLERS ##
@@ -352,22 +353,22 @@ def respond(request_handler, body, type='text/json'):
 ##################
 
 mappings = {
-    '/status'               : { 'GET'   : status_request },     
-    '/project'              : { 'POST'  : project_request }, 
-    '/project/edit'         : { 'POST'  : project_edit_request }, 
-    '/project/creds'        : { 'POST'  : update_credentials_request },
-    '/project/deploy'       : { 'POST'  : deploy_request },
-    '/project/unit_test'    : { 'POST'  : unit_test_request },
-    '/project/get_index'    : { 'GET'   : get_metadata_index },
-    '/project/index'        : { 'POST'  : metadata_index_request },
-    '/project/conns/list'   : { 'GET'   : connections_list_request },
-    '/project/conns/new'    : { 'POST'  : connections_new_request },
-    '/project/conns/delete' : { 'POST'  : connections_delete_request },
-    '/project/upgrade'      : { 'POST'  : project_upgrade_request },
-    '/project/existing'     : { 'POST'  : project_existing_request },
-    '/session'              : { 'GET'   : get_active_session_request },
-    '/apex/execute'         : { 'POST'  : execute_apex_request },
-    '/metadata/list'        : { 'GET'   : metadata_list_request }
+    '/status'                   : { 'GET'   : status_request },     
+    '/project'                  : { 'POST'  : project_request }, 
+    '/project/edit'             : { 'POST'  : project_edit_request }, 
+    '/project/creds'            : { 'POST'  : update_credentials_request },
+    '/project/deploy'           : { 'POST'  : deploy_request },
+    '/project/unit_test'        : { 'POST'  : unit_test_request },
+    '/project/get_index'        : { 'GET'   : get_metadata_index },
+    '/project/index'            : { 'POST'  : metadata_index_request },
+    '/project/conns/list'       : { 'GET'   : connections_list_request },
+    '/project/conns/new'        : { 'POST'  : connections_new_request },
+    '/project/conns/delete'     : { 'POST'  : connections_delete_request },
+    '/project/upgrade'          : { 'POST'  : project_upgrade_request },
+    '/project/existing'         : { 'POST'  : project_existing_request },
+    '/session'                  : { 'GET'   : get_active_session_request },
+    '/apex/execute'             : { 'POST'  : execute_apex_request },
+    '/metadata/list'            : { 'GET'   : metadata_list_request }
 }
 
 if __name__ == "__main__":

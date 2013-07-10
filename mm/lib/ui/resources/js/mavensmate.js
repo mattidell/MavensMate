@@ -418,18 +418,6 @@ function collapseAll() {
 	});
 }
 
-var isTreeFiltered = false;
-
-function submitSearch() {
-	var filter = $("#txtFilter").val();
-	if (filter && filter.length > 2) {
-		tree.filterByText(filter);
-		//filter_tree(filter, $('#meta_type').val());
-		//scrollToTop("#project_wrapper");
-		$("#search-btn").removeClass('btn-success').addClass('btn-danger').html('<i class="icon-remove"></i>')
-	}
-}
-
 function clearFilter() {
 	tree.clearFilter();
 	$('#txtFilter').val('');

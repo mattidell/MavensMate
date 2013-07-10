@@ -79,6 +79,7 @@
 {% block body_js %}
 	<script>
 		var tree;
+		var tree_store;
 		var tree_rendered = false;
 
 		Ext.require([
@@ -155,6 +156,25 @@
 		    }
 		});
 
+		tree_store = new Ext.data.TreeStore({
+            autoLoad: 'true',
+            proxy: {
+                type: 'ajax',
+                url: "http://127.0.0.1:9000/project/get_index",
+                extraParams: {
+		            project_name: '{{ name }}',
+		        }
+            },
+            lazyFill: false, //was causing issues with search
+            sorters: [{
+                property: 'leaf',
+                direction: 'ASC'
+            }, {
+                property: 'text',
+                direction: 'ASC'
+            }]
+        })
+
 		Ext.onReady(function() {
 			Ext.define('mm.tree', {
 			    extend: 'Ext.ux.grid.TriStateTree',
@@ -172,24 +192,7 @@
 			    initComponent: function(){
 
 			        Ext.apply(this, {
-			            store: new Ext.data.TreeStore({
-			                autoLoad: 'true',
-			                proxy: {
-			                    type: 'ajax',
-			                    url: "http://127.0.0.1:9000/project/get_index",
-			                    extraParams: {
-						            project_name: '{{ name }}',
-						        }
-			                },
-			                lazyFill: false, //was causing issues with search
-			                sorters: [{
-			                    property: 'leaf',
-			                    direction: 'ASC'
-			                }, {
-			                    property: 'text',
-			                    direction: 'ASC'
-			                }]
-			            }),
+			            store: tree_store,
 			            tbar: [{
 			                text: 'Get checked nodes',
 			                scope: this,
