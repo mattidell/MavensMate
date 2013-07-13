@@ -84,7 +84,8 @@
 		Ext.require([
 		    'Ext.data.*',
 		    'Ext.grid.*',
-		    'Ext.tree.*'
+		    'Ext.tree.*',
+		    'Ext.menu.*'
 		]);
 
 		Ext.define('mm.lib.TreeFilter', {
@@ -163,6 +164,11 @@
                 extraParams: {
 		            project_name: '{{ name }}',
 		        }
+            },
+            listeners: {
+            	beforeload:function() {
+            		//dosomething()
+            	}
             },
             lazyFill: false, //was causing issues with search
             sorters: [{

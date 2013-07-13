@@ -1004,8 +1004,11 @@ class MavensMateProject(object):
         except Exception, e:
             return mm_util.generate_error_response(e.message)
 
+    def refresh_index(self, mtypes=[]):
+        self.index_metadata(mtypes)
+
     #compiles a list of all metadata in the org and places in .org_metadata file
-    def index_metadata(self, mtype=None):
+    def index_metadata(self, mtypes=None):
         startThread = time.clock()
         try:    
             return_list = []
@@ -1015,55 +1018,70 @@ class MavensMateProject(object):
 
             data = self.__get_org_describe()
 
-            use_threading = True
             threads = []
             thread_results = []
             creds = self.get_creds()
 
-            if mtype == None:
-                metadata_chunks = list(mm_util.grouper(5, data["metadataObjects"]))
-                for chunk in metadata_chunks:                    
-                    thread_client = MavensMateClient(credentials=creds)
-                    thread = IndexCall(thread_client, chunk)
-                    threads.append(thread)
-                    thread.start()
+            to_be_indexed = []
+
+            if mtypes != None:
+                if type(mtypes) is not list:
+                    mtypes = [mtypes]
+                for mt in mtypes:
+                    for md in data["metadataObjects"]:
+                        if md['xmlName'] == mt:
+                            to_be_indexed.append(md)
+                            break
             else:
-                mtype_def = None
-                for md in data["metadataObjects"]:
-                    if md['xmlName'] == mtype:
-                        mtype_def = md
-                        break
+                to_be_indexed = data["metadataObjects"]
+
+            metadata_chunks = list(mm_util.grouper(8, to_be_indexed))
+            for chunk in metadata_chunks:                    
                 thread_client = MavensMateClient(credentials=creds)
-                thread = IndexCall(thread_client, [mtype_def])
+                thread = IndexCall(thread_client, chunk)
                 threads.append(thread)
                 thread.start()
-               
-
+                
             for thread in threads:
                 thread.join()
-                if len(thread.results) == len(thread.metadata_types):
+                if len(thread.results) == len(thread.clean_types):
                     thread_results.extend(thread.results)
-                    #del thread.client
             
-            #print thread_results
             return_list = sorted(thread_results, key=itemgetter('text')) 
-            #return_list = thread_results
-            #for testing only
-            #return_list = mm_util.parse_json_from_file(self.location+"/config/.org_metadata")
-            #end for testing only
 
-            file_body = json.dumps(return_list, sort_keys=False, indent=4)
-            src = open(self.location+"/config/.org_metadata", "w")
-            src.write(file_body)
-            src.close()
-            return file_body
+            if mtypes == None:
+                file_body = json.dumps(return_list, sort_keys=False, indent=4)
+                src = open(self.location+"/config/.org_metadata", "w")
+                src.write(file_body)
+                src.close()
+                return file_body
+            elif type(return_list) is list and len(return_list) > 0:
+                existing_index = self.get_org_metadata()
+                for mt in return_list:
+                    for emt in existing_index:
+                        if emt['xmlName'] == mt['xmlName']:
+                            emt['children'] = mt['children']
+                            break
+
+                file_body = json.dumps(existing_index, sort_keys=False, indent=4)
+                src = open(self.location+"/config/.org_metadata", "w")
+                src.write(file_body)
+                src.close()
+                return file_body
+
         except BaseException, e:
+            trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
+            print trace
+
             return mm_util.generate_error_response(e.message)
 
     def filter_indexed_metadata(self, payload):
         om = self.get_org_metadata()
         crawlJson.startCrawl(om, payload["keyword"])
         return json.dumps(om)
+
+    def refresh_indexed_metadata(self, payload):
+        pass
 
     def __select_metadata_based_on_package_xml(self, return_list):
         #process package and select only the items the package has specified
@@ -1641,13 +1659,17 @@ class IndexCall(threading.Thread):
         self.metadata_types = metadata_types
         self.client         = client
         self.results        = []
+        self.clean_types    = []
+        for mt in self.metadata_types:
+            if mt != None:
+                self.clean_types.append(mt)
         threading.Thread.__init__(self)
 
     def run(self):
         startThread = time.clock()
-        for mtype in self.metadata_types:
-            print mtype["xmlName"]
+        for mtype in self.clean_types:
             if mtype == None:
+                self.results.append({})
                 continue
             try:
                 result = self.client.list_metadata(mtype['xmlName'])
@@ -1686,6 +1708,7 @@ class IndexCall(threading.Thread):
                     "level"     : 1,
                     "id"        : mm_util.get_random_string(20)
                 })
+                elapsed =  (time.clock() - startThread)
                 continue
 
 

@@ -20,6 +20,12 @@
     <script src="{{ base_path }}/lib/ui/resources/js/ext-theme-neptune.js" type="text/javascript"></script>
     <script src="{{ base_path }}/lib/ui/resources/js/TriStateTree.js" type="text/javascript"></script>
     <script>
+        var project_name = '{{ name }}'
+
+        function get_project_name() {
+            return project_name;
+        }
+
         $.ajaxSetup({
             headers: { "mm_plugin_client": "{{ client }}" }
         });
@@ -62,10 +68,6 @@
         function submitSearch() {
             var filter = $("#txtFilter").val();
             if (filter && filter.length > 2) {
-                var recs = tree.getView().getChecked()
-                Ext.Array.each(recs, function(rec){
-                    tree.selectedIds.push(rec.get('id'));
-                });
                 showLoading("Searching...")
                 tree_store.load({
                     params: {keyword: filter, project_name: '{{ name }}'}
@@ -83,6 +85,19 @@
             $('#txtFilter').val('');
             $('#txtFilter').focus();
             $("#search-btn").removeClass('btn-danger').addClass('btn-success').html('<i class="icon-search"></i>');
+        }
+
+        function refreshMetadataType() {
+
+        }
+
+        function reloadTree() {
+            hideLoading()
+            showLoading("Loading...")
+            tree_store.load({
+                params: {project_name: '{{ name }}'},
+                callback:hideLoading
+            })
         }
     </script>
 </head>

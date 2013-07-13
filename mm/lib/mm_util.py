@@ -530,7 +530,7 @@ def generate_response(obj):
 
 def generate_success_response(message, type="text"):
     res = {
-        "time"   : repr(time.clock() - config.mm_start),
+        "time"      : repr(time.clock() - config.mm_start),
         "success"   : True,
         "body_type" : type,
         "body"      : message

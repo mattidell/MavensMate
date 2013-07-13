@@ -65,6 +65,35 @@
 
  */
 
+// function refreshMetadataType(item) {
+//      console.log(foo)
+//      showLoading("Refreshing "+ item.parentMenu.apexMetadataType +"...")
+
+//      //reloadTree()
+//  }
+
+ var itemRightClickMenu = new Ext.menu.Menu({
+    items: [{
+        text: 'Refresh metadata from server',
+        handler: function(item) {
+            console.log(item)
+            
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:9000/project/refresh_index", 
+                data: JSON.stringify({
+                    metadata_types   : [item.parentMenu.apexMetadataType],
+                    project_name    : get_project_name()
+                }),
+                beforeSend: function() { showLoading("Refreshing Metadata Type: "+ item.parentMenu.apexMetadataType +"..."); },
+                complete: function(data){
+                    reloadTree()
+                } 
+            });
+        }
+    }]
+ });
+
 Ext.define('Ext.ux.grid.TriStateTree', {
     extend: 'Ext.tree.Panel',
     rootVisible: true,
@@ -85,16 +114,7 @@ Ext.define('Ext.ux.grid.TriStateTree', {
 
     listeners: {
         load: function() {
-            for (var i = 0; i < this.selectedIds.length; i++) {
-                try {
-                    console.log('processing: ' + this.selectedIds[i])
-                    var node = this.store.getById(this.selectedIds[i])
-                    console.log(node)
-                    node.set('checked', true);
-                } catch(e) {
-
-                }
-            }
+            this.setSelections(this.selectedIds)
             hideLoading()
         },
         checkchange: function (node, check) {
@@ -103,28 +123,31 @@ Ext.define('Ext.ux.grid.TriStateTree', {
             node.set('cls', '');
             me.updateParentCheckedStatus(node);
 
+            //if top-level is checked, select all below
             if (node.hasChildNodes()) {
                 node.eachChild(this.setChildrenCheckedStatus);
             }
 
+            //if this is the root id, check everything
             if (node.get('id') == this.ALL_ID) {
                 //debug('[root checked]');
-
                 //unsetThirdState for all
                 me.getRootNode().cascadeBy(function () {
-
                     me.unsetThirdState(this);
                 });
             }
 
-            // console.log(node)
-            // console.log(check)
-            // if (check) {
-            //     this.selectedIds.push(node.get('id'))
-            // } else {
-            //     var index = this.selectedIds.indexOf(node.get('id'));
-            //     this.selectedIds.splice(index, 1);
-            // }
+            if (check) {
+                console.log('new node checked, adding to selected ids: ',node.get('id'))
+                tree.selectedIds.push(node.get('id'));
+                console.log(tree.selectedIds)
+            } else {
+                console.log('node unchecked, removing from selected ids: ')
+                console.log(tree.selectedIds)
+                var index = tree.selectedIds.indexOf(node.get('id'));
+                tree.selectedIds.splice(index, 1);
+                console.log(tree.selectedIds)
+            }
         },
         beforeitemclick: function(dv, record, item, index, e) {
             // if (isTreeFiltered) {
@@ -139,6 +162,15 @@ Ext.define('Ext.ux.grid.TriStateTree', {
             //     e.preventDefault();
             //     return false;
             // }
+        },
+        itemcontextmenu: function(view, record, item, index, event) {
+            console.log(record)
+            console.log(item)
+            if (record.data.depth == 1) {
+                itemRightClickMenu.showAt(event.getXY());
+                itemRightClickMenu.apexMetadataType = record.data.text;
+                event.stopEvent();
+            }
         }
     },
 
@@ -149,21 +181,41 @@ Ext.define('Ext.ux.grid.TriStateTree', {
         if (current.parentNode) {
             var parent = current.parentNode;
             current.set('checked', parent.get('checked'));
+            if (current.get('checked')) {
+                tree.selectedIds.push(current.get('id'));
+            } else {
+                var index = tree.selectedIds.indexOf(current.get('id'));
+                tree.selectedIds.splice(index, 1);  
+            }
         }
 
-
         if (current.hasChildNodes()) {
+            console.log('propping to children')
+            console.log(arguments.callee)
             current.eachChild(arguments.callee);
         }
     },
 
     // Propagate change upwards (if all siblings are the same, update parent).
     updateParentCheckedStatus: function (current) {
+        console.log('proppin upwards!')
+        console.log(current.get('text'))
         var me = this,
             currentChecked = current.get('checked'),
             currentId = current.get('id');
 
+        current.eachChild(function (n) {
+            console.log('CHILD: ' +n.get('cls'))
 
+            if (n.get('cls') == 'x-tree-checkbox-checked-disabled') {
+                console.log('CHILD IS THIRD STATE')
+                current.set('cls', 'x-tree-checkbox-checked-disabled');
+                current.set('checked', false);
+                return true;
+            }
+        });
+
+        //if this node has a parent
         if (current.parentNode) {
 
             var parent = current.parentNode;
@@ -231,7 +283,6 @@ Ext.define('Ext.ux.grid.TriStateTree', {
                 if (checkedCount) {
                     // At least one sibling is checked, so set parent node to third state.
                     me.setThirdState(parent);
-
                 } else {
 
                     parent.set('checked', false);
@@ -250,8 +301,17 @@ Ext.define('Ext.ux.grid.TriStateTree', {
     },
 
     setThirdState: function (node) {
+        console.log(node)
         node.set('cls', this.disabledCls);
         node.set('checked', false);
+        // if (node.parentNode != null) {
+        //     node.parentNode.set('cls', this.disabledCls);
+        //     node.parentNode.set('checked', false);  
+        //     if (node.parentNode.parentNode != null) {
+        //         node.parentNode.parentNode.set('cls', this.disabledCls);
+        //         node.parentNode.parentNode.set('checked', false);      
+        //     }
+        // }
     },
 
     unsetThirdState: function (node) {

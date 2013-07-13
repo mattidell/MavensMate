@@ -220,7 +220,24 @@ def get_metadata_index(request_handler):
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
-    respond(request_handler, response)  
+    respond(request_handler, response) 
+
+def refresh_metadata_index(request_handler):
+    '''
+        GET /project/get_index/refresh
+        {
+            "project_name"      : "my project name",
+            "metadata_types"    : ["ApexClass"]
+        }
+        call to refresh a certain type of metadata
+    '''
+    request_id = util.generate_request_id()
+    params, json_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('refresh_metadata_index', params, False, request_id, json_body, plugin_client)
+    worker_thread.start()
+    worker_thread.join()
+    response = worker_thread.response
+    respond(request_handler, response) 
 
 
 ##########################
@@ -360,6 +377,7 @@ mappings = {
     '/project/deploy'           : { 'POST'  : deploy_request },
     '/project/unit_test'        : { 'POST'  : unit_test_request },
     '/project/get_index'        : { 'GET'   : get_metadata_index },
+    '/project/refresh_index'   : { 'POST'  : refresh_metadata_index },    
     '/project/index'            : { 'POST'  : metadata_index_request },
     '/project/conns/list'       : { 'GET'   : connections_list_request },
     '/project/conns/new'        : { 'POST'  : connections_new_request },

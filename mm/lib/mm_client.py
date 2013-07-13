@@ -288,6 +288,7 @@ class MavensMateClient(object):
                                     "isFolder"  : False,
                                     "checked"   : False,
                                     "level"     : 4,
+                                    "leaf"      : True,
                                     "id"        : mm_util.get_random_string(20)
 
                                 })

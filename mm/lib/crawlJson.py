@@ -18,6 +18,8 @@ def crawlDict(jsonData, depth, query, parentVisiblity):
 			childVisibility = 1			
 		visibility = visibility if visibility > childVisibility else childVisibility
 	jsonData["visibility"] = visibility
+	if visibility == 0:
+		jsonData["cls"] = "hidden"
 	return visibility
 
 def crawlArray(jsonData, depth, query, parentVisiblity):
@@ -34,16 +36,35 @@ def crawlArray(jsonData, depth, query, parentVisiblity):
 			childVisibility = query in str(value).lower()
 		if childVisibility == 0 and parentVisiblity == 0:
 			elementsToRemove.append(value)
+			try:
+				value["cls"] = "hidden"
+			except:
+				pass
+		else:
+			try:
+				value["expanded"] = True
+			except:
+				pass
 		index += 1
 	for value in elementsToRemove:
-		jsonData.remove(value)
+		pass
 
 def crawl(jsonData, depth, query, parentVisiblity):
 	if(isinstance(jsonData,types.DictType)):
 		return crawlDict(jsonData, depth, query, parentVisiblity)
 	elif(isinstance(jsonData, types.ListType)):
 		crawlArray(jsonData, depth, query, parentVisiblity)		
-		return len(jsonData) > 0
+		#return len(jsonData) > 0
+		for jd in jsonData:
+			#print '\n\n'
+			#print jd
+			if 'visibility' in jd and jd['visibility'] == 1:
+				return True
+		return False
+		# if 'cls' in jsonData and jsonData['cls'] == 'hidden':
+		# 	return False
+		# else:
+		# 	return True
 	else:	
 		return 0
 

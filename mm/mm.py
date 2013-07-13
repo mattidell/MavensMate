@@ -115,6 +115,9 @@ def index_metadata(args):
     else:
         print util.generate_success_response(index_result)
 
+def refresh_metadata_index():
+    index_result = config.connection.project.index_metadata(request_payload['metadata_types'])
+
 def get_metadata_index():
     if 'keyword' in request_payload:
         print config.connection.project.filter_indexed_metadata(request_payload)
@@ -261,6 +264,7 @@ operation_dict = {
     'test'                                  : run_unit_tests,
     'list_metadata'                         : list_metadata,
     'index_metadata'                        : index_metadata,
+    'refresh_metadata_index'                : refresh_metadata_index,
     'get_indexed_metadata'                  : get_metadata_index,
     'list_connections'                      : list_connections,
     'new_connection'                        : new_connection,
