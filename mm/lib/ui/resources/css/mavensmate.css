@@ -19,13 +19,24 @@
  #search-btn {
  	position: absolute;
  	top:-5px;
- 	left:551px;
+ 	right:0px;
  }
 
  #select-btn {
  	position: absolute;
  	top:-5px;
- 	left:600px;
+ 	right:0px;
+ }
+
+ a.btn-info {
+ 	color:#fff !important;
+ }
+
+ #footer {
+ 	background:#34495e;
+ 	color:#fff;
+ 	padding:5px 0px;
+ 	width:100%;
  }
 
  .navbar {
@@ -351,6 +362,16 @@ ul.dynatree-container {
 
 .x-tree-checkbox {
 	width:15px !important;
+}
+
+.x-panel-default-framed {
+	border-color: #7bafde !important;
+	border-width: 3px !important;
+	border-radius: 6px !important;
+}
+
+.x-grid-body {
+	border:none !important;
 }
 
 div.x-panel-body .x-tree-checkbox-checked-disabled input.x-tree-checkbox {
