@@ -288,7 +288,7 @@ class MavensMateClient(object):
                                     "checked"   : False,
                                     "level"     : 4,
                                     "leaf"      : True,
-                                    "id"        : mm_util.get_random_string(20)
+                                    "id"        : full_name+"."+tag_name+"."+gchild_el
 
                                 })
                                 children = sorted(children, key=itemgetter('text')) 
@@ -301,7 +301,7 @@ class MavensMateClient(object):
                                 "children"  : gchildren,
                                 "checked"   : False,
                                 "level"     : 3,
-                                "id"        : mm_util.get_random_string(20)
+                                "id"        : full_name+"."+tag_name
                             })
                                             
                 #if this type has folders, run queries to grab all metadata in the folders
@@ -325,7 +325,7 @@ class MavensMateClient(object):
                             "isFolder"  : False,
                             "checked"   : False,
                             "level"     : 3,
-                            "id"        : mm_util.get_random_string(20)
+                            "id"        : folder_element['fullName'].replace('/', '.')
                         })
                     
                 children = sorted(children, key=itemgetter('text')) 
@@ -338,7 +338,7 @@ class MavensMateClient(object):
                     "children"  : children,
                     "checked"   : False,
                     "level"     : 2,
-                    "id"        : mm_util.get_random_string(20)
+                    "id"        : metadata_type_def['xmlName']+'.'+full_name
                 })
 
             return_elements = sorted(return_elements, key=itemgetter('text')) 

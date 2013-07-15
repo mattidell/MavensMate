@@ -1759,7 +1759,7 @@ class IndexCall(threading.Thread):
                     "children"  : result,
                     "checked"   : False,
                     "level"     : 1,
-                    "id"        : mm_util.get_random_string(20)
+                    "id"        : mtype['xmlName']
                 })
                 elapsed =  (time.clock() - startThread)
             except BaseException, e:
@@ -1781,7 +1781,7 @@ class IndexCall(threading.Thread):
                     "children"  : [],
                     "checked"   : False,
                     "level"     : 1,
-                    "id"        : mm_util.get_random_string(20)
+                    "id"        : mtype['xmlName']
                 })
                 elapsed =  (time.clock() - startThread)
                 continue
