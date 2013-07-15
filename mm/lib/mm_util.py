@@ -402,12 +402,6 @@ def generate_ui(operation,params={}):
             selected=selected,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'deploy':
-        tree_body = ''
-        if config.connection.project.is_metadata_indexed == True:
-            template = env.get_template('/project/tree.html')
-            selected = params['selected'] if 'selected' in params else None
-            org_metadata = config.connection.project.get_org_metadata(selected)
-            tree_body = template.render(metadata=org_metadata,operation=operation)
         template = env.get_template('/deploy/index.html')
         file_body = template.render(
             base_path=config.base_path,
@@ -415,7 +409,6 @@ def generate_ui(operation,params={}):
             has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
             connections=config.connection.project.get_org_connections(False),
-            tree_body=tree_body,
             operation=operation,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'execute_apex':
