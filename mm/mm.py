@@ -113,7 +113,7 @@ def index_metadata(args):
         html = util.generate_html_response(args.operation, index_result, request_payload)
         print util.generate_success_response(html, "html")
     else:
-        print util.generate_success_response(index_result)
+        print util.generate_success_response("Project metadata indexed successfully")
 
 def refresh_metadata_index():
     index_result = config.connection.project.index_metadata(request_payload['metadata_types'])
