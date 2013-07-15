@@ -7,9 +7,7 @@
 	</div>
 </div>
 
-
-<div class="content">
-	
+<div class="content">	
 	<ul class="nav nav-tabs nav-append-content">
 		<li class="">
 			<a id="project_details_tab" href="#form" data-toggle="tab">Project Details</a>
@@ -17,9 +15,10 @@
 		<li class="active">
 			<a href="#metadata" data-toggle="tab">
 				Project Metadata &nbsp;&nbsp;
-				<span onclick="index_org(true)" class="label" style="line-height:15px;cursor:pointer;">Refresh <i class="icon-refresh"></i></span> 	
+				<span onclick="index_org(true)" class="label" style="line-height:15px;cursor:pointer;">
+					Refresh <i class="icon-refresh"></i>
+				</span> 	
 			</a>
-</a>
 		</li>
 	</ul>
 	
@@ -58,10 +57,11 @@
 		<div id="metadata" class="tab-pane active">
 			<div class="alert alert-info" id="filter">
 				<input type="text" placeholder="Search for metadata" id="txtFilter" style="width:300px;height:35px;" />
-				<a href="#" class="btn btn-success" id="search-btn"><i class="icon-search"></i></a>
+				<a href="#" class="btn btn-success" id="search-btn" style="right:45px"><i class="icon-search"></i></a>
+				<a href="#" class="btn btn-select" id="select-btn" ><i class="icon-check-empty"></i></a>
 			</div>
 			<div id="project_wrapper">
-				<div id="treewrapper" style="height:100%; padding-bottom:100px;">
+				<div id="treewrapper" style="height:100%;">
 					<div id="tree"></div>
 					<div id="info"></div>
 				</div>
@@ -78,83 +78,8 @@
 
 {% block body_js %}
 	<script>
-		var tree;
-		var tree_store;
-
-		Ext.require([
-		    'Ext.data.*',
-		    'Ext.grid.*',
-		    'Ext.tree.*',
-		    'Ext.menu.*'
-		]);
-
-		Ext.define('mm.lib.TreeFilter', {
-		    filterByText: function(text) {
-		        this.filterBy(text, 'text');
-		    },
-		 
-		    /**
-		     * Filter the tree on a string, hiding all nodes expect those which match and their parents.
-		     * @param The term to filter on.
-		     * @param The field to filter on (i.e. 'text').
-		     */
-		    filterBy: function(text, by) {
-		 
-		        this.clearFilter();
-		 
-		        var view = this.getView(),
-		            me = this,
-		            nodesAndParents = [];
-		 
-		        // Find the nodes which match the search term, expand them.
-		        // Then add them and their parents to nodesAndParents.
-		        this.getRootNode().cascadeBy(function(tree, view){
-		            var currNode = this;
-		 
-		            if(currNode && currNode.data[by] && currNode.data[by].toString().toLowerCase().indexOf(text.toLowerCase()) > -1) {
-		                //console.log('expanding')
-		                //console.log(currNode.getPath())
-		                //me.expandPath(currNode.getPath()); //not working
-		                if (currNode.parentNode != null) {
-		                	currNode.parentNode.expand();
-		                	pnode = currNode.parentNode;
-		                	if (pnode.parentNode != null) {
-		                		pnode.parentNode.expand();
-		                	}
-		                }
-		 
-		                while(currNode.parentNode) {
-		                    nodesAndParents.push(currNode.id);
-		                    currNode = currNode.parentNode;
-		                }
-		            }
-		        }, null, [me, view]);
-		 
-		        // Hide all of the nodes which aren't in nodesAndParents
-		        this.getRootNode().cascadeBy(function(tree, view){
-		            var uiNode = view.getNodeByRecord(this);
-		 
-		            if(uiNode && !Ext.Array.contains(nodesAndParents, this.id)) {
-		                Ext.get(uiNode).setDisplayed('none');
-		            }
-		        }, null, [me, view]);
-		    },
-		 
-		 
-		    clearFilter: function() {
-		        var view = this.getView();
-		 
-		        this.getRootNode().cascadeBy(function(tree, view){
-		            var uiNode = view.getNodeByRecord(this);
-		 
-		            if(uiNode) {
-		                Ext.get(uiNode).setDisplayed('table-row');
-		                //Ext.get(uiNode).setDisplayed(true);
-		                //Ext.get(uiNode).setVisible(true);
-		            }
-		        }, null, [this, view]);
-		    }
-		});
+		var has_indexed_metadata = {{ has_indexed_metadata|lower }};
+		var operation;
 
 		tree_store = new Ext.data.TreeStore({
             autoLoad: 'true',
@@ -164,101 +89,9 @@
                 extraParams: {
 		            project_name: '{{ name }}',
 		        }
-            },
-            listeners: {
-            	beforeload:function() {
-            		//dosomething()
-            	}
-            },
-            lazyFill: false, //was causing issues with search
-            sorters: [{
-                property: 'leaf',
-                direction: 'ASC'
-            }, {
-                property: 'text',
-                direction: 'ASC'
-            }]
+            }
         })
 
-		Ext.onReady(function() {
-			Ext.define('mm.tree', {
-			    extend: 'Ext.ux.grid.TriStateTree',
-			    
-			    requires: [
-			        'Ext.data.TreeStore'
-			    ],
-			    xtype: 'check-tree',
-			    rootVisible: false,
-			    useArrows: true,
-			    frame: true,
-			    title: 'Check Tree',
-			    width: 250,
-			    height: 300,
-			    initComponent: function(){
-
-			        Ext.apply(this, {
-			            store: tree_store,
-			            tbar: [{
-			                text: 'Get checked nodes',
-			                scope: this,
-			                handler: this.onCheckedNodesClick
-			            }]
-			        });
-			        this.callParent();
-			    },
-			    
-			    mixins: {
-			    	treeFilter: 'mm.lib.TreeFilter'
-			    },
-
-			    onCheckedNodesClick: function(){
-			        var records = this.getView().getChecked(),
-			            names = [];
-			                   
-			        Ext.Array.each(records, function(rec){
-			            names.push(rec.get('text'));
-			        });
-			                    
-			        Ext.MessageBox.show({
-			            title: 'Selected Nodes',
-			            msg: names.join('<br />'),
-			            icon: Ext.MessageBox.INFO
-			        });
-			    }
-			})
-
-			$('a[data-toggle="tab"]').on('shown', function (e) {
-				//console.log(e.target.href.indexOf("metadata"))
-				if (e.target.href.indexOf("metadata") != -1) {
-					if (!tree_rendered) {
-						renderTree()
-					}
-				}
-			});
-
-			renderTree()
-
-		});
-
-		function renderTree() {
-			tree_rendered = true;
-			tree = Ext.create('mm.tree', {
-			    renderTo: 'tree',
-			    id: 'mmtree',
-			    width: '100%',
-			    height: '100%'
-			    // plugins: [{
-		     //        ptype: 'bufferedrenderer'
-		     //    }]
-			});
-		}
-
-		var mm_cpd = '{{ project_location }}';
-		var has_indexed_metadata = true; //TOFIX
-		var operation;
-		var child_def = {};
-		var rootNode;
-		var search_worker;
 		function updateProjectCreds() {
 			console.log('updating project creds')
 			operation = "update_creds"
@@ -280,7 +113,7 @@
 					if (response["success"] == false) {
 						show_message(response["body"])
 					} else {
-						show_message(response["body"], 'success')
+						show_message(response["body"], 'success', true)
 					}
 					hideLoading();
 				}
@@ -313,7 +146,7 @@
 				data: JSON.stringify({
 					project_name 	: '{{ name }}'
 				}),
-				beforeSend: function() { showLoading('Indexing your Salesforce.com metadata.  This operation could take a while depending on the size of your org.<br/><br/>Thanks for being patient! :)'); },
+				beforeSend: function() { showLoading('Updating the metadata index for this project. This operation can take a few minutes in large orgs.<br/><br/>Thanks for being patient! :)'); },
 				complete: function(data, status, xhr){
 					global_init_handler(data)				
 				} 
@@ -325,20 +158,11 @@
 				if (response["success"] == false) {
 					show_message(response["body"])
 				} else {
-					$("#tree").dynatree("destroy")
-					$("#tree ul").html(response["body"]);
-					$("#tree").dynatree({
-						persist: false,
-						checkbox: true,
-						selectMode: 3,
-						filter: {
-							mode: "hide"
-						}
-					});
-					$("#tree").dynatree("getRoot").visit(function(node) {
-		        		node.expand(false);
-		    		});  
-					rootNode = $("#tree").dynatree("getRoot");
+					if (tree === undefined) {
+						renderTree()  
+					} else {
+						tree_store.reload()
+					}
 				}
 				notify_sound()
 				hideLoading();
@@ -346,7 +170,7 @@
 				if (response["success"] == false) {
 					show_message(response["body"])
 				} else {
-					show_message("Project updated successfully", "success")
+					show_message("Project updated successfully.", "success", true)
 				}
 				notify_sound()
 				hideLoading();
@@ -375,70 +199,51 @@
 				}
 			)
 
+			$("#select-btn").click(function() {
+				if ($(this).html().indexOf('icon-check-empty') !== -1) {
+					tree.getRootNode().cascadeBy(function(n){
+						n.set('cls', '');
+						n.set("checked",true);
+					});
+					$(this).html('<i class="icon-check"></i>')
+				} else {
+					tree.getRootNode().cascadeBy(function(n){
+						n.set('cls', '');
+						n.set("checked",false);
+					});
+					$(this).html('<i class="icon-check-empty"></i>')
+				}
+			})
+
 		    window.resizeTo(700, 750)
 		    centerWindow()
 
-		    $("#btnDeselectAll").click(function(){
-				$("#tree").dynatree("getRoot").visit(function(node){   		
-					if ($(node.li).css('display') != 'none') { 
-						try {
-							if (node.data.level > 1)
-								node.select(false);
-						} catch(e) {
-							node.select(false);   				
-						}
-					}
-				});
-				return false;
-			});
-			$("#btnSelectAll").click(function(){
-				$("#tree").dynatree("getRoot").visit(function(node){		   			
-					if ($(node.li).css('display') != 'none') {
-						try {
-							if (node.data.level > 1)
-								node.select(true);
-						} catch(e) {
-							node.select(true);   				
-						}
-					}   		
-				});
-				return false;
-			});
+		});
 
-			$("#txtFilter").bind('keyup', function(e) {
-				var code = (e.keyCode ? e.keyCode : e.which);
-				if (code == 13) {
-					submitSearch()
-				}
+		Ext.onReady(function() {
+			Ext.define('mm.tree', {
+			    extend: 'Ext.ux.grid.mm-tree',
+			    requires: [
+			        'Ext.data.TreeStore'
+			    ],
+			    xtype: 'check-tree',
+			    rootVisible: false,
+			    useArrows: true,
+			    frame: true,
+			    initComponent: function(){
+			        Ext.apply(this, {
+			            store: tree_store
+			        });
+			        this.callParent();
+			    }
 			})
-			.change(function() {
-				var filter = $("#txtFilter").val();
-				if (!filter) {
-					clearFilter();
-					scrollToTop("#project_wrapper");	
-				}
-			})
-			.keyup(function() {
-		        $(this).change();
-		    });
 
-		    $("#search-btn").click(function() {
-		    	if ($(this).hasClass('btn-success')) {
-		    		submitSearch()
-		    	} else {
-		    		clearFilter()
-		    	}
-		    })
-
-			//brief pause
-			setTimeout(function(){	
-				if (!has_indexed_metadata) {
-					index_org();
-				} else {
-					resizeProjectWrapper()
-				}
-			}, 200);
-
+			if (has_indexed_metadata) {
+				renderTree()
+				resizeProjectWrapper()
+			} else {
+				index_org()
+			}
 		});
 	</script>
 
