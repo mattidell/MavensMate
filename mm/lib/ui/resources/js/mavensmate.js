@@ -23,6 +23,31 @@ $(function() {
 	
 });
 
+function renderTree() {
+	tree = Ext.create('mm.tree', {
+	    renderTo: 'tree',
+	    id: 'mmtree',
+	    width: '100%',
+	    height: '100%'
+	});
+}
+
+function renderBufferedTree() {
+	tree = Ext.create('mm.tree', {
+	    renderTo: 'tree',
+	    id: 'mmtree',
+	    width: '100%',
+	    height: '100%',
+	    plugins: [{
+			ptype: 'bufferedrenderer'
+		 }]
+	});
+}
+
+function resizeFilter() {
+	$("#txtFilter").width($("#filter").width() - $("#search-btn").width() - $("#select-btn").width()  - 70)
+}
+
 function scrollToTop(selector) {
 	$(selector).animate({ scrollTop: 0 }, 300);
 }
@@ -104,97 +129,17 @@ function resizeWindowOnDomElementRemoved() {
 
 //submit form on enter
 function submitFormOnEnter() {
-	//submit form on enter
 	$(".content").bind('keyup', function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
 		 if(code == 13) { //enter pressed
-		 	//if ($('#un').val() && $('#pw').val() && $('#pn').val())
-				$("#btnSubmit").click();
+			$("#btnSubmit").click();
 		 }
 	}); 
 } 
 
-//gets tree content in ruby hash form
+//gets tree content in json format
 function get_tree() {			
-	var json = { }
-	var tree = $("#tree").dynatree("getTree")
-	var child_def = {}
-	for (item in child_metadata) {
-		child_def[child_metadata[item]['tagName']] = child_metadata[item]['xmlName']
-	}
-	try {
-		//process top level (these are top level metadata types)
-		var selected_items = tree.getSelectedAndPartselNodesByLevel(1)
-		for (var i in selected_items) {
-			json[selected_items[i].data.title] = selected_items[i].bSelected && !selected_items[i].data.inFolder && !selected_items[i].data.in_folder ? "*" : []
-		} 
-		
-		
-		//process children (can either be files or folders)
-		selected_items = tree.getSelectedAndPartselNodesByLevel(2)
-		for (var i in selected_items) {
-			if (json[selected_items[i].parent.data.title] == "*") continue;   
-			if (selected_items[i].parent.data.hasChildTypes == true && !selected_items[i].bSelected) continue;
-			json[selected_items[i].parent.data.title].push(selected_items[i].data.title)
-		}
-		
-		//console.log('after second level processing')
-		//return json
-		
-		//process grandchildren (this is either metadata in folders or child metadata types like fields, weblinks, listviews, etc.)
-		selected_items = tree.getSelectedAndPartselNodesByLevel(3)
-		for (var i in selected_items) {
-			if (selected_items[i].parent.parent.data.inFolder || selected_items[i].parent.parent.data.in_folder) {
-				//this is folder-based metadata, we need to add this item explicitly
-			    items = json[selected_items[i].parent.parent.data.title] //=> items is an array
-			  	var item;
-				folder_name = ""
-				for (var j = 0; j < items.length; j++) {
-					if (items[j].name == selected_items[i].parent.data.title) {
-						folder_name = items[j].name
-						item = items[j]
-						break;
-					}
-				} 
-				//console.log(item)
-				items.push(selected_items[i].parent.data.title + "/" + selected_items[i].data.title)
-			} else if (selected_items[i].parent.parent.data.hasChildTypes) {
-				//this is metadata types like weblinks, fields, etc.
-				//console.log('processing child item')
-				//console.log(selected_items[i])
-				if (selected_items[i].parent.parent.data.select || selected_items[i].parent.parent.bSelected) {
-					//console.log('topmost parent is selected, continuing')
-					continue;
-				} else {
-					if (selected_items[i].parent.data.select || selected_items[i].parent.bSelected) {
-						console.log('direct parent is selected, continuing')
-						continue;
-					}
-					metadata_type = child_def[selected_items[i].data.title]
-					//console.log('type is: ')
-					//console.log(metadata_type)
-					if (!json[metadata_type]) {
-						json[metadata_type] = []
-					}    
-					//console.log(metadata_type)
-					for (var j = 0; j < selected_items[i].childList.length; j++) {
-						//console.log(selected_items[i].childList[j])
-						if (selected_items[i].childList[j].bSelected || selected_items[i].childList[j].data.select) {
-							json[metadata_type].push(selected_items[i].parent.data.title+"."+selected_items[i].childList[j].data.title)  
-						}
-					}
-				}
-			}
-		}      
-		for (item in json) {
-			if (json[item] !== "*" && json[item].length == 0) {
-				delete json[item]
-			}
-		} 
-	} catch(e) {
-		return []
-	}
-	return json
+	return tree.getPackage()
 }
 
 function get_log_levels_json() {
@@ -271,9 +216,15 @@ function hide_global_error() {
 	$("#global_message").html('')
 }
 
-function show_message(message, mtype) {
+function show_message(message, mtype, showCloseButton) {
 	if (mtype === undefined) {
 		mtype = 'error'
+	}
+	if (showCloseButton === undefined) {
+		showCloseButton = false
+	}
+	if (showCloseButton) {
+		message += '<br/><a href="#" class="btn btn-info btn-wide" onclick="window.close()">Done</a>'
 	}
 	$("#error_message").parent().attr('class', 'alert')
 	$("#error_message").parent().addClass('alert-'+mtype)
@@ -290,28 +241,14 @@ function hide_message(message) {
 
 function resize_arcade() {
 	$(".flash_game").css("width", $(".tab-content").width() - 45)
-	$(".flash_game").css("height", $(window).height() - 270)
+	$(".flash_game").css("height", $(window).height() - 290)
 }
 
 function resizeElements() {
-    // if ($("#result_output").css('display') != 'none') {
-    //     if ($(".tab-content").hasClass('tab-content-nested')) {
-
-    //     } else {
-    //     	$(".tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 140)
-    //     }
-    // } else {
-    //     if ($(".tab-content").hasClass('tab-content-nested')) {
-
-    //     } else {
-    //     	$(".tab-content").height($(window).height() - $(".navbar").height() - 120)
-    //     }
-    // }
-
     if ($("#result_output").css('display') != 'none') {
-		$("#main-tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 140)
+		$("#main-tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 160)
     } else {
-        $("#main-tab-content").height($(window).height() - $(".navbar").height() - 120)
+        $("#main-tab-content").height($(window).height() - $(".navbar").height() - 140)
     }
 }
 
@@ -320,6 +257,9 @@ function resizeProjectWrapper(offset) {
 		offset = 90
 	}
 	$("#project_wrapper").height($("#main-tab-content").height() - offset)
+	if (tree !== undefined) {
+		tree.setHeight($("#project_wrapper").height())
+	}
 }
 
 function check_status(request_id) {
@@ -351,11 +291,9 @@ function check_status(request_id) {
 	});
 }
 
-
 jQuery.fn.selectText = function(){
 	var doc = document;
 	var element = this[0];
-	console.log(this, element);
 	if (doc.body.createTextRange) {
 		var range = document.body.createTextRange();
 		range.moveToElementText(element);
@@ -369,61 +307,12 @@ jQuery.fn.selectText = function(){
 	}
 };
 
-function filter_tree(searchTerm, parent) {
-	if (searchTerm === undefined || searchTerm.length < 2) {
-		return;
-	}
-	if (parent === undefined) {
-		parent = 'ApexClass'
-	}
-	var st = searchTerm.toLowerCase()
-	$("#tree").dynatree("getRoot").visit(function(node) {
-		if (node.data.level == 1) {
-			if (node.data.title == parent) {
-				node.expand(true);
-				node.visit(function(child_node) {
-					
-					var nodeTitle = child_node.data.title;
-					var nt = nodeTitle.toLowerCase()
-					if ( nt.indexOf(st) >= 0 ) {
-						$(child_node.li).show();
-						child_node.visitParents(function(parent_node) {
-							$(parent_node.li).show();
-							return (parent_node.parent != null);
-						}, false); 
-						return 'skip';  
-					} else {
-						$(child_node.li).hide();
-					}
-
-				}, false);
-			} else {
-				$(node.li).hide();
-			}
-		}
-	});
-}
-
 function expandAll() {
-	$("#tree").dynatree("getRoot").visit(function(node){
-		if (node.hasChildren()) {
-			node.expand(true);
-		}
-	});
+	tree.expandAll()
 }
 
 function collapseAll() {
-	$("#tree").dynatree("getRoot").visit(function(node){
-		node.expand(false);
-	});
-}
-
-function clearFilter() {
-	tree.clearFilter();
-	$('#txtFilter').val('');
-	$('#txtFilter').focus();
-	$("#search-btn").removeClass('btn-danger').addClass('btn-success').html('<i class="icon-search"></i>');
-	tree.collapseAll();
+	tree.collapseAll()
 }
 
 $.expr[':'].Contains = function(a, i, m) {
