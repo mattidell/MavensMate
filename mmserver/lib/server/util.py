@@ -89,8 +89,8 @@ class BackgroundWorker(threading.Thread):
             args['--html'] = None
         elif self.operation == 'unit_test':
             args['--html'] = None
-        elif self.operation == 'index_metadata':
-            args['--html'] = None    
+        #elif self.operation == 'index_metadata':
+        #    args['--html'] = None    
                 
         arg_string = []
         for x in args.keys():
