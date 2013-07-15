@@ -540,6 +540,7 @@ class MavensMateProject(object):
                 raise MMException('"package" definition required in JSON body')
             self.package = params['package']
 
+            #intercept and overwrite customobject retrieve to include standard objects
             if 'CustomObject' in self.package:
                 custom_fields = []
                 for member in self.package['CustomObject']:
@@ -1083,7 +1084,91 @@ class MavensMateProject(object):
     def refresh_indexed_metadata(self, payload):
         pass
 
-    def __select_metadata_based_on_package_xml(self, return_list):
+    def __select_metadata_based_on_package_xml(self, org_index):
+        project_package = self.__get_package_as_dict()
+        for index_type in org_index:   
+            if index_type['type']['inFolder'] == True:
+                #print '-----> ', index_type['xmlName']
+                #document, emailtemplate, dashboard, etc. 
+                for package_type in project_package['Package']['types']:
+                    if package_type['name'] == index_type['xmlName']:
+                        #print 'this item is in package.xml --> ',index_type['xmlName']
+                        if type(package_type['members']) is not list:
+                            package_type['members'] = [package_type['members']]
+                        pm = {}
+                        for package_member in package_type['members']:
+                            #print '---> package item: ',package_member
+                            folder_name = None
+                            folder_item = None
+                            if '/' in package_member:
+                                folder_name = package_member.split('/')[0]
+                                folder_item = package_member.split('/')[1]
+                            else:
+                                folder_name = package_member
+
+                            if folder_name not in pm:
+                                pm[folder_name] = []
+                                if folder_item != None:
+                                    pm[folder_name].append(folder_item)
+                            else:
+                                pm[folder_name].append(folder_item)
+                        #print pm
+
+                        for child in index_type['children']:
+                            #print child['text']
+                            if child['text'] in pm:
+                                for c in child['children']:
+                                    if c['text'] in pm[child['text']]:
+                                        c['checked'] = True
+
+            elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0:
+                #customobject with children like:
+                #customfield, listview, weblink, etc.
+                for child_type in index_type['type']['childXmlNames']:
+                    #child_type = listview
+                    for package_type in project_package['Package']['types']:
+                        if package_type['name'] == child_type:
+                            #print '------> index child type: ', child_type
+                            #ListView
+                            if type(package_type['members']) is not list:
+                                package_type['members'] = [package_type['members']]
+                            pm = {}
+                            for package_member in package_type['members']:
+                                #print '---> package item: ',package_member
+                                top_level_key   = package_member.split('.')[0]
+                                top_level_value = package_member.split('.')[1]
+                                if top_level_key not in pm:
+                                    pm[top_level_key] = [top_level_value]
+                                else:
+                                    pm[top_level_key].append(top_level_value)
+
+                            for child_item in index_type['children']:
+                                #print child_item['text']
+                                if child_item['text'] in pm:
+                                    for c in child_item['children']:
+                                        #c ==> listviews
+                                        mdef = mm_util.get_meta_type_by_dir(c['text'])
+                                        if mdef['xmlName'] == child_type:
+                                            for leaf in c['children']:
+                                                if leaf['text'] in pm[child_item['text']]:
+                                                    leaf['checked'] = True
+            else:
+                #apexclass, apexpage, etc.
+                for package_type in project_package['Package']['types']:
+                    if package_type['name'] == index_type['xmlName']:
+                        if package_type['members'] == '*':
+                            index_type['checked'] = True
+                            for child in index_type['children']:
+                                child['checked'] = True
+                        else:
+                            index_type['checked'] = False
+                            if type(package_type['members']) is not list:
+                                package_type['members'] = [package_type['members']]
+                            for child in index_type['children']:
+                                if child['text'] in package_type['members']:
+                                    child['checked'] = True
+
+    def __select_metadata_based_on_package_xml_OLD(self, return_list):
         #process package and select only the items the package has specified
         package_types = self.get_package_types();
         #expand standard "custombjects" to customfields
@@ -1438,29 +1523,19 @@ class MavensMateProject(object):
     def get_org_metadata(self, selected=None, raw=False):
         if self.get_is_metadata_indexed() == True:
             if raw:
-                return mm_util.get_file_as_string(os.path.join(self.location,"config",".org_metadata"))
+                org_metadata_raw = mm_util.get_file_as_string(os.path.join(self.location,"config",".org_metadata"))
+                org_index = json.loads(org_metadata_raw)
+                self.__select_metadata_based_on_package_xml(org_index)
+                return json.dumps(org_index)
             else:
-                metadata = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
-                # if selected != None and len(selected) > 0:
-                #     for p in selected:
-                #         for item in metadata:
-                #             for child in item['children']:
-                #                 if child['title'] == p:
-                #                     child['selected'] = True
-                #                 else:
-                #                     child['selected'] = False
-                # else:
-                #     metadata = self.__select_metadata_based_on_package_xml(metadata)
-                #     
-                #metadata = None
-                #file_body = json.dumps(metadata)
-                #src = open(os.path.join(self.location,"config",".org_metadata"), "w")
-                #src.write(file_body)
-                #src.close()
-                return metadata
+                org_index = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
+                self.__select_metadata_based_on_package_xml(org_index)
+                return org_index
         else:
             self.index_metadata()
-            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
+            org_index = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
+            self.__select_metadata_based_on_package_xml(org_index)
+            return org_index
 
     def __get_settings(self):
         #returns settings for this project (handles legacy yaml format)
@@ -1690,10 +1765,10 @@ class IndexCall(threading.Thread):
             except BaseException, e:
                 #print 'ERROR: %s\n' % str(e)
                 #print self.result
-                print 'error when trying to index: ', mtype['xmlName']
-                print e.message
-                trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
-                print trace
+                #print 'error when trying to index: ', mtype['xmlName']
+                #print e.message
+                #trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
+                #print trace
                 #print self.metadata_type['xmlName']
                 #self.result = mm_util.generate_error_response(e.message)
                 #self.results.append({})

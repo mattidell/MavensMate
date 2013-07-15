@@ -139,9 +139,8 @@ class MavensMateClient(object):
         d = xmltodict.parse(describe_result,postprocessor=mm_util.xmltodict_postprocessor)
         if as_dict:
             result = d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"]
-            sorted_list = sorted(result['metadataObjects'], key=itemgetter('xmlName')) 
-            result['metadataObjects'] = sorted_list
-            return result
+            sorted_list = sorted(result['metadataObjects'], key=itemgetter('xmlName'))
+            return mm_util.prepare_for_metadata_tree( sorted_list )
         else:
             return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"], sort_keys=True, indent=4)
 

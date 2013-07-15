@@ -284,9 +284,13 @@ def get_meta_type_by_suffix(suffix):
             return item
 
 def get_meta_type_by_dir(dir_name):
-    data = get_default_metadata_data()
-    for item in data["metadataObjects"]: 
-        if 'directoryName' in item and item['directoryName'] == dir_name:
+    parent_data = get_default_metadata_data()
+    child_data = get_child_metadata_data()
+    data = parent_data['metadataObjects'] + child_data
+    for item in data: 
+        if 'directoryName' in item and item['directoryName'].lower() == dir_name.lower():
+            return item
+        elif 'tagName' in item and item['tagName'].lower() == dir_name.lower():
             return item
 
 def get_meta_type_by_name(name):
@@ -359,11 +363,6 @@ def generate_ui(operation,params={}):
             client=config.connection.plugin_client
         ).encode('UTF-8')
     elif operation == 'edit_project':
-        tree_body = ''
-        # if config.connection.project.is_metadata_indexed == True:
-        #     template = env.get_template('/project/tree.html')
-        #     org_metadata = config.connection.project.get_org_metadata()
-        #     tree_body = template.render(metadata=org_metadata)
         template = env.get_template('/project/edit.html')
         creds = config.connection.project.get_creds()
         file_body = template.render(
@@ -372,9 +371,8 @@ def generate_ui(operation,params={}):
             username=creds['username'],
             password=creds['password'],
             org_type=creds['org_type'],
-            # has_indexed_metadata=config.connection.project.is_metadata_indexed,
+            has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
-            # tree_body=tree_body,
             client=config.connection.plugin_client
         ).encode('UTF-8')
     elif operation == 'unit_test':
@@ -542,7 +540,7 @@ def generate_error_response(message):
     try:
         trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
         message = message.strip()
-        if trace != None and trace != 'None' and 'raise MMException' not in trace:
+        if trace != None and trace != 'None' and 'MMException' not in trace:
             # if message = e.message just use the trace
             if len(trace):
                 if trace.endswith(message):
@@ -579,6 +577,15 @@ def generate_error_response(message):
             "body"      : message
         }
         return json.dumps(res)
+
+def prepare_for_metadata_tree(metadata_list):
+    apex_types = ['ApexClass', 'ApexComponent', 'ApexTrigger', 'ApexPage', 'StaticResource']
+    for mt in metadata_list:
+        mt['text']      = mt['xmlName']
+        mt['folder']    = True
+        mt['checked']   = True if mt['xmlName'] in apex_types else False
+        mt['children']  = []
+    return metadata_list
 
 def get_request_payload():
     try:
