@@ -154,7 +154,7 @@
 						$("#btnSubmit").click();
 				 }
 			});  
-			
+
 			//when user changes tab to metadata selection, use provided creds to login and get session id
 			$('a[data-toggle="tab"]').on('shown', function (e) {
 				//console.log(e.target.href.indexOf("metadata"))
@@ -205,14 +205,17 @@
 														},
 														beforeSend: function() { showLoading('Retrieving metadata...'); },
 														complete: function(data){
-								    						console.log(data)
+								    						//console.log('parsing response...')
+								    						//console.log(data)
 								    						try {
 								    							var json_data = JSON.parse(data.responseText)
 								    							for (i in json_data) {
+								    								//console.log(json_data[i])
 								    								node.appendChild(json_data[i])	
 								    							}
 								    						} catch(e) {
 								    							console.log(e)
+								    							hideLoading()
 								    							return []
 								    						}
 								    						node.loadedFromServer = true
