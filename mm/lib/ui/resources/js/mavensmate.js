@@ -37,11 +37,9 @@ function renderBufferedTree() {
 	    renderTo: 'tree',
 	    id: 'mmtree',
 	    width: '100%',
-	    height: '100%',
-	    plugins: [{
-			ptype: 'bufferedrenderer'
-		 }]
+	    height: '100%'
 	});
+	tree.mmType = 'new_project'
 }
 
 function resizeFilter() {
@@ -139,7 +137,17 @@ function submitFormOnEnter() {
 
 //gets tree content in json format
 function get_tree() {			
-	return tree.getPackage()
+	if (tree !== undefined) {
+		return tree.getPackage()
+	} else {
+		return {
+			"ApexClass" 		: "*",
+			"ApexComponent" 	: "*",
+			"ApexPage"			: "*",
+			"ApexTrigger" 		: "*",
+			"StaticResource" 	: "*"
+		}
+	}
 }
 
 function get_log_levels_json() {
