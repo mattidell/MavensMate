@@ -19,3 +19,5 @@ mm/build/build_settings.json
 platforms/osx/MavensMate/MavensMate.xcodeproj/project.xcworkspace/xcuserdata/josephferraro.xcuserdatad/UserInterfaceState.xcuserstate
 
 *.sublime-project
+
+mm/lib/ui/templates/layouts/build/ext.html
