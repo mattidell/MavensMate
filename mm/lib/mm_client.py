@@ -203,6 +203,8 @@ class MavensMateClient(object):
             if self.mclient == None:
                 self.mclient = self.__get_metadata_client()
             metadata_type_def = mm_util.get_meta_type_by_name(metadata_type)
+            if metadata_type_def == None:
+                return []
             has_children_metadata = False
             if 'childXmlNames' in metadata_type_def and type(metadata_type_def['childXmlNames']) is list:
                 has_children_metadata = True
@@ -283,7 +285,7 @@ class MavensMateClient(object):
                             for gchild_el in object_detail[tag_name]:
                                 gchildren.append({
                                     "text"      : gchild_el,
-                                    "key"       : gchild_el,
+                                    #"key"       : gchild_el,
                                     "isFolder"  : False,
                                     "checked"   : False,
                                     "level"     : 4,
@@ -295,7 +297,7 @@ class MavensMateClient(object):
                           
                             children.append({
                                 "text"      : child_type_def['tagName'],
-                                "key"       : child_type_def['tagName'],
+                                #"key"       : child_type_def['tagName'],
                                 "isFolder"  : True,
                                 "cls"       : "folder",
                                 "children"  : gchildren,
@@ -320,7 +322,7 @@ class MavensMateClient(object):
                     for folder_element in list_basic_response:
                         children.append({
                             "text"      : folder_element['fullName'].split("/")[1],
-                            "key"       : folder_element['fullName'],
+                            #"key"       : folder_element['fullName'],
                             "leaf"      : True,
                             "isFolder"  : False,
                             "checked"   : False,
@@ -331,14 +333,14 @@ class MavensMateClient(object):
                 children = sorted(children, key=itemgetter('text')) 
                 return_elements.append({
                     "text"      : element['fullName'],
-                    "key"       : element['fullName'],
+                    #"key"       : element['fullName'],
                     "isFolder"  : is_folder_metadata or has_children_metadata,
                     "cls"       : "folder" if is_folder_metadata or has_children_metadata else "",
                     "leaf"      : not is_folder_metadata and not has_children_metadata,
                     "children"  : children,
                     "checked"   : False,
                     "level"     : 2,
-                    "id"        : metadata_type_def['xmlName']+'.'+full_name
+                    "id"        : metadata_type_def['xmlName']+'.'+full_name.replace(' ', '')
                 })
 
             return_elements = sorted(return_elements, key=itemgetter('text')) 
