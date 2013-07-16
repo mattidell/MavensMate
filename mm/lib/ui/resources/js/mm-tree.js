@@ -23,6 +23,7 @@ var itemRightClickMenu = new Ext.menu.Menu({
 Ext.define('Ext.ux.grid.mm-tree', {
     extend: 'Ext.tree.Panel',
     rootVisible: true,
+    mmType:'',
     // mask: true,
     // maskConfig: { msg: "Loading tree items..." },
     // loadMask: true,
@@ -101,9 +102,9 @@ Ext.define('Ext.ux.grid.mm-tree', {
             // }
         },
         itemcontextmenu: function(view, record, item, index, event) {
-            console.log(record)
-            console.log(item)
-            if (record.data.depth == 1) {
+            //console.log(record)
+            //console.log(item)
+            if (record.data.depth == 1 && tree.mmType !== 'new_project') {
                 itemRightClickMenu.showAt(event.getXY());
                 itemRightClickMenu.apexMetadataType = record.data.text;
                 event.stopEvent();
