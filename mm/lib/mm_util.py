@@ -347,6 +347,7 @@ def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
     env.globals['play_sounds'] = play_sounds
+    env.globals['project_settings'] = project_settings
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -476,6 +477,12 @@ def generate_html_response(operation, obj, params):
 
 def play_sounds():
     return config.connection.get_plugin_client_setting('mm_play_sounds', False)
+
+def project_settings():
+    try:
+        return config.connection.project.settings
+    except:
+        return {}
 
 def does_file_exist(api_name, metadata_type_name):
     metadata_type = get_meta_type_by_name(metadata_type_name)
