@@ -30,6 +30,10 @@ function renderTree() {
 	    width: '100%',
 	    height: '100%'
 	});
+	tree.setLoading()	
+	tree_store.on('load', function() {
+		tree.setLoading(false)	
+	});
 }
 
 function renderBufferedTree() {
@@ -40,6 +44,10 @@ function renderBufferedTree() {
 	    height: '100%'
 	});
 	tree.mmType = 'new_project'
+	tree.setLoading()	
+	tree_store.on('load', function() {
+		tree.setLoading(false)	
+	});
 }
 
 function resizeFilter() {
