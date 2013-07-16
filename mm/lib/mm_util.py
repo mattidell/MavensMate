@@ -536,22 +536,20 @@ def generate_success_response(message, type="text"):
     return json.dumps(res)
 
 def generate_error_response(message):
-    # hide path info from build
     try:
+        stack_trace = ''
         trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
         message = message.strip()
         if trace != None and trace != 'None' and 'MMException' not in trace:
             # if message = e.message just use the trace
             if len(trace):
-                if trace.endswith(message):
-                    message = ''
-                message += '\n' + '[STACKTRACE]: ' + trace
-            message += '\n'+'[ENVIRONMENT]: '
+                stack_trace += trace
+            stack_trace += '\n'+'[ENVIRONMENT]: '
             # get OS info
             try:
                 if sys.platform == 'darwin':
                     release, versioninfo, machine = platform.mac_ver()
-                    message += 'MacOS ' + release
+                    stack_trace += 'MacOS ' + release
                 #todo: support windows and linux
             except:
                 pass
@@ -559,22 +557,25 @@ def generate_error_response(message):
             try:
                 dic = plistlib.readPlist('/Applications/MavensMate.app/Contents/Info.plist')
                 if 'CFBundleVersion' in dic:
-                    message += ', MavensMate ' + dic['CFBundleVersion']
+                    stack_trace += ', MavensMate ' + dic['CFBundleVersion']
             except:
                 pass
 
         config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
+        config.logger.debug(stack_trace)
         res = {
-            "success"   : False,
-            "body_type" : "text",
-            "body"      : message
+            "success"       : False,
+            "body_type"     : "text",
+            "body"          : message,
+            "stack_trace"   : stack_trace
         }
         return json.dumps(res)
     except:
         res = {
-            "success"   : False,
-            "body_type" : "text",
-            "body"      : message
+            "success"       : False,
+            "body_type"     : "text",
+            "body"          : message,
+            "stack_trace"   : stack_trace
         }
         return json.dumps(res)
 
