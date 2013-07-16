@@ -298,11 +298,11 @@
 	$(function(){
 	
 		$(window).resize(function() {
-			$("#result_wrapper").height($(window).height() - 190)
-			$("#class_coverage_wrapper").height($(window).height() - 240)   
-			$("#trigger_coverage_wrapper").height($(window).height() - 240)
-			$("#warnings_coverage_wrapper").height($(window).height() - 190)
-			$("#log_coverage_wrapper").height($(window).height() - 190)
+			$("#result_wrapper").height($(window).height() - 210)
+			$("#class_coverage_wrapper").height($(window).height() - 260)   
+			$("#trigger_coverage_wrapper").height($(window).height() - 260)
+			$("#warnings_coverage_wrapper").height($(window).height() - 210)
+			$("#log_coverage_wrapper").height($(window).height() - 210)
 			resize_test_container_sizes()  
 			resize_arcade()
 		});
@@ -359,11 +359,11 @@
 		$("#"+type+"_code_result_"+index).toggle();        
 	}
 
-	$("#result_wrapper").height($(window).height() - 190)
-	$("#class_coverage_wrapper").height($(window).height() - 240)
-	$("#trigger_coverage_wrapper").height($(window).height() - 240)
-	$("#warnings_coverage_wrapper").height($(window).height() - 190)
-	$("#log_coverage_wrapper").height($(window).height() - 190)
+	$("#result_wrapper").height($(window).height() - 210)
+	$("#class_coverage_wrapper").height($(window).height() - 260)
+	$("#trigger_coverage_wrapper").height($(window).height() - 260)
+	$("#warnings_coverage_wrapper").height($(window).height() - 210)
+	$("#log_coverage_wrapper").height($(window).height() - 210)
 	
 	$("#category").change(function() {
 		if (this.value == "Apex_code") {
