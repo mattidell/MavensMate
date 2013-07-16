@@ -1121,7 +1121,7 @@ class MavensMateProject(object):
                                     if c['text'] in pm[child['text']]:
                                         c['checked'] = True
 
-            elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0:
+            elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0 and index_type['xmlName'] != 'Workflow':
                 #customobject with children like:
                 #customfield, listview, weblink, etc.
                 for child_type in index_type['type']['childXmlNames']:

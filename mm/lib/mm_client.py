@@ -331,12 +331,24 @@ class MavensMateClient(object):
                         })
                     
                 children = sorted(children, key=itemgetter('text')) 
+                is_leaf = True
+                cls = ''
+                if is_folder_metadata:
+                    is_leaf = False
+                    cls = 'folder'
+                if has_children_metadata:
+                    is_leaf = False
+                    cls = 'folder'
+                if metadata_type_def['xmlName'] == 'Workflow':
+                    is_leaf = True
+                    cls = ''
+
                 return_elements.append({
                     "text"      : element['fullName'],
                     #"key"       : element['fullName'],
                     "isFolder"  : is_folder_metadata or has_children_metadata,
-                    "cls"       : "folder" if is_folder_metadata or has_children_metadata else "",
-                    "leaf"      : not is_folder_metadata and not has_children_metadata,
+                    "cls"       : cls,
+                    "leaf"      : is_leaf,
                     "children"  : children,
                     "checked"   : False,
                     "level"     : 2,
