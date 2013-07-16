@@ -79,11 +79,17 @@ def setup_connection(args):
 
 # echo '{ "username" : "", "password" : "", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():
-    client = MavensMateClient(credentials={
-        "sid"                   : request_payload.get('sid', None),
-        "metadata_server_url"   : urllib.unquote(request_payload.get('metadata_server_url', None)),
-        "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
-    }) 
+    if 'sid' in request_payload:
+        client = MavensMateClient(credentials={
+            "sid"                   : request_payload.get('sid', None),
+            "metadata_server_url"   : urllib.unquote(request_payload.get('metadata_server_url', None)),
+            "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
+        }) 
+    elif 'username' in request_payload:
+        client = MavensMateClient(credentials={
+            "username"              : request_payload.get('username', None),
+            "password"              : request_payload.get('password', None)
+        })
     print json.dumps(client.list_metadata(request_payload['metadata_type']))
 
 def open_sfdc_url():
