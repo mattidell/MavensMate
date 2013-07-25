@@ -1,4 +1,3 @@
-import keyring
 import os
 import yaml
 import json
@@ -21,6 +20,8 @@ import traceback
 import plistlib
 import platform
 import itertools
+import keyring
+from operator import itemgetter
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -58,7 +59,6 @@ template_path = config.base_path + "/lib/templates"
 
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
-
 def get_timestamp():
     ts = time.time()
     return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H:%M:%S')
@@ -85,6 +85,15 @@ def parse_xml_from_file(location):
         return data
     except:
         return {}
+
+def get_iso_8601_timestamp(delta_in_minutes=None):
+    now = datetime.datetime.now()
+    if delta_in_minutes == None:
+        return now.isoformat()
+    else:
+        delta = datetime.timedelta(minutes = delta_in_minutes)
+        expiration_date = now + delta
+        return expiration_date.isoformat()
 
 def get_sfdc_endpoint(url):
     endpoint = PRODUCTION_ENDPOINT
@@ -346,8 +355,10 @@ def parse_manifest(location):
 def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
-    env.globals['play_sounds'] = play_sounds
-    env.globals['project_settings'] = project_settings
+    env.globals['play_sounds']              = play_sounds
+    env.globals['project_settings']         = project_settings
+    env.globals['metadata_types']           = metadata_types
+    env.globals['client_subscription_list'] = client_subscription_list
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -433,7 +444,8 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             project_name=config.connection.project.project_name,
             users=config.connection.project.get_org_users_list(),
-            logs=config.connection.project.get_org_logs(),
+            apex_items=config.connection.project.sfdc_client.get_apex_classes_and_triggers(),
+            #logs=config.connection.project.get_org_logs(),
             client=config.connection.plugin_client).encode('UTF-8')
     temp.write(file_body)
     temp.close()
@@ -469,10 +481,6 @@ def generate_html_response(operation, obj, params):
         config.logger.debug(obj)
         config.logger.debug(deploy_results)
         html = template.render(deploy_results=deploy_results,args=params)
-    elif operation == 'index_metadata':
-        template = env.get_template('/project/tree.html')
-        org_metadata = config.connection.project.get_org_metadata()
-        html = template.render(metadata=org_metadata)
     return html
 
 def play_sounds():
@@ -483,6 +491,16 @@ def project_settings():
         return config.connection.project.settings
     except:
         return {}
+
+def client_subscription_list():
+    try:
+        return config.connection.get_plugin_client_setting('mm_default_subscription')
+    except:
+        return []
+
+def metadata_types():
+    return sorted(get_default_metadata_data()["metadataObjects"], key=itemgetter('xmlName'))
+
 
 def does_file_exist(api_name, metadata_type_name):
     metadata_type = get_meta_type_by_name(metadata_type_name)
@@ -528,7 +546,7 @@ def generate_response(obj):
 
 def generate_success_response(message, type="text"):
     res = {
-        "time"      : repr(time.clock() - config.mm_start),
+        "time"      : repr(time.time() - config.mm_start),
         "success"   : True,
         "body_type" : type,
         "body"      : message

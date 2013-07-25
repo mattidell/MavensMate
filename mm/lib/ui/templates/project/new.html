@@ -11,7 +11,15 @@
 		 
 	<ul class="nav nav-tabs nav-append-content">
 		<li class="active"><a id="project_details_tab" href="#form" data-toggle="tab">Project Details</a></li>
-		<li><a href="#metadata" data-toggle="tab">Project Metadata</a></li>
+		<li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+		<li>
+			<a href="#metadata" data-toggle="tab">
+				Project Metadata &nbsp;&nbsp;
+				<span onclick="populateMetadataTree('Refreshing Metadata...')" class="label" style="line-height:15px;cursor:pointer;">
+					Refresh <i class="icon-refresh"></i>
+				</span> 
+			</a>
+		</li>
 	</ul>
 	
 	<div class="tab-content" id="main-tab-content">
@@ -39,6 +47,31 @@
 							<option value="prerelease">Prerelease</option>
 						</select>
 					</div>  
+				</fieldset>
+			</form>
+		</div>
+
+		<div id="advanced" class="tab-pane">
+			<form class="form-stacked" style="padding-top:10px;">
+				<fieldset>
+					<div class="clearfix">
+						<label for="subscription" style="font-weight:bold;">Metadata Subscription List</label> 
+						<select name="huge" class="select-block mbl info" style="display:none;" id="subscription" multiple="multiple" data-placeholder="Select 1 or more metadata types...">
+							{% for m in metadata_types() %}
+								{% if m['xmlName'] in client_subscription_list() %}
+									{% set selected = 'selected="selected"' %}
+								{% else %}
+									{% set selected = '' %}
+								{% endif %}
+								<option {{ selected }} value="{{ m['xmlName'] }}">
+									{{ m['xmlName'] }}
+								</option>
+							{% endfor %} 
+						</select>	
+						<div class="alert alert-info">
+							<span>If you only plan to work with certain metadata types in this project, specify those types here. Otherwise, MavensMate will index each metadata type available in your org. In larger orgs, this can negatively impact performance. The default list of metadata types is controlled by your plugin client's <strong>mm_default_subscription</strong> setting.</span>
+						</div>
+					</div>			
 				</fieldset>
 			</form>
 		</div>
@@ -100,12 +133,13 @@
 				contentType: 'application/json; charset=utf-8',
 				url: "http://127.0.0.1:9000/project", 
 				data: JSON.stringify({
-					 project_name: $("#pn").val(), 
-					 username: $("#un").val(), 
-					 password: $("#pw").val(), 
-					 org_type: $("#org_type").val(),
-					 package: get_tree(),
-					 action: "new"
+					 project_name 	: $("#pn").val(), 
+					 username 		: $("#un").val(), 
+					 password 		: $("#pw").val(), 
+					 org_type 		: $("#org_type").val(),
+					 package 		: get_tree(),
+					 subscription 	: $("#subscription").val(),
+					 action 		: "new"
 				}),
 				beforeSend: function() { showLoading('Creating new MavensMate project'); },
 				complete: function(data){
@@ -143,7 +177,7 @@
 				resizeProjectWrapper(10)
 			});
 
-			window.resizeTo(520, 620)
+			window.resizeTo(570, 670)
 			centerWindow()
 
 			//submit form on enter
@@ -161,92 +195,103 @@
 				if (e.target.href.indexOf("metadata") != -1 && ($('#sid').val() == null || $('#sid').val() == "")) {
 					console.log('checking creds');
 					operation = "check_creds"
-					$.ajax({
-						type: "GET",
-						url: "http://127.0.0.1:9000/session", 
-						data: {
-							 username: $("#un").val(), 
-							 password: $("#pw").val(), 
-							 org_type: $("#org_type").val()
-						},
-						beforeSend: function() { showLoading('Attempting to authenticate to Salesforce using the provided credentials'); },
-						complete: function(data){
-							console.log(data)
-							try {
-								var response = JSON.parse(data.responseText)
-								if (response["success"] == false) {
-									$("#project_details_tab").click();
-									show_message(response["body"]);
-									notify_sound();
-								} else {
-									tree_store = Ext.create('Ext.data.TreeStore', {
-									    proxy: {
-									        data : response["metadata"],
-									        type: 'memory',
-									        reader: {
-									            type: 'json',
-									        }
-									    },
-									    lazyFill: true,
-									    listeners: {
-									    	beforeexpand:function(node) {
-									    		if (!node.loadedFromServer && node.data.depth == 1) {
-									    			console.log(node)
-													$.ajax({
-														type: "GET",
-														dataType: 'json',
-														contentType: 'application/json; charset=utf-8',
-														url: "http://127.0.0.1:9000/metadata/list", 
-														data: {
-															"metadata_type"			: node.data.text,
-								    						"sid"					: $("#sid").val(),
-								    						"metadata_server_url" 	: $("#metadata_server_url").val(),
-								    						"server_url" 			: $("#server_url").val()
-														},
-														beforeSend: function() { showLoading('Retrieving metadata...'); },
-														complete: function(data){
-								    						//console.log('parsing response...')
-								    						//console.log(data)
-								    						try {
-								    							var json_data = JSON.parse(data.responseText)
-								    							for (i in json_data) {
-								    								//console.log(json_data[i])
-								    								node.appendChild(json_data[i])	
-								    							}
-								    						} catch(e) {
-								    							console.log(e)
-								    							hideLoading()
-								    							return []
-								    						}
-								    						node.loadedFromServer = true
-								    						hideLoading()
-														} 
-												 	});	
-									    		}
-									    	}
-									    }
-									});
-									renderBufferedTree()
-									$('#sid').val(response["sid"])	
-									$('#metadata_server_url').val(response["metadata_server_url"])
-									$('#server_url').val(response["server_url"])
-									hide_message()
-								}
-								resizeProjectWrapper(10);
-								hideLoading();
-							} catch(e) {
-								console.log(e)
-								show_message('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
-								notify_sound();
-								hideLoading();
-							}
-							
-						}
-				 	});
+					populateMetadataTree('Attempting to authenticate to Salesforce using the provided credentials')
 				}
 		    });
 
 		});
+
+		function populateMetadataTree(message) {
+			$.ajax({
+				type: "GET",
+				url: "http://127.0.0.1:9000/session", 
+				data: {
+					 username 		: $("#un").val(), 
+					 password 		: $("#pw").val(), 
+					 org_type 		: $("#org_type").val(),
+					 subscription 	: $("#subscription").val()
+				},
+				beforeSend: function() { showLoading(message); },
+				complete: function(data){
+					console.log(data)
+					try {
+						var response = JSON.parse(data.responseText)
+						if (response["success"] == false) {
+							$("#project_details_tab").click();
+							show_message(response["body"]);
+							notify_sound();
+						} else {
+							tree_store = Ext.create('Ext.data.TreeStore', {
+							    proxy: {
+							        data : response["metadata"],
+							        type: 'memory',
+							        reader: {
+							            type: 'json',
+							        }
+							    },
+							    lazyFill: true,
+							    listeners: {
+							    	beforeexpand:function(node) {
+							    		if (!node.loadedFromServer && node.data.depth == 1) {
+							    			console.log(node)
+											$.ajax({
+												type: "GET",
+												dataType: 'json',
+												contentType: 'application/json; charset=utf-8',
+												url: "http://127.0.0.1:9000/metadata/list", 
+												data: {
+													"metadata_type"			: node.data.text,
+						    						"sid"					: $("#sid").val(),
+						    						"metadata_server_url" 	: $("#metadata_server_url").val(),
+						    						"server_url" 			: $("#server_url").val()
+												},
+												beforeSend: function() { tree.setLoading() },
+												complete: function(data){
+						    						//console.log('parsing response...')
+						    						//console.log(data)
+						    						try {
+						    							var json_data = JSON.parse(data.responseText)
+						    							for (i in json_data) {
+						    								//console.log(json_data[i])
+						    								node.appendChild(json_data[i])	
+						    							}
+						    						} catch(e) {
+						    							console.log(e)
+						    							tree.setLoading(false)
+						    							return []
+						    						}
+						    						node.loadedFromServer = true
+						    						tree.setLoading(false)
+												} 
+										 	});	
+							    		}
+							    	}
+							    }
+							});
+							if (tree === undefined) {
+								renderBufferedTree()
+							} else {
+								tree.destroy()
+								renderBufferedTree()
+							}
+							$('#sid').val(response["sid"])	
+							$('#metadata_server_url').val(response["metadata_server_url"])
+							$('#server_url').val(response["server_url"])
+							tree.setLoading(false)
+							hide_message()
+						}
+						resizeProjectWrapper(10);
+						hideLoading();
+					} catch(e) {
+						console.log(e)
+						show_message('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
+						notify_sound();
+						hideLoading();
+					}
+					
+				}
+		 	});
+		}
 								
 	</script>
 {% endblock %}

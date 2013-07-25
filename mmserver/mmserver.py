@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import argparse
-#import lib.server.server_threaded as server_threaded
+import lib.server.server_threaded as server_threaded
 import lib.server.server as server
 import lib.config as config
 import threading
@@ -11,7 +11,8 @@ def main():
     args = parser.parse_args()
     config.mm_path = args.mmpath
     try:
-        server.run()
+        #server.run()
+        server_threaded.run()
     except:
         config.logger.warn("Server at port 9000 already running")
 

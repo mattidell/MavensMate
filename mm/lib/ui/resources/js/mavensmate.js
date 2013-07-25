@@ -24,11 +24,16 @@ $(function() {
 });
 
 function renderTree() {
+	Ext.require([
+	    'Ext.grid.plugin.BufferedRenderer'
+	]);
+
 	tree = Ext.create('mm.tree', {
 	    renderTo: 'tree',
 	    id: 'mmtree',
 	    width: '100%',
-	    height: '100%'
+	    height: '100%',
+	    plugins: 'bufferedrenderer'
 	});
 	tree.setLoading()	
 	tree_store.on('load', function() {
@@ -168,6 +173,27 @@ function get_log_levels_json() {
 			options.push({
 				"category" 	: logCategory,
 				"level" 	: logLevel
+			})
+		}
+	}
+	return options
+}
+
+function get_log_levels_json_tooling() {
+	var options = []
+	var logCategories = ['Database', 'System', 'Visualforce', 'Workflow', 'Validation', 'Callout', 'ApexCode', 'ApexProfiling']
+	for (category in logCategories) {
+		var logCategory = logCategories[category]
+		var logLevel = $("#select-"+logCategory).val()
+		if (logLevel != '') {
+			options.push({
+				"category" 	: logCategory,
+				"level" 	: logLevel
+			})
+		} else {
+			options.push({
+				"category" 	: logCategory,
+				"level" 	: 'INFO'
 			})
 		}
 	}

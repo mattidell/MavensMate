@@ -331,16 +331,7 @@
 	var has_indexed_metadata = {{ has_indexed_metadata|lower }};
 	var operation;
 
-	tree_store = new Ext.data.TreeStore({
-        autoLoad: 'true',
-        proxy: {
-            type: 'ajax',
-            url: "http://127.0.0.1:9000/project/get_index",
-            extraParams: {
-	            project_name: '{{ name }}',
-	        }
-        }
-    })
+    {% include 'snippets/tree_store.html' %}
 
 	function isValidateOnly() {
 		return $("#check_only").is(":checked")

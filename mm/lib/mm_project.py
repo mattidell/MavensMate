@@ -1,4 +1,3 @@
-import datetime
 import re
 import string
 import sys
@@ -44,6 +43,7 @@ class MavensMateProject(object):
         self.directory          = params.get('directory', False)
         self.sfdc_client        = None
         self.defer_connection   = params.get('defer_connection', False)
+        self.subscription       = params.get('subscription', [])
 
         if 'location' in params and os.path.exists(params['location']): #=> existing project on the disk
             
@@ -54,7 +54,8 @@ class MavensMateProject(object):
             self.package                    = os.path.join(self.location,"src","package.xml")
             self.apex_file_properties_path  = os.path.join(self.location,"config",".apex_file_properties")
             self.is_metadata_indexed        = self.get_is_metadata_indexed()
-
+            if self.subscription == []:
+                self.subscription           = self.settings.get('subscription', [])
             config.logger.debug(self.sfdc_session)
             config.logger.debug(self.get_creds())
 
@@ -354,8 +355,15 @@ class MavensMateProject(object):
             file_ext = files[0].split('.')[-1]
 
             #use tooling api here, if possible
-            if len(files) == 1 and file_ext in mm_util.TOOLING_API_EXTENSIONS:
-                result = self.sfdc_client.compile_with_tooling_api(files[0], container_id)
+            
+            can_use_tooling_api = True
+            for f in files:
+                if f.split('.')[-1] not in mm_util.TOOLING_API_EXTENSIONS:
+                    #cannot use tooling api
+                    can_use_tooling_api = False
+
+            if can_use_tooling_api:
+                result = self.sfdc_client.compile_with_tooling_api(files, container_id)
                 if 'Id' in result and 'State' in result:
                     return mm_util.generate_response(result)
 
@@ -571,6 +579,15 @@ class MavensMateProject(object):
         except Exception as e:
             return mm_util.generate_error_response(e.message)
 
+    def update_subscription(self, params):
+        current_settings = self.__get_settings()
+        new_sub = params['subscription']
+        if type(new_sub) is not list:
+            new_sub = [new_sub]
+        current_settings['subscription'] = new_sub
+        self.__put_settings_file(current_settings)
+        return mm_util.generate_success_response('Subscription updated successfully')
+
     #reverts a project to the server state based on the existing package.xml
     def clean(self, **kwargs):
         try:
@@ -645,7 +662,7 @@ class MavensMateProject(object):
                 # refresh all if it's the project base or src directory
                 if basename == config.connection.project_name or basename == "src":
                     data = mm_util.get_default_metadata_data();
-                    for item in data["metadataObjects"]: 
+                    for item in data: 
                         if 'directoryName' in item:
                             types.append(item['xmlName'])
                 else:
@@ -1018,7 +1035,6 @@ class MavensMateProject(object):
                 self.__set_sfdc_session()
 
             data = self.__get_org_describe()
-
             threads = []
             thread_results = []
             creds = self.get_creds()
@@ -1029,12 +1045,12 @@ class MavensMateProject(object):
                 if type(mtypes) is not list:
                     mtypes = [mtypes]
                 for mt in mtypes:
-                    for md in data["metadataObjects"]:
+                    for md in data:
                         if md['xmlName'] == mt:
                             to_be_indexed.append(md)
                             break
             else:
-                to_be_indexed = data["metadataObjects"]
+                to_be_indexed = data
 
             metadata_chunks = list(mm_util.grouper(8, to_be_indexed))
             for chunk in metadata_chunks:                    
@@ -1050,12 +1066,15 @@ class MavensMateProject(object):
             
             return_list = sorted(thread_results, key=itemgetter('text')) 
 
+            #no specific metadata types were requested, 
+            #so we simply overwirte .org_metadata with the new index 
             if mtypes == None:
                 file_body = json.dumps(return_list, sort_keys=False, indent=4)
                 src = open(self.location+"/config/.org_metadata", "w")
                 src.write(file_body)
                 src.close()
                 return file_body
+            #specific metadata types were requested, so update .org_metadata with the result
             elif type(return_list) is list and len(return_list) > 0:
                 existing_index = self.get_org_metadata()
                 for mt in return_list:
@@ -1075,14 +1094,6 @@ class MavensMateProject(object):
             print trace
 
             return mm_util.generate_error_response(e.message)
-
-    def filter_indexed_metadata(self, payload):
-        om = self.get_org_metadata()
-        crawlJson.startCrawl(om, payload["keyword"])
-        return json.dumps(om)
-
-    def refresh_indexed_metadata(self, payload):
-        pass
 
     def __select_metadata_based_on_package_xml(self, org_index):
         project_package = self.__get_package_as_dict()
@@ -1154,6 +1165,8 @@ class MavensMateProject(object):
                                                     leaf['checked'] = True
             else:
                 #apexclass, apexpage, etc.
+                if type(project_package['Package']['types']) is not list:
+                    project_package['Package']['types'] = [project_package['Package']['types']]
                 for package_type in project_package['Package']['types']:
                     if package_type['name'] == index_type['xmlName']:
                         if package_type['members'] == '*':
@@ -1320,10 +1333,11 @@ class MavensMateProject(object):
         
         return return_list
 
-    def index_apex_overlays(self, payload):
+    def index_apex_overlays(self, payload=None):
         try:
-            result = self.sfdc_client.get_overlay_actions()
+            result = self.sfdc_client.get_apex_checkpoints()
             if 'records' not in result or len(result['records']) == 0:
+                self.__put_overlays_file('[]')
                 return mm_util.generate_success_response('Could Not Find Any Apex Execution Overlays')
             else:
                 id_to_name_map = {}
@@ -1377,19 +1391,21 @@ class MavensMateProject(object):
         if 'project_name' in payload:
             payload.pop('project_name', None)
 
-        create_result = self.sfdc_client.create_overlay_action(payload)
+        create_result = self.sfdc_client.create_apex_checkpoint(payload)
         if type(create_result) is list:
             create_result = create_result[0]
+        self.index_apex_overlays()
         if type(create_result) is not str and type(create_result) is not unicode:
             return json.dumps(create_result)
         else:
             return create_result
 
     def delete_apex_overlay(self, payload):
-        delete_result = self.sfdc_client.remove_overlay_action(overlay_id=payload['id'])
+        delete_result = self.sfdc_client.delete_apex_checkpoint(overlay_id=payload['id'])
+        self.index_apex_overlays()
         return delete_result
 
-    def new_trace_log(self, payload):
+    def new_trace_flag(self, payload):
         try:
             '''
                 payload = {
@@ -1406,9 +1422,21 @@ class MavensMateProject(object):
                     "Workflow"          : ""
                 }
             '''
-            if 'project_name' in payload:
-                payload.pop('project_name', None)
-            create_result = self.sfdc_client.create_trace_flag(payload)
+            request = {}
+            if payload['type'] == 'user':
+                request['ScopeId'] = None
+                request['TracedEntityId'] = payload.get('user_id', self.sfdc_client.user_id)
+            elif payload['type'] == 'apex':
+                #request['ScopeId'] = 'user'
+                request['ScopeId'] = self.sfdc_client.user_id
+                request['TracedEntityId'] = payload['apex_id']
+
+            for c in payload['debug_categories']:
+                request[c['category']] = c['level']
+            
+            request['ExpirationDate'] = mm_util.get_iso_8601_timestamp(int(float(payload.get('expiration', 30))))
+
+            create_result = self.sfdc_client.create_trace_flag(request)
             if type(create_result) is list:
                 create_result = create_result[0]
             if type(create_result) is not str and type(create_result) is not unicode:
@@ -1416,9 +1444,12 @@ class MavensMateProject(object):
             else:
                 return create_result
         except Exception, e:
-            mm_util.generate_error_response(e.message)
+            return mm_util.generate_error_response(e.message)
 
+    #downloads logs and apex checkpoints
     def fetch_logs(self, payload):
+        number_of_logs = 0
+        number_of_checkpoints = 0
         try:
             user_id = payload.get('user_id', self.sfdc_client.user_id)
             limit   = payload.get('limit', 20)
@@ -1429,50 +1460,64 @@ class MavensMateProject(object):
                     id = r["Id"]
                     log = self.sfdc_client.download_log(id)
                     logs.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":log,"userid":r["LogUserId"]})
-                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/debug/logs") == False:
-                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/debug/logs")
-                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/debug/logs"):
-                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/debug/logs", the_file)
+                if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")) == False:
+                    os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","logs"))
+                for the_file in os.listdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")):
+                    file_path = os.path.join(config.connection.workspace,self.project_name,"debug","logs", the_file)
                     try:
                         if os.path.isfile(file_path):
                             os.unlink(file_path)
                     except Exception, e:
                         print e
+                number_of_logs = len(logs)
                 for log in logs:
-                    file_name = log["modstamp"]+"."+log["userid"]+".log"
-                    src = open(config.connection.workspace+"/"+self.project_name+"/debug/logs/"+file_name, "w")
+                    file_name = log["modstamp"]+"|"+log["userid"]+".json"
+                    src = open(os.path.join(config.connection.workspace,self.project_name,"debug","logs",file_name), "w")
                     src.write(log["log"])
                     src.close() 
-                mm_util.generate_success_response('Logs successfully downloaded') 
             else:
-                mm_util.generate_success_response('No logs to download') 
+                config.logger.debug("No logs to download")
 
-            checkpoint_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location = \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
-            checkpoints = []
-            if 'records' in checkpoint_result:
-                for r in checkpoint_result['records']:
-                    id = r["Id"]
-                    cp = self.sfdc_client.download_checkpoint(id)
-                    checkpoints.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":cp,"userid":r["LogUserId"]})
-                if os.path.isdir(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints") == False:
-                    os.makedirs(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints")
-                for the_file in os.listdir(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints"):
-                    file_path = os.path.join(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints", the_file)
-                    try:
-                        if os.path.isfile(file_path):
-                            os.unlink(file_path)
-                    except Exception, e:
-                        print e
-                for cp in checkpoints:
-                    file_name = cp["modstamp"]+"."+cp["userid"]+".log"
-                    src = open(config.connection.workspace+"/"+self.project_name+"/debug/checkpoints/"+file_name, "w")
-                    src.write(cp["log"])
-                    src.close() 
-                mm_util.generate_success_response('Checkpoints successfully downloaded') 
+            checkpoint_results = self.sfdc_client.get_apex_checkpoint_results(self.sfdc_client.user_id, limit)
+            if 'records' in checkpoint_results:
+                number_of_checkpoints = len(checkpoint_results['records'])
+                if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints")):
+                    shutil.rmtree(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints"))
+
+                os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints"))
+
+                apex_entity_to_lines = {}
+                for r in checkpoint_results['records']:
+                    if 'HeapDump' in r and 'className' in r['HeapDump']:
+                        if r['HeapDump']['className'] not in apex_entity_to_lines:
+                            apex_entity_to_lines[r['HeapDump']['className']] = [r['Line']]
+                        else:
+                            apex_entity_to_lines[r['HeapDump']['className']].append(r['Line'])
+
+                for apex_entity_name, lines in apex_entity_to_lines.items():
+                    if not os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name)):
+                        os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name))
+                    for l in lines:
+                        if not os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name,str(l))):
+                            os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name,str(l)))
+
+                # for apex_entity in apex_classes_and_triggers:
+                #     if not os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity)):
+                #         os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity))
+                
+                for r in checkpoint_results['records']:
+                    if 'HeapDump' in r and 'className' in r['HeapDump']:
+                        file_name = r["HeapDump"]["heapDumpDate"]+"|"+r["UserId"]+".json"
+                        file_path = os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",r['HeapDump']['className'],str(r['Line']),file_name)
+                        src = open(file_path, "w")
+                        src.write(json.dumps(r,sort_keys=True,indent=4))
+                        src.close() 
             else:
-                mm_util.generate_success_response('No checkpoints to download') 
+                config.logger.debug("No checkpoints to download")
+        
+            return mm_util.generate_success_response(str(number_of_logs)+' Logs and '+str(number_of_checkpoints)+' Checkpoints successfully downloaded') 
         except Exception, e:
-            mm_util.generate_error_response(e.message)
+            print mm_util.generate_error_response(e.message)
 
     def __get_package_as_dict(self):
         return mm_util.parse_xml_from_file(os.path.join(self.location,"src","package.xml"))
@@ -1520,16 +1565,32 @@ class MavensMateProject(object):
         else:
             return []
 
-    def get_org_metadata(self, selected=None, raw=False):
-        if self.get_is_metadata_indexed() == True:
+    def filter_indexed_metadata(self, payload):
+        om = self.get_org_metadata(False, False, payload.get("ids", []), payload.get("keyword", None))
+        return json.dumps(om)
+
+    def get_org_metadata(self, raw=False, selectBasedOnPackageXml=False, selectedIds=[], keyword=None):
+        if self.get_is_metadata_indexed():
             if raw:
                 org_metadata_raw = mm_util.get_file_as_string(os.path.join(self.location,"config",".org_metadata"))
                 org_index = json.loads(org_metadata_raw)
-                self.__select_metadata_based_on_package_xml(org_index)
+                if selectBasedOnPackageXml:
+                    self.__select_metadata_based_on_package_xml(org_index)
+                elif len(selectedIds) > 0 or keyword != None:
+                    if keyword != None:
+                        crawlJson.setVisibility(org_index, keyword)
+                    if len(selectedIds) > 0:
+                        crawlJson.setChecked(org_index, selectedIds)
                 return json.dumps(org_index)
             else:
                 org_index = mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_metadata"))
-                self.__select_metadata_based_on_package_xml(org_index)
+                if selectBasedOnPackageXml:
+                    self.__select_metadata_based_on_package_xml(org_index)
+                elif len(selectedIds) > 0 or keyword != None:
+                    if keyword != None:
+                        crawlJson.setVisibility(org_index, keyword)
+                    if len(selectedIds) > 0:
+                        crawlJson.setChecked(org_index, selectedIds)
                 return org_index
         else:
             self.index_metadata()
@@ -1613,7 +1674,8 @@ class MavensMateProject(object):
                 "environment"           : self.org_type,
                 "namespace"             : self.sfdc_client.get_org_namespace(),
                 "id"                    : self.id,
-                "metadata_container"    : self.sfdc_client.get_metadata_container_id()
+                "metadata_container"    : self.sfdc_client.get_metadata_container_id(),
+                "subscription"          : self.subscription or []
             }
         src = open(os.path.join(config.connection.workspace,self.project_name,"config",".settings"), "w")
         json_data = json.dumps(settings, sort_keys=False, indent=4)
@@ -1640,9 +1702,21 @@ class MavensMateProject(object):
     #returns metadata types for this org, or default types
     def __get_org_describe(self):
         try:
-            return mm_util.parse_json_from_file(os.path.join(self.location,"config",".describe"))
+            om = mm_util.parse_json_from_file(os.path.join(self.location,"config",".describe"))
+            mlist = []
+            if self.subscription != None and type(self.subscription) is list and len(self.subscription) > 0:
+                for m in om['metadataObjects']:
+                    if m['xmlName'] in self.subscription:
+                        mlist.append(m)
+            return mlist
         except:
-            return mm_util.get_default_metadata_data()
+            om = mm_util.get_default_metadata_data()
+            mlist = []
+            if self.subscription != None and self.subscription is list and len(self.subscription) > 0:
+                for m in om['metadataObjects']:
+                    if m['xmlName'] in self.subscription:
+                        mlist.append(m)
+            return mlist
 
     def __put_base_config(self):
         if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"config")) == False:

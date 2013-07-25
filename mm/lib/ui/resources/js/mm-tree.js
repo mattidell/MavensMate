@@ -41,7 +41,7 @@ Ext.define('Ext.ux.grid.mm-tree', {
     }),
     listeners: {
         load: function() {
-            if (this.selectedIds === '') {
+            if (this.selectedIds === '' || this.selectedIds == []) {
                 this.selectedIds = []
                 var ids = []
                 var selected = this.getView().getChecked()
@@ -52,7 +52,7 @@ Ext.define('Ext.ux.grid.mm-tree', {
             }
             //console.log('loading into tree!')
             //console.log(this.selectedIds)
-            this.setSelections(this.selectedIds)
+            //this.setSelections(this.selectedIds)
             hideLoading()
         },
         checkchange: function (node, check) {
@@ -77,7 +77,9 @@ Ext.define('Ext.ux.grid.mm-tree', {
 
             if (check) {
                 //console.log('new node checked, adding to selected ids: ',node.get('id'))
-                tree.selectedIds.push(node.get('id'));
+                if ($.inArray(node.get('id'),tree.selectedIds) === -1) {
+                    tree.selectedIds.push(node.get('id'));
+                }
                 //console.log(tree.selectedIds)
             } else {
                 //console.log('node unchecked, removing from selected ids: ')
@@ -120,7 +122,9 @@ Ext.define('Ext.ux.grid.mm-tree', {
             var parent = current.parentNode;
             current.set('checked', parent.get('checked'));
             if (current.get('checked')) {
-                tree.selectedIds.push(current.get('id'));
+                if ($.inArray(current.get('id'),tree.selectedIds) === -1) {
+                    tree.selectedIds.push(current.get('id'));
+                }
             } else {
                 var index = tree.selectedIds.indexOf(current.get('id'));
                 tree.selectedIds.splice(index, 1);  
@@ -163,6 +167,8 @@ Ext.define('Ext.ux.grid.mm-tree', {
                 // debug( n.get('text'))
                 checkedCount += (n.get('checked') ? 1 : 0);
             });
+
+            //return true;
 
             current.eachChild(function (n) {
                 // debug( n.get('text'))
@@ -213,13 +219,9 @@ Ext.define('Ext.ux.grid.mm-tree', {
                     // At least one sibling is checked, so set parent node to third state.
                     me.setThirdState(parent);
                 } else {
-
                     parent.set('checked', false);
                 }
-
-
             }
-
             me.updateParentCheckedStatus(parent);
         }
     },
@@ -359,31 +361,19 @@ Ext.define('Ext.ux.grid.mm-tree', {
     },
 
     setSelections: function (ids) {
-
         var me = this;
-        //  me.stopListener = true;
-
-        //debug('[accessPanel setSelections]');
-        // debug(ids);
-
-
-        if (ids[0] && ids[0]['id']){
-
+       
+        if (ids[0] && ids[0]['id']) {
             ids = Ext.Array.pluck(ids, 'id');
         }
 
         // check RootNode or do cascade checking
-
         if (ids.indexOf(me.ALL_ID) > -1) {
             me.getRootNode().set('checked', true);
             me.getRootNode().eachChild(me.setChildrenCheckedStatus);
         } else {
-
-
             me.getRootNode().cascadeBy(function () {
-
                 var currNode = this;
-
                 if (currNode.get('leaf')) {
                     currNode.set('checked', ids.indexOf(currNode.get('id')) > -1);
                     me.updateParentCheckedStatus(currNode);

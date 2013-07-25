@@ -46,8 +46,6 @@ def crawlArray(jsonData, depth, query, parentVisiblity):
 			except:
 				pass
 		index += 1
-	for value in elementsToRemove:
-		pass
 
 def crawl(jsonData, depth, query, parentVisiblity):
 	if(isinstance(jsonData,types.DictType)):
@@ -68,5 +66,35 @@ def crawl(jsonData, depth, query, parentVisiblity):
 	else:	
 		return 0
 
-def startCrawl(jsonData, query):
+def setVisibility(jsonData, query):
 	crawl(jsonData, 0, query.lower(), 0)
+
+def setChecked(src, ids=[], dpth = 0, key = ''):
+    """ Recursively find checked item."""
+    #tabs = lambda n: ' ' * n * 4 # or 2 or 8 or...
+    #brace = lambda s, n: '%s%s%s' % ('['*n, s, ']'*n)
+
+    if isinstance(src, dict):
+        for key, value in src.iteritems():
+            setChecked(value, ids, dpth + 1, key)
+    elif isinstance(src, list):
+        for litem in src:
+            if isinstance(litem, types.DictType):
+	            if "id" in litem and litem["id"] in ids:
+	            	litem["checked"] = True
+            setChecked(litem, ids, dpth + 2)
+
+def setThirdStateChecked(src, ids=[], dpth = 0, key = ''):
+    """ Recursively find checked item."""
+    #tabs = lambda n: ' ' * n * 4 # or 2 or 8 or...
+    #brace = lambda s, n: '%s%s%s' % ('['*n, s, ']'*n)
+
+    if isinstance(src, dict):
+        for key, value in src.iteritems():
+            setThirdStateChecked(value, ids, dpth + 1, key)
+    elif isinstance(src, list):
+        for litem in src:
+            if isinstance(litem, types.DictType):
+	            if "id" in litem and litem["id"] in ids:
+	            	litem["checked"] = True
+            setThirdStateChecked(litem, ids, dpth + 2)

@@ -12,6 +12,7 @@
 		<li class="">
 			<a id="project_details_tab" href="#form" data-toggle="tab">Project Details</a>
 		</li>
+		<li><a href="#advanced" data-toggle="tab">Advanced</a></li>
 		<li class="active">
 			<a href="#metadata" data-toggle="tab">
 				Project Metadata &nbsp;&nbsp;
@@ -54,6 +55,37 @@
 				<div id="treeold"></div>
 			</form>
 		</div>
+
+		<div id="advanced" class="tab-pane">
+			<form class="form-stacked" style="padding-top:10px;">
+				<fieldset>
+					<div class="clearfix">
+						<label for="subscription" style="font-weight:bold;">Metadata Subscription List</label> 
+						<select name="huge" class="select-block mbl info" style="display:none;" id="subscription" multiple="multiple" data-placeholder="Select 1 or more metadata types...">
+							{% for m in metadata_types() %}
+								{% if m['xmlName'] in project_settings()['subscription'] %}
+									{% set selected = 'selected="selected"' %}
+								{% else %}
+									{% set selected = '' %}
+								{% endif %}
+								<option {{ selected }} value="{{ m['xmlName'] }}">
+									{{ m['xmlName'] }}
+								</option>
+							{% endfor %} 
+						</select>	
+						<div class="alert alert-info">
+							<span>If you only plan to work with certain metadata types in this project, specify those types here. Otherwise, MavensMate will index each metadata type available in your org. In larger orgs, this can negatively impact performance. The default list of metadata types is controlled by your plugin client's <strong>mm_default_subscription</strong> setting.</span>
+						</div>
+					</div>
+					<div class="clearfix" style="margin-top:20px;">
+						<a class="btn btn-success" onclick="updateSubscription();">
+							Update Subscription
+						</a>
+					</div> 			
+				</fieldset>
+			</form>
+		</div>
+
 		<div id="metadata" class="tab-pane active">
 			<div class="alert alert-info" id="filter">
 				<input type="text" placeholder="Search for metadata" id="txtFilter" style="width:300px;height:35px;" />
@@ -81,16 +113,7 @@
 		var has_indexed_metadata = {{ has_indexed_metadata|lower }};
 		var operation;
 
-		tree_store = new Ext.data.TreeStore({
-            autoLoad: 'true',
-            proxy: {
-                type: 'ajax',
-                url: "http://127.0.0.1:9000/project/get_index",
-                extraParams: {
-		            project_name: '{{ name }}',
-		        }
-            }
-        })
+		{% include 'snippets/tree_store.html' %}
 
 		function updateProjectCreds() {
 			console.log('updating project creds')
@@ -119,6 +142,32 @@
 				}
 			});
 		}
+
+		function updateSubscription() {
+			console.log('updating project subscription')
+			operation = "update_subscription"
+			$.ajax({
+				type: "POST",
+				url: "http://127.0.0.1:9000/project/subscription", 
+				data: JSON.stringify({
+			    	project_name 		: '{{ name }}',
+			    	subscription 		: $("#subscription").val()
+				}),
+				beforeSend: function() { showLoading('Updating project subscription'); },
+				complete: function(data){
+					console.log(data)				
+					var response = JSON.parse(data.responseText)
+					if (response["success"] == false) {
+						show_message(response["body"])
+					} else {
+						show_message(response["body"], 'success', true)
+					}
+					hideLoading();
+				}
+			});
+		}
+
+
 
 		function updateProject() {
 			console.log('updating project')
