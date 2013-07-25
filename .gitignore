@@ -21,3 +21,19 @@ platforms/osx/MavensMate/MavensMate.xcodeproj/project.xcworkspace/xcuserdata/jos
 *.sublime-project
 
 mm/lib/ui/templates/layouts/build/ext.html
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-PYZ.toc
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-PYZ.toc
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-PYZ.pyz
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-PKG.pkg
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-EXE.toc
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-Analysis.toc
+
+tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/mmserver
+
+platforms/osx/MavensMateWindowServer/MavensMateWindowServer.xcodeproj/project.xcworkspace/xcuserdata/josephferraro.xcuserdatad/UserInterfaceState.xcuserstate
