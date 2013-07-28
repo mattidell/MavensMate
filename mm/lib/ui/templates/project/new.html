@@ -131,7 +131,7 @@
 				type: "POST",
 				dataType: 'json',
 				contentType: 'application/json; charset=utf-8',
-				url: "http://127.0.0.1:9000/project", 
+				url: "{{ base_local_server_url() }}/project", 
 				data: JSON.stringify({
 					 project_name 	: $("#pn").val(), 
 					 username 		: $("#un").val(), 
@@ -204,7 +204,7 @@
 		function populateMetadataTree(message) {
 			$.ajax({
 				type: "GET",
-				url: "http://127.0.0.1:9000/session", 
+				url: "{{ base_local_server_url() }}/session", 
 				data: {
 					 username 		: $("#un").val(), 
 					 password 		: $("#pw").val(), 
@@ -238,7 +238,7 @@
 												type: "GET",
 												dataType: 'json',
 												contentType: 'application/json; charset=utf-8',
-												url: "http://127.0.0.1:9000/metadata/list", 
+												url: "{{ base_local_server_url() }}/metadata/list", 
 												data: {
 													"metadata_type"			: node.data.text,
 						    						"sid"					: $("#sid").val(),

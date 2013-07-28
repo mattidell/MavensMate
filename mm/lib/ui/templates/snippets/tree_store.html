@@ -2,7 +2,7 @@ tree_store = new Ext.data.TreeStore({
     autoLoad: 'true',
     proxy: {
         type: 'ajax',
-        url: "http://127.0.0.1:9000/project/get_index",
+        url: "{{ base_local_server_url() }}/project/get_index",
         extraParams: {
             project_name: '{{ name }}',
         },

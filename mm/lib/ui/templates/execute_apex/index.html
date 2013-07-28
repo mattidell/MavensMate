@@ -318,7 +318,7 @@ var line;
 function execute_apex() {
 	$.ajax({
 		type: "POST",
-		url: "http://127.0.0.1:9000/apex/execute", 
+		url: "{{ base_local_server_url() }}/apex/execute", 
 		dataType: "json",
 		contentType: 'application/json; charset=utf-8',
 		data: JSON.stringify({

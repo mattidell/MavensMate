@@ -16,15 +16,8 @@
 
 from base import SforceBaseClient
 import xmltodict
-import string
-import suds.sudsobject
 import time
 import lib.mm_util as mm_util
-import lib.config as config
-import pprint
-import json
-import os.path
-import xmltodict
 
 class SforceMetadataClient(SforceBaseClient):
   

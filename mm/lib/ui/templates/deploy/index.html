@@ -449,7 +449,7 @@
 		operation = "index"
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/index", 
+			url: "{{ base_local_server_url() }}/project/index", 
 			data: JSON.stringify({
 				project_name 	: '{{ name }}'
 			}),
@@ -532,7 +532,7 @@
 		operation = "deploy"
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/deploy", 
+			url: "{{ base_local_server_url() }}/project/deploy", 
 			data: JSON.stringify({
 				destinations 		: get_target_json(),
 			    check_only 			: isValidateOnly(),
@@ -556,7 +556,7 @@
 	function listConnections() {
 		$.ajax({
 			type: "GET",
-			url: "http://127.0.0.1:9000/project/conns/list", 
+			url: "{{ base_local_server_url() }}/project/conns/list", 
 			data: {
 				 project_name	: '{{name}}'
 			},
@@ -583,7 +583,7 @@
 			type: "POST",
 			dataType: 'json',
 			contentType: 'application/json; charset=utf-8',
-			url: "http://127.0.0.1:9000/project/conns/delete", 
+			url: "{{ base_local_server_url() }}/project/conns/delete", 
 			data: JSON.stringify({
 				project_name	: '{{name}}',
 				id 				: id
@@ -611,7 +611,7 @@
 			type: "POST",
 			dataType: 'json',
 			contentType: 'application/json; charset=utf-8',
-			url: "http://127.0.0.1:9000/project/conns/new", 
+			url: "{{ base_local_server_url() }}/project/conns/new", 
 			data: JSON.stringify({
 				username 		: $("#connection_un").val(), 
 				password 		: $("#connection_pw").val(), 

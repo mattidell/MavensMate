@@ -271,7 +271,7 @@
 	function run_tests() {
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/unit_test", 
+			url: "{{ base_local_server_url() }}/project/unit_test", 
 			dataType: "json",
 			data: JSON.stringify({
 				project_name 		: '{{ name }}',

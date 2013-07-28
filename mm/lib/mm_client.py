@@ -1,12 +1,6 @@
-import datetime
-import re
-import string
 import sys
-import unittest
-import traceback
 import json
 import os
-import yaml
 import mm_util
 import shutil
 import config
@@ -324,8 +318,9 @@ class MavensMateClient(object):
                                     "checked"   : False,
                                     "level"     : 4,
                                     "leaf"      : True,
-                                    "id"        : full_name+"."+tag_name+"."+gchild_el
-
+                                    "id"        : metadata_type_def['xmlName']+"."+full_name+"."+tag_name+"."+gchild_el,
+                                    "select"    : False,
+                                    "title"     : gchild_el
                                 })
                                 children = sorted(children, key=itemgetter('text')) 
                           
@@ -336,7 +331,9 @@ class MavensMateClient(object):
                                 "children"  : gchildren,
                                 "checked"   : False,
                                 "level"     : 3,
-                                "id"        : full_name+"."+tag_name
+                                "id"        : metadata_type_def['xmlName']+"."+full_name+"."+tag_name,
+                                "select"    : False,
+                                "title"     : child_type_def['tagName']
                             })
                                             
                 #if this type has folders, run queries to grab all metadata in the folders
@@ -359,7 +356,10 @@ class MavensMateClient(object):
                             "isFolder"  : False,
                             "checked"   : False,
                             "level"     : 3,
-                            "id"        : folder_element['fullName'].replace('/', '.')
+                            "id"        : folder_element['fullName'].replace('/', '.'),
+                            "select"    : False,
+                            "title"     : folder_element['fullName'].split("/")[1]
+
                         })
                     
                 children = sorted(children, key=itemgetter('text')) 
@@ -383,7 +383,9 @@ class MavensMateClient(object):
                     "children"  : children,
                     "checked"   : False,
                     "level"     : 2,
-                    "id"        : metadata_type_def['xmlName']+'.'+full_name.replace(' ', '')
+                    "id"        : metadata_type_def['xmlName']+'.'+full_name.replace(' ', ''),
+                    "select"    : False,
+                    "title"     : element['fullName']
                 })
 
             return_elements = sorted(return_elements, key=itemgetter('text')) 
@@ -644,8 +646,6 @@ class MavensMateClient(object):
         r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
         return mm_util.parse_rest_response(r.text)
-        #print json.dumps(r.text,sort_keys=True,indent=4)
-        #pprint.pprint(qr)
 
     def delete_trace_flags(self):
         query_string = 'Select Id From TraceFlag'
@@ -728,7 +728,10 @@ class MavensMateClient(object):
     ##END TOOLING PLUMBING##
 
 
-
+    def query(self, soql):
+        r = requests.get(self.get_base_url()+"/query/", params={'q':soql}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        return r.json()
 
     def get_rest_headers(self, method='GET'):
         headers = {}
@@ -736,6 +739,11 @@ class MavensMateClient(object):
         if method == 'POST':
             headers['Content-Type'] = 'application/json'
         return headers
+
+    def get_base_url(self):
+        pod = self.metadata_server_url.replace("https://", "")
+        pod = pod.split('.salesforce.com')[0]
+        return "https://{0}.salesforce.com/services/data/v{1}".format(pod, mm_util.SFDC_API_VERSION)
 
     def get_tooling_url(self):
         pod = self.metadata_server_url.replace("https://", "")

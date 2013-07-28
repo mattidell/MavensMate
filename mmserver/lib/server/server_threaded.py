@@ -1,13 +1,12 @@
 import sys
 import os
-import BaseHTTPServer
+#import BaseHTTPServer
 import handler
 import config
 import lib.config as gc
 
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer
-import threading
 server = None
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -22,5 +21,5 @@ def run(context_path='', port=9000):
     server.serve_forever()
 
 def stop():
-    print '>>> shutting down local MavensMate server'
+    print('>>> shutting down local MavensMate server')
     server.shutdown()

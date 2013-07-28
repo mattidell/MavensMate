@@ -2,7 +2,6 @@ import os
 import random
 import string
 import json
-import shutil
 import threading
 import subprocess
 import pipes

@@ -98,7 +98,7 @@
 			operation = "update_creds"
 			$.ajax({
 				type: "POST",
-				url: "http://127.0.0.1:9000/project/creds", 
+				url: "{{ base_local_server_url() }}/project/creds", 
 				data: JSON.stringify({
 					username 			: $("#un").val(),
 			    	password 			: $("#pw").val(),
@@ -126,7 +126,7 @@
 			operation = "update"
 			$.ajax({
 				type: "POST",
-				url: "http://127.0.0.1:9000/project/edit", 
+				url: "{{ base_local_server_url() }}/project/edit", 
 				data: JSON.stringify({
 					package 		: get_tree(),
 					project_name 	: '{{ name }}'
@@ -143,7 +143,7 @@
 			operation = "index"
 			$.ajax({
 				type: "POST",
-				url: "http://127.0.0.1:9000/project/index", 
+				url: "{{ base_local_server_url() }}/project/index", 
 				data: JSON.stringify({
 					project_name 	: '{{ name }}'
 				}),

@@ -24,21 +24,127 @@ $(function() {
 });
 
 function renderTree() {
-	Ext.require([
-	    'Ext.grid.plugin.BufferedRenderer'
-	]);
+	tree = $("#tree").dynatree({
+	    initAjax: {
+	    	type 	 : "POST",
+	    	dataType : "json",
+	    	url 	 : baseLocalServerURL+"/project/get_index",
+		    data 	 : JSON.stringify({
+				"project_name" : project_name
+			})
+		},
+		checkbox: true,
+		selectMode: 3,
+		debugLevel: 0,
+		persist: false,
+		selectedIds: '',
+		onSelect: function(check, node) {
+		    var selectedNodes = tree.getSelectedNodes()
+		    var ids = $.map(selectedNodes, function(node){
+                return node.data.id;
+            });
+		    this.selectedIds = ids
+		},
+		onPostInit: function(isReloading, isError) {
+			if (this.selectedIds === undefined || this.selectedIds === '' || this.selectedIds == []) {
+			    this.selectedIds = []
+			    var selected = this.getSelectedNodes();
+			    var ids = $.map(selected, function(node){
+                    return node.data.id;
+                });
+			    this.selectedIds = ids
+			}
 
-	tree = Ext.create('mm.tree', {
-	    renderTo: 'tree',
-	    id: 'mmtree',
-	    width: '100%',
-	    height: '100%',
-	    plugins: 'bufferedrenderer'
+			var filter = $("#txtFilter").val();
+			if (filter && filter.length > 2) {
+				$("#tree").dynatree("getRoot").visit(function(node){
+				    node.expand(true);
+				});
+			}
+		}
 	});
-	tree.setLoading()	
-	tree_store.on('load', function() {
-		tree.setLoading(false)	
-	});
+	tree = $("#tree").dynatree("getTree")
+}
+
+function getPackage() {
+    var json = { }
+    var child_def = {}
+    for (item in child_metadata) {
+        child_def[child_metadata[item]['tagName']] = child_metadata[item]['xmlName']
+    }
+    try {
+        var records = tree.getSelectedNodes()
+        $.each(records, function(index, rec) {
+            if (rec.data.level == 1) {
+                if (json[rec.parent.data.text] === undefined) {
+                    try {
+                        if (Object.prototype.toString.call(rec.data.type.childXmlNames) === '[object Array]') {
+                            if (rec.data.type.childXmlNames.length == 0) {
+                                json[rec.data.text] = '*'
+                            } else {
+                                json[rec.data.text] = []
+                            }
+                        } else {
+                            json[rec.data.text] = '*'
+                        }
+                    } catch(e) {
+                        json[rec.data.text] = '*'
+                    }
+                    
+                }
+            } else if (rec.data.level == 2) {
+                if (json[rec.parent.data.text] === undefined) {
+                    json[rec.parent.data.text] = []
+                    json[rec.parent.data.text].push(rec.data.text)
+                } else if (json[rec.parent.data.text] !== '*') {
+                    json[rec.parent.data.text].push(rec.data.text)
+                }
+            } else if (rec.data.level == 3) {
+                if (rec.parent.parent.data.type.inFolder) {
+                    if (json[rec.parent.parent.data.text] === undefined) {
+                        json[rec.parent.parent.data.text] = []
+                    }
+                    //this is a folder name, add it
+                    json[rec.parent.parent.data.text].push(rec.parent.data.text + "/" + rec.data.text)
+                } else {
+                    //this is a sub type like a custom field, list view, etc.
+                    
+                    if (rec.children != null) {
+                    	metadata_type = child_def[rec.data.text]
+                    	if (!json[metadata_type]) {
+                    	    json[metadata_type] = []
+                    	} 
+
+                    	$.each(rec.children, function(index, childNode) {
+                    	    if (childNode.data.checked) {
+                    	        json[metadata_type].push(childNode.parent.parent.data.text+"."+childNode.data.text)  
+                    	    }
+                    	})
+                    }
+                } 
+            } else if (rec.data.level == 4) {
+                //this is a child metadata object, like a custom field
+                metadata_type = child_def[rec.parent.data.text]
+                if (json.hasOwnProperty(rec.parent.parent.parent.data.text)) { //json['CustomObject'] exists already
+                	if ($.inArray(rec.parent.parent.data.text, json[rec.parent.parent.parent.data.text]) === -1) {
+		            	if (!json[metadata_type]) {
+		            	    json[metadata_type] = []
+		            	} 
+		            	json[metadata_type].push(rec.parent.parent.data.text+"."+rec.data.text) 	
+		        	}
+                } else {
+                	if (!json[metadata_type]) {
+                	    json[metadata_type] = []
+                	} 
+                	json[metadata_type].push(rec.parent.parent.data.text+"."+rec.data.text) 	
+                } 
+            }
+        })  
+    } catch(e) {
+        console.log(e)
+        return []
+    }
+    return json
 }
 
 function renderBufferedTree() {
@@ -46,7 +152,8 @@ function renderBufferedTree() {
 	    renderTo: 'tree',
 	    id: 'mmtree',
 	    width: '100%',
-	    height: '100%'
+	    height: '100%',
+	    animate: false
 	});
 	tree.mmType = 'new_project'
 	tree.setLoading()	
@@ -151,7 +258,8 @@ function submitFormOnEnter() {
 //gets tree content in json format
 function get_tree() {			
 	if (tree !== undefined) {
-		return tree.getPackage()
+		return getPackage()
+		//return tree.getPackage()
 	} else {
 		return {
 			"ApexClass" 		: "*",
@@ -300,37 +408,8 @@ function resizeProjectWrapper(offset) {
 	}
 	$("#project_wrapper").height($("#main-tab-content").height() - offset)
 	if (tree !== undefined) {
-		tree.setHeight($("#project_wrapper").height())
+		//TODO:tree.setHeight($("#project_wrapper").height())
 	}
-}
-
-function check_status(request_id) {
-	$.ajax({
-		type: "GET",
-		url: "http://127.0.0.1:9000/status", 
-		data: {
-			 id: request_id
-		},
-		complete: function(data, status, xhr) {
-			try {
-				console.log('checking status of async request')
-			    console.log(data)
-			    console.log('json response: ')
-			    console.log(data.responseText)
-			    var response = JSON.parse(data.responseText)
-				if (response["status"] == 'pending') {
-			    	setTimeout(function() { check_status(request_id); }, CHECK_STATUS_INTERVAL); //poll for completed async request
-			    } else {
-			    	handle_response(response);
-			    }
-			} catch(e) {
-				console.log(e)
-				console.log('caught an error, polling again...')
-				setTimeout(function() { check_status(request_id); }, 2000);
-			}
-						
-		} 
-	});
 }
 
 jQuery.fn.selectText = function(){

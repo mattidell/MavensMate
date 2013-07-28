@@ -6,7 +6,7 @@ var itemRightClickMenu = new Ext.menu.Menu({
             
             $.ajax({
                 type: "POST",
-                url: "http://127.0.0.1:9000/project/refresh_index", 
+                url: baseLocalServerURL+"/project/refresh_index", 
                 data: JSON.stringify({
                     metadata_types   : [item.parentMenu.apexMetadataType],
                     project_name    : get_project_name()
@@ -116,7 +116,7 @@ Ext.define('Ext.ux.grid.mm-tree', {
 
     // Propagate change downwards (for all children of current node).
     setChildrenCheckedStatus: function (current) {
-
+        console.log('setting children status!')
         // if not root checked
         if (current.parentNode) {
             var parent = current.parentNode;
@@ -140,6 +140,7 @@ Ext.define('Ext.ux.grid.mm-tree', {
 
     // Propagate change upwards (if all siblings are the same, update parent).
     updateParentCheckedStatus: function (current) {
+        console.log('setting parent checked status!')
         //console.log('proppin upwards!')
         //console.log(current.get('text'))
         var me = this,
@@ -361,6 +362,8 @@ Ext.define('Ext.ux.grid.mm-tree', {
     },
 
     setSelections: function (ids) {
+        console.log('setting selections')
+
         var me = this;
        
         if (ids[0] && ids[0]['id']) {

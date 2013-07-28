@@ -68,7 +68,7 @@
 				type: "POST",
 				dataType: 'json',
 				contentType: 'application/json; charset=utf-8',
-				url: "http://127.0.0.1:9000/project/existing", 
+				url: "{{ base_local_server_url() }}/project/existing", 
 				data: JSON.stringify({
 					 project_name 	: $("#pn").val(), 
 					 username 		: $("#un").val(), 

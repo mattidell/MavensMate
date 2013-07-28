@@ -36,7 +36,19 @@ ul.dynatree-container li
 	background-image: none;  /* no v-lines */
 
 	margin:0;
-	padding:1px 0 0 0;
+	/*line-height: 0px;*/
+	padding:0px 0 0 0;
+	/*padding:2px 0px;*/
+}
+
+.hidden {
+	display: none;
+	padding:0px !important;
+	margin:0px !important;
+}
+
+ul.dynatree-container li ul {
+	margin-top:5px;
 }
 /* Suppress lines for last child node */
 ul.dynatree-container li.dynatree-lastsib
@@ -78,7 +90,7 @@ span.dynatree-drag-helper-img,
 	vertical-align: top;
 	background-repeat: no-repeat;
 	background-position: left;
-	background-image: url("../images/icons.gif");
+	background-image: url("../images/icons.png");
 	background-position: 0 0;
 }
 
@@ -292,7 +304,7 @@ span.dynatree-icon /* Default icon */
 span.dynatree-node
 {
   display: -moz-inline-box; /* issue 133, 165, 172, 192 */
-/*  display: inline-block; /* Required to make a span sizeable */
+  /*display: inline-block;*/ /* Required to make a span sizeable */
 }
 
 

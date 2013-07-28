@@ -124,6 +124,7 @@ def get_metadata_index():
     if 'keyword' in request_payload or 'ids' in request_payload:
         print config.connection.project.filter_indexed_metadata(request_payload)
     else:
+        #print config.connection.project.get_org_metadata(True, True)
         print config.connection.project.get_org_metadata(True, True)
 
 def new_project():
@@ -149,9 +150,6 @@ def compile_project():
 
 def clean_project():
     print config.connection.project.clean()
-
-def synchronize():
-    print config.connection.project.synchronize_selected_metadata(request_payload)
 
 def refresh():
     print config.connection.project.refresh_selected_metadata(request_payload)
@@ -261,7 +259,6 @@ operation_dict = {
     'checkout_project'                      : checkout_project,
     'compile_project'                       : compile_project,
     'new_metadata'                          : new_metadata,
-    'synchronize'                           : synchronize,
     'refresh'                               : refresh,
     'clean_project'                         : clean_project,
     'refresh_properties'                    : refresh_properties,

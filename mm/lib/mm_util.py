@@ -288,6 +288,8 @@ def get_meta_type_by_suffix(suffix):
     if '-meta' in suffix:
         suffix = suffix.split('-meta')[0]
     data = get_default_metadata_data()
+    if '.' in suffix:
+        suffix = suffix.replace('.','')
     for item in data["metadataObjects"]: 
         if 'suffix' in item and item['suffix'] == suffix:
             return item
@@ -352,6 +354,10 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
 def parse_manifest(location):
     return parse_json_from_file(location)
 
+def base_local_server_url():
+    port = config.connection.get_plugin_client_setting('mm_server_port', 9876)
+    return 'http://127.0.0.1:{0}'.format(port)
+
 def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
@@ -359,6 +365,7 @@ def generate_ui(operation,params={}):
     env.globals['project_settings']         = project_settings
     env.globals['metadata_types']           = metadata_types
     env.globals['client_subscription_list'] = client_subscription_list
+    env.globals['base_local_server_url']    = base_local_server_url
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -553,6 +560,16 @@ def generate_success_response(message, type="text"):
     }
     return json.dumps(res)
 
+def generate_request_for_action_response(message, operation, actions=[]):
+    res = {
+        "success"       : False,
+        "body_type"     : "text",
+        "body"          : message,
+        "actions"       : actions,
+        "operation"     : operation
+    }
+    return json.dumps(res)
+
 def generate_error_response(message):
     try:
         stack_trace = ''
@@ -730,8 +747,8 @@ def get_file_extension_no_period(path):
     return ext.replace(".", "")
 
 def get_file_name_no_extension(path):
-    name, ext = os.path.splitext(path)
-    return name.split("/")[-1]
+    base=os.path.basename(path)
+    return os.path.splitext(base)[0]
 
 #returns metadata hash of selected files  #=> {"ApexClass" => ["aclass", "anotherclass"], "ApexTrigger" => ["atrigger", "anothertrigger"]}
 def get_metadata_hash(selected_files=[]):

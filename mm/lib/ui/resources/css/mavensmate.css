@@ -7,10 +7,6 @@
  	font-weight: bold;
  }
 
- .hidden {
- 	display: none;
- }
-
  .main-wrapper {
  	padding-left: 20px;
  	padding-right: 20px;
@@ -183,8 +179,18 @@
 #project_wrapper {
 	height:500px;
 	overflow-y:auto; 
-	/*border:1px solid #ddd;*/
+	border:3px solid #3398db;
+	border-radius: 6px;
 }  
+
+.dynatree-hidden {
+	display: none;
+}
+
+#treewrapper {
+	padding:10px 5px;
+	box-sizing: border-box;
+}
 
 #connections {
 	height:500px;
@@ -318,6 +324,11 @@ ul.dynatree-container {
 	-webkit-transition: 0s;
 	transition: 0s;
 	outline: none;
+	/*line-height: 1.1em;*/
+}
+
+a.dynatree-title {
+	line-height: 1.1em;
 }
 
 .dynatree-container li .dynatree-node a:active {

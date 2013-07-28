@@ -2,14 +2,14 @@ import urlparse
 import sys
 import util
 import json
-import cgi
-import time
+#import cgi
+#import time
 import multiprocessing
-from multiprocessing import Queue
-from multiprocessing import Manager
+#from multiprocessing import Queue
+#from multiprocessing import Manager
 sys.path.append('../')
 from util import BackgroundWorker
-from urlparse import urlparse, parse_qs
+#from urlparse import urlparse, parse_qs
 import lib.config as gc
 
 # async_request_queue holds list of active async requests

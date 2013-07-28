@@ -1,16 +1,12 @@
 import re
-import string
 import sys
-import unittest
 import traceback
 import json
 import os
 import yaml
-import logging
 import mm_util
 import config
 import shutil
-import distutils
 import xmltodict
 import threading
 import time
@@ -18,7 +14,6 @@ import collections
 import webbrowser
 import tempfile
 import subprocess
-import traceback
 import crawlJson
 
 from xml.dom import minidom
@@ -292,58 +287,40 @@ class MavensMateProject(object):
                 pass
             return mm_util.generate_error_response(e.message)
 
-    def synchronize_selected_metadata(self, params):
-        files = params.get('files', None)
-        directories = params.get('directories', None)
-
-        if len(files)==1:
-            projectpath = files[0]
-            destination = tempfile.mktemp()
-        elif len(directories)==1:
-            projectpath = directories[0]
-            destination = tempfile.mkdtemp()
-        else:
-            return mm_util.generate_error_response("You may only synchronize one file or at a time");
-            
-        diffmerge = "/Applications/DiffMerge.app/Contents/Resources/diffmerge.sh"
-        if not os.path.exists(diffmerge):
-            return mm_util.generate_error_response("You must have DiffMerge installed to synchronize.");
-
-        retrieve_result = self.get_retrieve_result(params)
-        mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, self.location)
-       
-        # get metadata and copy to temp file or folder as necessary
-        for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
-            for filename in filenames:
-                full_file_path = os.path.join(dirname, filename)
-                if '/unpackaged/package.xml' in full_file_path:
-                    continue
-
-                current_destination = destination
-                if os.path.basename(projectpath) == 'src':
-                    subdir = full_file_path.split('/')[-2]
-                    current_destination = os.path.join(destination, subdir)
-                    if not os.path.exists(current_destination):
-                        os.makedirs(current_destination)
-                elif len(files)==1 and '-meta.xml' in full_file_path:
-                    continue
-
-                shutil.move(full_file_path, current_destination)
-                projectfile = full_file_path.replace('/unpackaged', '/src')
-
-        shutil.rmtree(os.path.join(self.location,"unpackaged"))
-
-        #compare retrieved metadata to local metadata
-        p = subprocess.Popen([diffmerge, destination, projectpath], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return mm_util.generate_success_response("Launched diff tool")
-
     #compiles metadata
     def compile_selected_metadata(self, params):        
         files = params.get('files', None)
-
         use_tooling_api = config.connection.get_plugin_client_setting('mm_compile_with_tooling_api', False)
-        
-        if use_tooling_api == True:
+        check_for_conflicts = config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False)
+
+        compiling_apex_metadata = True
+        for f in files:
+            if f.split('.')[-1] not in mm_util.TOOLING_API_EXTENSIONS:
+                #cannot use tooling api
+                compiling_apex_metadata = False
+                break
+
+        #when compiling apex metadata, check to see if it is newer on the server
+        if check_for_conflicts and compiling_apex_metadata:
+            if 'action' not in params or params['action'] != 'overwrite':
+                for f in files:
+                    ext = mm_util.get_file_extension_no_period(f)
+                    apex_type = mm_util.get_meta_type_by_suffix(ext)
+                    apex_entity_api_name = mm_util.get_file_name_no_extension(f)
+                    qr = self.sfdc_client.query("Select LastModifiedById, LastModifiedDate, LastModifiedBy.Name From {0} Where Name = '{1}'".format(apex_type['xmlName'], apex_entity_api_name))
+                    if 'records' in qr and type(qr['records']) is list and len(qr['records']) == 1:
+                        if qr['records'][0]['LastModifiedById'] != self.sfdc_client.user_id:
+                            last_modified_name = qr['records'][0]['LastModifiedBy']['Name']
+                            last_modified_date = qr['records'][0]['LastModifiedDate']
+                            return mm_util.generate_request_for_action_response(
+                                "{0} was last modified by {1} on {2}. Do you wish to overwrite these changes?"
+                                .format(apex_entity_api_name, last_modified_name, last_modified_date),
+                                'compile',
+                                ["overwrite","cancel"]
+                            )
+
+        #use tooling api here, if possible
+        if use_tooling_api == True and compiling_apex_metadata:
             if 'metadata_container' not in self.settings:
                 container_id = self.sfdc_client.get_metadata_container_id()
                 new_settings = self.settings
@@ -354,133 +331,68 @@ class MavensMateProject(object):
             
             file_ext = files[0].split('.')[-1]
 
-            #use tooling api here, if possible
-            
-            can_use_tooling_api = True
-            for f in files:
-                if f.split('.')[-1] not in mm_util.TOOLING_API_EXTENSIONS:
-                    #cannot use tooling api
-                    can_use_tooling_api = False
+            result = self.sfdc_client.compile_with_tooling_api(files, container_id)
+            if 'Id' in result and 'State' in result:
+                return mm_util.generate_response(result)
 
-            if can_use_tooling_api:
-                result = self.sfdc_client.compile_with_tooling_api(files, container_id)
-                if 'Id' in result and 'State' in result:
-                    return mm_util.generate_response(result)
-
-        try:
-            #this first try goes to the apex api
+        #the user has either chosen not to use the tooling api, or it's non apex metadata
+        else:
             try:
-                #when compiling a single class, check to see if it is newer on the server
-                # if len(files) == 1 and config.connection.get_plugin_client_setting('mm_compile_check_conflicts', False) == True:
-                #     if 'override' not in params or params['override'] == False:
-                #         apex_file_properties = self.get_apex_file_properties();
-                #         filename = os.path.basename(files[0])
-
-                #         error_result = {
-                #             'success': False,
-                #             'line': '0',
-                #             'column': '0',
-                #             'conflict' : True
-                #         }
-
-                #         if filename not in apex_file_properties:
-                #             error_result['problem'] = "Uh oh, could not find property for " + filename + ". Please refresh this file or its Apex properties from the server."
-                #             return json.dumps(error_result)
-                       
-                #         retrieve_result = self.get_retrieve_result(params)
-                #         for props in retrieve_result.fileProperties:
-                #             if props.type != 'Package':
-                #                 if filename in apex_file_properties:
-                #                     if 'lastModifiedDate' in apex_file_properties[filename]:
-                #                         lastModifiedDate = apex_file_properties[filename]['lastModifiedDate']
-                #                     else:
-                #                         lastModifiedDate = ''
-
-                #                     if lastModifiedDate != str(props.lastModifiedDate):
-                #                         error_result['problem'] = "Uh oh, " + props.lastModifiedByName + " changed this file on " + str(props.lastModifiedDate) + " and you last refreshed it on " + lastModifiedDate
-                #                         return json.dumps(error_result)
-
-                #no conflicts, compile
-                if len(files) == 1 and (files[0].split('.')[-1] == 'trigger' or files[0].split('.')[-1] == 'cls'):
-                    file_path = files[0]
-                    file_ext = file_path.split('.')[-1]
+                
+                for f in files:
+                    if '-meta.xml' in f:
+                        corresponding_file = f.split('-meta.xml')[0]
+                        if corresponding_file not in files:
+                            files.append(corresponding_file)
+                for f in files:
+                    if '-meta.xml' in f:
+                        continue
+                    file_ext = f.split('.')[-1]
                     metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
-                    f = open(file_path, "r")
-                    file_body = f.read()
-                    f.close()
-                    file_body = file_body.decode("utf-8")
-                    result = self.sfdc_client.compile_apex(metadata_type['xmlName'], file_body, retXml=True)
-                    d = xmltodict.parse(result,postprocessor=mm_util.xmltodict_postprocessor)
-                    body = d["soapenv:Envelope"]["soapenv:Body"]
-                    # print(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['changed'])
-                    if file_ext == 'trigger':
-                        result = body["compileTriggersResponse"]["result"]
-                    else:
-                        result = body["compileClassesResponse"]["result"]
+                    if metadata_type != None and 'metaFile' in metadata_type and metadata_type['metaFile'] == True:
+                        corresponding_file = f + '-meta.xml'
+                        if corresponding_file not in files:
+                            files.append(corresponding_file)
 
-                    # Get new properties for the files we just compiled
-                    if result['success'] == True:
-                        self.refresh_selected_properties(params)
+                metadata_package_dict = mm_util.get_metadata_hash(files)
+                tmp = mm_util.put_tmp_directory_on_disk()
+                os.makedirs(tmp+"/unpackaged")
+                #copy files from project directory to tmp
+                for full_file_path in files:
+                    if '/package.xml' in full_file_path:
+                        continue
+                    destination = tmp + '/unpackaged/' + full_file_path.split('/src/')[1]
+                    destination_directory = os.path.dirname(destination)
+                    if not os.path.exists(destination_directory):
+                        os.makedirs(destination_directory)
+                    shutil.copy2(full_file_path, destination_directory)
 
-                    return json.dumps(result)
-            except UnicodeDecodeError:
-                #decode error, let's use the metadata api
-                pass
+                package_xml = mm_util.get_package_xml_contents(metadata_package_dict)
+                mm_util.put_package_xml_in_directory(tmp+"/unpackaged", package_xml)
+                zip_file = mm_util.zip_directory(tmp, tmp)
+                deploy_params = {
+                    "zip_file"          : zip_file,
+                    "rollback_on_error" : True,
+                    "ret_xml"           : True
+                }
+                deploy_result = self.sfdc_client.deploy(deploy_params)
 
-            for f in files:
-                if '-meta.xml' in f:
-                    corresponding_file = f.split('-meta.xml')[0]
-                    if corresponding_file not in files:
-                        files.append(corresponding_file)
-            for f in files:
-                if '-meta.xml' in f:
-                    continue
-                file_ext = f.split('.')[-1]
-                metadata_type = mm_util.get_meta_type_by_suffix(file_ext)
-                if metadata_type != None and 'metaFile' in metadata_type and metadata_type['metaFile'] == True:
-                    corresponding_file = f + '-meta.xml'
-                    if corresponding_file not in files:
-                        files.append(corresponding_file)
-
-            metadata_package_dict = mm_util.get_metadata_hash(files)
-            tmp = mm_util.put_tmp_directory_on_disk()
-            os.makedirs(tmp+"/unpackaged")
-            #copy files from project directory to tmp
-            for full_file_path in files:
-                if '/package.xml' in full_file_path:
-                    continue
-                destination = tmp + '/unpackaged/' + full_file_path.split('/src/')[1]
-                destination_directory = os.path.dirname(destination)
-                if not os.path.exists(destination_directory):
-                    os.makedirs(destination_directory)
-                shutil.copy2(full_file_path, destination_directory)
-
-            package_xml = mm_util.get_package_xml_contents(metadata_package_dict)
-            mm_util.put_package_xml_in_directory(tmp+"/unpackaged", package_xml)
-            zip_file = mm_util.zip_directory(tmp, tmp)
-            deploy_params = {
-                "zip_file"          : zip_file,
-                "rollback_on_error" : True,
-                "ret_xml"           : True
-            }
-            deploy_result = self.sfdc_client.deploy(deploy_params)
-
-            d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
-            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
-            shutil.rmtree(tmp)
-
-            # Get new properties for the files we just compiled
-            if result['success'] == True:
-                self.refresh_selected_properties(params)
-
-            return json.dumps(result)
-
-        except Exception, e:
-            try:
+                d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+                result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']
                 shutil.rmtree(tmp)
-            except:
-                pass
-            return mm_util.generate_error_response(e.message)
+
+                # Get new properties for the files we just compiled
+                if result['success'] == True:
+                    self.refresh_selected_properties(params)
+
+                return json.dumps(result)
+
+            except Exception, e:
+                try:
+                    shutil.rmtree(tmp)
+                except:
+                    pass
+                return mm_util.generate_error_response(e.message)
 
     #deletes metadata
     def delete_selected_metadata(self, params):
@@ -1098,6 +1010,8 @@ class MavensMateProject(object):
     def __select_metadata_based_on_package_xml(self, org_index):
         project_package = self.__get_package_as_dict()
         for index_type in org_index:   
+            # print index_type['xmlName']
+            # print index_type
             if index_type['type']['inFolder'] == True:
                 #print '-----> ', index_type['xmlName']
                 #document, emailtemplate, dashboard, etc. 
@@ -1131,13 +1045,15 @@ class MavensMateProject(object):
                                 for c in child['children']:
                                     if c['text'] in pm[child['text']]:
                                         c['checked'] = True
+                                        c['select'] = True
 
-            elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0 and index_type['xmlName'] != 'Workflow':
+            elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0 and index_type['xmlName'] != 'Workflow' and index_type['xmlName'] != 'CustomLabels':
                 #customobject with children like:
                 #customfield, listview, weblink, etc.
                 for child_type in index_type['type']['childXmlNames']:
                     #child_type = listview
                     for package_type in project_package['Package']['types']:
+                        #print package_type
                         if package_type['name'] == child_type:
                             #print '------> index child type: ', child_type
                             #ListView
@@ -1163,23 +1079,32 @@ class MavensMateProject(object):
                                             for leaf in c['children']:
                                                 if leaf['text'] in pm[child_item['text']]:
                                                     leaf['checked'] = True
+                                                    leaf['select'] = True
             else:
+                #print index_type['xmlName']
+                #print index_type
                 #apexclass, apexpage, etc.
                 if type(project_package['Package']['types']) is not list:
                     project_package['Package']['types'] = [project_package['Package']['types']]
                 for package_type in project_package['Package']['types']:
+                    #print package_type
+                    #print index_type['xmlName']
                     if package_type['name'] == index_type['xmlName']:
                         if package_type['members'] == '*':
                             index_type['checked'] = True
+                            index_type['select'] = True
                             for child in index_type['children']:
                                 child['checked'] = True
+                                child['select'] = True
                         else:
                             index_type['checked'] = False
+                            index_type['select'] = False
                             if type(package_type['members']) is not list:
                                 package_type['members'] = [package_type['members']]
                             for child in index_type['children']:
                                 if child['text'] in package_type['members']:
                                     child['checked'] = True
+                                    child['select'] = True
 
     def __select_metadata_based_on_package_xml_OLD(self, return_list):
         #process package and select only the items the package has specified
@@ -1825,15 +1750,22 @@ class IndexCall(threading.Thread):
                 if result == None:
                     result = []
                 self.results.append({
-                    "text"      : mtype['xmlName'],
-                    "xmlName"   : mtype['xmlName'],
-                    "type"      : mtype,
-                    "cls"       : "folder",
-                    "expanded"  : False,
-                    "children"  : result,
-                    "checked"   : False,
-                    "level"     : 1,
-                    "id"        : mtype['xmlName']
+                    "title"         : mtype['xmlName'],
+                    "text"          : mtype['xmlName'],
+                    "xmlName"       : mtype['xmlName'],
+                    "type"          : mtype,
+                    "cls"           : "folder",
+                    "expanded"      : False,
+                    "children"      : result,
+                    "checked"       : False,
+                    "select"        : False,
+                    "level"         : 1,
+                    "id"            : mtype['xmlName'],
+                    "isFolder"      : True,
+                    "cls"           : "folder",
+                    "inFolder"      : mtype['inFolder'],
+                    "hasChildTypes" : 'childXmlNames' in mtype
+
                 })
                 elapsed =  (time.clock() - startThread)
             except BaseException, e:
@@ -1847,15 +1779,21 @@ class IndexCall(threading.Thread):
                 #self.result = mm_util.generate_error_response(e.message)
                 #self.results.append({})
                 self.results.append({
-                    "text"      : mtype['xmlName'],
-                    "xmlName"   : mtype['xmlName'],
-                    "type"      : mtype,
-                    "cls"       : "folder",
-                    "expanded"  : False,
-                    "children"  : [],
-                    "checked"   : False,
-                    "level"     : 1,
-                    "id"        : mtype['xmlName']
+                    "title"         : mtype['xmlName'], 
+                    "text"          : mtype['xmlName'],
+                    "xmlName"       : mtype['xmlName'],
+                    "type"          : mtype,
+                    "cls"           : "folder",
+                    "expanded"      : False,
+                    "children"      : [],
+                    "checked"       : False,
+                    "select"        : False,
+                    "level"         : 1,
+                    "id"            : mtype['xmlName'],
+                    "isFolder"      : True,
+                    "cls"           : "folder",
+                    "inFolder"      : mtype['inFolder'],
+                    "hasChildTypes" : 'childXmlNames' in mtype
                 })
                 elapsed =  (time.clock() - startThread)
                 continue

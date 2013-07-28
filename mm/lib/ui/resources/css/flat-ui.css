@@ -4705,10 +4705,6 @@ input.search-query {
   width: 0;
   z-index: 10;
   -webkit-transform: rotate(360deg);
-  -webkit-transition: 0.25s;
-  -moz-transition: 0.25s;
-  -o-transition: 0.25s;
-  transition: 0.25s;
   -webkit-backface-visibility: hidden;
 }
 .dropdown-inverse {
