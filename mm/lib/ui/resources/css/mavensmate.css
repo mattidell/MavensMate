@@ -392,7 +392,7 @@ div.x-panel-body .x-tree-checkbox-checked-disabled input.x-tree-checkbox {
 /* Generic context menu styles */
 .contextMenu {
 	position: absolute;
-	width: 250px;
+	width: auto;
 	z-index: 99999;
 	border: solid 1px #CCC;
 	background: #EEE;
@@ -416,8 +416,7 @@ div.x-panel-body .x-tree-checkbox-checked-disabled input.x-tree-checkbox {
 	background-position: 6px center;
 	background-repeat: no-repeat;
 	outline: none;
-	padding: 1px 5px;
-	padding-left: 28px;
+	padding: 2px 10px;
 }
 
 .contextMenu LI.hover A {

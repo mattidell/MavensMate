@@ -4,11 +4,13 @@
 	    $(span).contextMenu({menu: "myMenu"}, function(action, el, pos) {
 			// The event was bound to the <span> tag, but the node object
 			// is stored in the parent <li> tag
-			var node = $.ui.dynatree.getNode(el);
+			var mtype = $(el).find('a').html()
+			
+			//var node = $("#tree").dynatree("getTree").getNode(el)
 			switch( action ) {
 				case "refresh":
 					//copyPaste(action, node);
-					console.log('refreshing!')
+					refreshNode(mtype)
 					break;
 				default:
 					console.log("Todo: appply action '" + action + "' to node " + node);

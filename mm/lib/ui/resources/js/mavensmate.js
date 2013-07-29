@@ -61,9 +61,12 @@ function renderTree() {
 				    node.expand(true);
 				});
 			}
+			resizeProjectWrapper()
+			hideLoading()
 		},
 		onCreate: function(node, span) {
-			bindContextMenu(span);
+			if (node.data.level === 1)
+				bindContextMenu(span);
 		}
 	});
 	tree = $("#tree").dynatree("getTree")

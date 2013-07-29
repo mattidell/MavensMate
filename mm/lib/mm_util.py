@@ -619,7 +619,7 @@ def prepare_for_metadata_tree(metadata_list):
     for mt in metadata_list:
         mt['text']          = mt['xmlName']
         mt['title']         = mt['xmlName']
-        #mt['xmlName']       = mt['xmlName']
+        mt['key']           = mt['xmlName']
         mt['folder']        = True
         mt['checked']       = True if mt['xmlName'] in apex_types else False
         mt['select']        = True if mt['xmlName'] in apex_types else False

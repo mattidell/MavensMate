@@ -119,6 +119,7 @@ def index_metadata(args):
 
 def refresh_metadata_index():
     config.connection.project.index_metadata(request_payload['metadata_types'])
+    print util.generate_success_response("Metadata refreshed successfully.")
 
 def get_metadata_index():
     if 'keyword' in request_payload or 'ids' in request_payload:
