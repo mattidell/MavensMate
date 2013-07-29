@@ -331,8 +331,6 @@
 	var has_indexed_metadata = {{ has_indexed_metadata|lower }};
 	var operation;
 
-    {% include 'snippets/tree_store.html' %}
-
 	function isValidateOnly() {
 		return $("#check_only").is(":checked")
 	}
@@ -379,7 +377,7 @@
 			if (e.target.href.indexOf("metadata") != -1) {
 				if (tree === undefined) {
 					renderTree()
-					resizeProjectWrapper()
+					setTimeout(resizeProjectWrapper(),500)
 					resizeFilter()
 				}
 			}
@@ -391,15 +389,19 @@
 
 		$("#select-btn").click(function() {
 			if ($(this).html().indexOf('icon-check-empty') !== -1) {
-				tree.getRootNode().cascadeBy(function(n){
-					n.set('cls', '');
-					n.set("checked",true);
+				$("#tree").dynatree("getRoot").visit(function(node){
+					console.log(node.data.id)
+					console.log(node.data.cls)
+					if (node.data.cls !== 'hidden')
+						console.log('not a hidden node, selecting it!')
+						node.select(true);
 				});
 				$(this).html('<i class="icon-check"></i>')
 			} else {
-				tree.getRootNode().cascadeBy(function(n){
-					n.set('cls', '');
-					n.set("checked",false);
+				$("#tree").dynatree("getRoot").visit(function(node){
+					console.log(node.data.cls)
+					if (node.data.cls !== 'hidden')
+						node.select(false);
 				});
 				$(this).html('<i class="icon-check-empty"></i>')
 			}
@@ -410,26 +412,7 @@
 		resize_games()
 		window.resizeTo(900, 720)
 		centerWindow()
-		resizeProjectWrapper()
-	});
-
-	Ext.onReady(function() {
-		Ext.define('mm.tree', {
-		    extend: 'Ext.ux.grid.mm-tree',
-		    requires: [
-		        'Ext.data.TreeStore'
-		    ],
-		    xtype: 'check-tree',
-		    rootVisible: false,
-		    useArrows: true,
-		    frame: true,
-		    initComponent: function(){
-		        Ext.apply(this, {
-		            store: tree_store
-		        });
-		        this.callParent();
-		    }
-		})
+		setTimeout(resizeProjectWrapper(),500)
 	});
 
 	function repopulate_connection_list(conns) {
@@ -519,7 +502,7 @@
 				if (tree === undefined) {
 					renderTree()  
 				} else {
-					tree_store.reload()
+					$("#tree").dynatree("getTree").reload();
 				}
 			}
 			resizeProjectWrapper();

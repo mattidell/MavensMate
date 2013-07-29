@@ -61,7 +61,61 @@ function renderTree() {
 				    node.expand(true);
 				});
 			}
+		},
+		onCreate: function(node, span) {
+			bindContextMenu(span);
 		}
+	});
+	tree = $("#tree").dynatree("getTree")
+}
+
+function renderBufferedTree(metadata) {
+	tree = $("#tree").dynatree({
+		ajaxDefaults: { // Used by initAjax option
+	        timeout: 600000, // >0: Make sure we get an ajax error for invalid URLs
+	    },
+		children: metadata,
+		checkbox: true,
+		selectMode: 3,
+		debugLevel: 0,
+		persist: false,
+		onCreate: function(node, span) {
+			bindContextMenu(span);
+		},
+		onSelect: function(check, node) {
+		    
+		},
+		onPostInit: function(isReloading, isError) {
+			
+		},
+		onLazyRead: function(node) {
+			node.appendAjax({
+				url: baseLocalServerURL+"/metadata/list",
+	  			data: {
+					"metadata_type"			: node.data.title,
+					"sid"					: $("#sid").val(),
+					"metadata_server_url" 	: $("#metadata_server_url").val(),
+					"server_url" 			: $("#server_url").val()
+				},
+				dataFilter: function (data, type) {
+					console.log('processing data')
+					console.log(data)
+					try {
+						var json_data = JSON.parse(data)
+						for (i in json_data) {
+							json_data[i]['title'] 		= json_data[i]['title']    	|| json_data[i]['fullName']
+							json_data[i]['key'] 		= json_data[i]['key'] 		|| json_data[i]['fullName']
+							json_data[i]['isFolder'] 	= json_data[i]['isFolder'] 	|| false
+							json_data[i]['isLazy'] 		= json_data[i]['isLazy']   	|| false
+						}
+						var json_string = JSON.stringify(json_data);
+						return json_string
+					} catch(e) {
+						return []
+					}
+				}
+			});
+	 	}
 	});
 	tree = $("#tree").dynatree("getTree")
 }
@@ -145,21 +199,6 @@ function getPackage() {
         return []
     }
     return json
-}
-
-function renderBufferedTree() {
-	tree = Ext.create('mm.tree', {
-	    renderTo: 'tree',
-	    id: 'mmtree',
-	    width: '100%',
-	    height: '100%',
-	    animate: false
-	});
-	tree.mmType = 'new_project'
-	tree.setLoading()	
-	tree_store.on('load', function() {
-		tree.setLoading(false)	
-	});
 }
 
 function resizeFilter() {
@@ -351,7 +390,7 @@ function global_init_handler(data) {
 		var response = JSON.parse(data.responseText)
 		check_status(response["id"])
 	} catch(e) {
-		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
+		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. Try restarting your text editor and MavensMate.app.');
 		hideLoading()
 	}
 }

@@ -89,6 +89,8 @@
 				if (response["success"] == false) {
 					$("#error_message").html(response["body"])
 					$("#result_output").show()
+				} else {
+					window.close()
 				}
 				hideLoading();
 			} else if (operation == "check_creds") {

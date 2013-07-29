@@ -77,7 +77,6 @@ class SforceMetadataClient(SforceBaseClient):
         if 'package' in kwargs and type(kwargs['package']) is not dict: 
             #if package is location of package.xml, we'll parse the xml and create a request
             package_dict = xmltodict.parse(mm_util.get_file_as_string(kwargs['package']))
-            #config.logger.debug('>>>> ', package_dict)
             api_version = package_dict['Package']['version']
             package_dict['unpackaged'] = package_dict.pop('Package')
             package_dict['unpackaged'].pop('version')
@@ -98,18 +97,28 @@ class SforceMetadataClient(SforceBaseClient):
                 except:
                     package_dict['unpackaged']['types'].pop("#text", None)
 
-            #print json.dumps(package_dict, sort_keys=True, indent=4)
+            #if custom object is asterisked, we need to explictly retrieve standard objects
+            for t in package_dict['unpackaged']['types']:
+                if 'name' in t and t['name'] == 'CustomObject':
+                    if 'members' in t and type(t['members']) is not list:
+                        if t['members'] == "*":
+                            mlist = self.listMetadata('CustomObject', False)
+                            objs = []
+                            for obj in mlist:
+                                if ('__c') not in mlist:
+                                    objs.append(obj['fullName'])
+                            objs.append("*")
+                            objs.sort()
+                            t['members'] = objs
+
             request_payload = package_dict
-            #pprint.pprint(request_payload)
+
         elif 'package' in kwargs and type(kwargs['package']) is dict:
             package = kwargs['package']
-            #print package
             if 'unpackaged' not in package:
                 #{ "ApexClass"    : ["MultiselectControllerTest","MultiselectController"] }
                 type_array = []
                 for i, metadata_type in enumerate(package):
-                    #print i, metadata_type
-                    #print package[metadata_type]
                     member_value = package[metadata_type]
                     type_array.append({ "name" : metadata_type, "members" : member_value })
 
@@ -119,6 +128,21 @@ class SforceMetadataClient(SforceBaseClient):
                     },
                     'apiVersion' : mm_util.SFDC_API_VERSION
                 }
+            
+            #if custom object is asterisked, we need to explictly retrieve standard objects
+            for t in package['unpackaged']['types']:
+                if 'name' in t and t['name'] == 'CustomObject':
+                    if 'members' in t and type(t['members']) is not list:
+                        if t['members'] == "*":
+                            mlist = self.listMetadata('CustomObject', False)
+                            objs = []
+                            for obj in mlist:
+                                if ('__c') not in mlist:
+                                    objs.append(obj['fullName'])
+                            objs.append("*")
+                            objs.sort()
+                            t['members'] = objs
+            
             request_payload = package
         
         result = self._handleResultTyping(self._sforce.service.retrieve(request_payload))
@@ -136,6 +160,7 @@ class SforceMetadataClient(SforceBaseClient):
         deploy_options['checkOnly']         = params.get('check_only', False)
         deploy_options['rollbackOnError']   = params.get('rollback_on_error', True)
         deploy_options['runAllTests']       = params.get('run_tests', False)
+        deploy_options['runTests']          = params.get('classes', False)
 
         result = self._handleResultTyping(self._sforce.service.deploy(params['zip_file'], deploy_options))
         #config.logger.debug('deploy request')
@@ -145,10 +170,11 @@ class SforceMetadataClient(SforceBaseClient):
             self._waitForRequest(result.id)
             if 'ret_xml' in params and params['ret_xml'] == True:
                 self._sforce.set_options(retxml=True)
-            self._setHeaders('deploy_response', debug_category='Apex_code', debug_level='DEBUG')
+            #self._setHeaders('deploy_response', debug_category='Apex_code', debug_level='DEBUG')
             deploy_result = self._getDeployResponse(result.id)
-            if 'debug_categories' in params and 'ret_xml' in params and params['ret_xml'] == True:
-                deploy_result['log'] = self.getDebugLog()
+            #print deploy_result
+            #if 'debug_categories' in params and 'ret_xml' in params and params['ret_xml'] == True:
+            #    deploy_result['log'] = self.getDebugLog()
             self._sforce.set_options(retxml=False)  
             return deploy_result
         else:

@@ -320,7 +320,7 @@ class MavensMateProject(object):
                             )
 
         #use tooling api here, if possible
-        if use_tooling_api == True and compiling_apex_metadata:
+        if use_tooling_api == True and compiling_apex_metadata and int(float(mm_util.SFDC_API_VERSION)) >= 27:
             if 'metadata_container' not in self.settings:
                 container_id = self.sfdc_client.get_metadata_container_id()
                 new_settings = self.settings
@@ -462,26 +462,14 @@ class MavensMateProject(object):
 
             #intercept and overwrite customobject retrieve to include standard objects
             if 'CustomObject' in self.package:
-                custom_fields = []
                 for member in self.package['CustomObject']:
-                    if member == "*" or not member.endswith("__c"):
-                        for item in self.get_org_metadata():
-                           if item['xmlName'] == 'CustomObject':
-                                for child in item['children']:
-                                    if (member == "*" and not child['key'].endswith("__c")) or child['key'] == member:
-                                        for props in child['children']:
-                                            if props['key'] == 'fields':
-                                                for field in props['children']:
-                                                    custom_fields.append(child['key']+'.'+field['key'])
-                                                break
-                                        if member != "*":
-                                            break
-                                break
+                    if member == "*":
+                        pass
+                        #TODO
 
-                if len(custom_fields):
-                    if 'CustomField' not in self.package:
-                        self.package['CustomField'] = []
-                    self.package['CustomField'] = list(set(self.package['CustomField']+custom_fields))
+                        
+
+               
 
             clean_result = json.loads(self.clean(overwrite_package_xml=True))
             if clean_result['success'] == True:
@@ -832,35 +820,27 @@ class MavensMateProject(object):
     #executes 1 or more unit tests
     def run_unit_tests(self, params):
         try:
-            api = params.get('api', 'apex')
-            if api == 'apex':
-                run_tests_result = self.sfdc_client.run_tests(params)
-                if "soapenv:Envelope" in run_tests_result:
-                    result = {}
-                    result = run_tests_result["soapenv:Envelope"]["soapenv:Body"]["runTestsResponse"]["result"]
-                    try:
-                        result['log'] = run_tests_result["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
-                    except:
-                        pass
-                    return result
-                elif 'log' in run_tests_result:
-                    run_tests_result['log'] = run_tests_result['log']
-                    return mm_util.generate_response(run_tests_result)
-            else:
-                # payload = {
-                #     'namespace' : params.get('namespace', None),
-                #     'allTests'  : params.get('run_all_tests', False),
-                #     'classes'   : params.get('classes', [])
-                # }
-                #deploy_metadata = self.sfdc_client.retrieve(package=params['package'])
-                #TODO: empty zip here
-                threads = []
-                thread = DeploymentHandler(self, destination, params, deploy_metadata)
-                thread.start()  
-                thread.join()
-                test_result = thread.result
-                return test_result
+            empty_package_xml = mm_util.get_empty_package_xml_contents()
+            tmp, tmp_unpackaged = mm_util.put_tmp_directory_on_disk(True)
+            mm_util.put_empty_package_xml_in_directory(tmp_unpackaged, empty_package_xml)
+            zip_file = mm_util.zip_directory(tmp, tmp)
+            deploy_params = {
+                "zip_file"          : zip_file,
+                "rollback_on_error" : True,
+                "ret_xml"           : True,
+                "classes"           : params.get('classes', []),
+                "debug_categories"  : params.get('debug_categories', [])
+            }
+            deploy_result = self.sfdc_client.deploy(deploy_params)
+            d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['runTestResult']
+            try:
+                result['log'] = d["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
+            except:
+                result['log'] = 'Log not available.'
 
+            shutil.rmtree(tmp)
+            return result
         except BaseException, e:
             return mm_util.generate_error_response(e.message)  
 
@@ -1050,36 +1030,60 @@ class MavensMateProject(object):
             elif 'childXmlNames' in index_type['type'] and len(index_type['type']['childXmlNames']) > 0 and index_type['xmlName'] != 'Workflow' and index_type['xmlName'] != 'CustomLabels':
                 #customobject with children like:
                 #customfield, listview, weblink, etc.
-                for child_type in index_type['type']['childXmlNames']:
-                    #child_type = listview
+                process = True
+                if index_type['xmlName'] == 'CustomObject':
+                    all_selected = False
                     for package_type in project_package['Package']['types']:
-                        #print package_type
-                        if package_type['name'] == child_type:
-                            #print '------> index child type: ', child_type
-                            #ListView
+                        if package_type['name'] == 'CustomObject':
                             if type(package_type['members']) is not list:
                                 package_type['members'] = [package_type['members']]
-                            pm = {}
                             for package_member in package_type['members']:
-                                #print '---> package item: ',package_member
-                                top_level_key   = package_member.split('.')[0]
-                                top_level_value = package_member.split('.')[1]
-                                if top_level_key not in pm:
-                                    pm[top_level_key] = [top_level_value]
-                                else:
-                                    pm[top_level_key].append(top_level_value)
+                                if package_member == "*":
+                                    #need to select all
+                                    process = False
+                                    all_selected = True
+                                    break
+                            break
+                    if all_selected:
+                        index_type['select'] = True
+                        for child_item in index_type['children']:
+                            child_item['select'] = True
+                            for c in child_item['children']:
+                                c['select'] = True
+                                for leaf in c['children']:
+                                    leaf['select'] = True
+                
+                if process:
+                    for child_type in index_type['type']['childXmlNames']:
+                        #child_type = listview
+                        for package_type in project_package['Package']['types']:
+                            #print package_type
+                            if package_type['name'] == child_type:
+                                #print '------> index child type: ', child_type
+                                #ListView
+                                if type(package_type['members']) is not list:
+                                    package_type['members'] = [package_type['members']]
+                                pm = {}
+                                for package_member in package_type['members']:
+                                    #print '---> package item: ',package_member
+                                    top_level_key   = package_member.split('.')[0]
+                                    top_level_value = package_member.split('.')[1]
+                                    if top_level_key not in pm:
+                                        pm[top_level_key] = [top_level_value]
+                                    else:
+                                        pm[top_level_key].append(top_level_value)
 
-                            for child_item in index_type['children']:
-                                #print child_item['text']
-                                if child_item['text'] in pm:
-                                    for c in child_item['children']:
-                                        #c ==> listviews
-                                        mdef = mm_util.get_meta_type_by_dir(c['text'])
-                                        if mdef['xmlName'] == child_type:
-                                            for leaf in c['children']:
-                                                if leaf['text'] in pm[child_item['text']]:
-                                                    leaf['checked'] = True
-                                                    leaf['select'] = True
+                                for child_item in index_type['children']:
+                                    #print child_item['text']
+                                    if child_item['text'] in pm:
+                                        for c in child_item['children']:
+                                            #c ==> listviews
+                                            mdef = mm_util.get_meta_type_by_dir(c['text'])
+                                            if mdef['xmlName'] == child_type:
+                                                for leaf in c['children']:
+                                                    if leaf['text'] in pm[child_item['text']]:
+                                                        leaf['checked'] = True
+                                                        leaf['select'] = True
             else:
                 #print index_type['xmlName']
                 #print index_type
@@ -1599,9 +1603,10 @@ class MavensMateProject(object):
                 "environment"           : self.org_type,
                 "namespace"             : self.sfdc_client.get_org_namespace(),
                 "id"                    : self.id,
-                "metadata_container"    : self.sfdc_client.get_metadata_container_id(),
                 "subscription"          : self.subscription or []
             }
+            if int(float(mm_util.SFDC_API_VERSION)) >= 27:
+                settings['metadata_container'] = self.sfdc_client.get_metadata_container_id()
         src = open(os.path.join(config.connection.workspace,self.project_name,"config",".settings"), "w")
         json_data = json.dumps(settings, sort_keys=False, indent=4)
         src.write(json_data)

@@ -30,7 +30,7 @@ from jinja2htmlcompress import HTMLCompress
 
 TOOLING_API_EXTENSIONS = ['cls', 'trigger', 'page', 'component']
 
-SFDC_API_VERSION = "27.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
+SFDC_API_VERSION = "28.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
 
 PRODUCTION_ENDPOINT = "https://www.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
 SANDBOX_ENDPOINT    = "https://test.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
@@ -617,10 +617,22 @@ def generate_error_response(message):
 def prepare_for_metadata_tree(metadata_list):
     apex_types = ['ApexClass', 'ApexComponent', 'ApexTrigger', 'ApexPage', 'StaticResource']
     for mt in metadata_list:
-        mt['text']      = mt['xmlName']
-        mt['folder']    = True
-        mt['checked']   = True if mt['xmlName'] in apex_types else False
-        mt['children']  = []
+        mt['text']          = mt['xmlName']
+        mt['title']         = mt['xmlName']
+        #mt['xmlName']       = mt['xmlName']
+        mt['folder']        = True
+        mt['checked']       = True if mt['xmlName'] in apex_types else False
+        mt['select']        = True if mt['xmlName'] in apex_types else False
+        mt['children']      = []
+        mt['cls']           = "folder"
+        mt['isLazy']        = True
+        mt['children']      = []
+        mt['isFolder']      = True
+        # mt['type']          = mt
+        mt['level']         = 1
+        mt['id']            = mt['xmlName']
+        #mt["inFolder"]      = mt['inFolder'],
+        mt["hasChildTypes"] = 'childXmlNames' in mt
     return metadata_list
 
 def get_request_payload():
