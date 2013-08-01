@@ -165,6 +165,9 @@ def new_metadata():
 def execute_apex():
     print config.connection.project.execute_apex(request_payload)
 
+def fetch_checkpoints():
+    print config.connection.project.fetch_checkpoints(request_payload)
+
 def fetch_logs():
     print config.connection.project.fetch_logs(request_payload)
 
@@ -283,6 +286,7 @@ operation_dict = {
     'new_apex_overlay'                      : new_apex_overlay,
     'delete_apex_overlay'                   : delete_apex_overlay,
     'fetch_logs'                            : fetch_logs,
+    'fetch_checkpoints'                     : fetch_checkpoints,
     'new_project_from_existing_directory'   : new_project_from_existing_directory,
     'open_sfdc_url'                         : open_sfdc_url,
     'get_symbols'                           : get_symbol_table,
