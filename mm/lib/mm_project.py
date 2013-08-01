@@ -307,16 +307,20 @@ class MavensMateProject(object):
                     ext = mm_util.get_file_extension_no_period(f)
                     apex_type = mm_util.get_meta_type_by_suffix(ext)
                     apex_entity_api_name = mm_util.get_file_name_no_extension(f)
-                    qr = self.sfdc_client.query("Select LastModifiedById, LastModifiedDate, LastModifiedBy.Name From {0} Where Name = '{1}'".format(apex_type['xmlName'], apex_entity_api_name))
+                    body_field = 'Body'
+                    if apex_type['xmlName'] == 'ApexPage' or apex_type['xmlName'] == 'ApexComponent':
+                        body_field = 'Markup'
+                    qr = self.sfdc_client.query("Select LastModifiedById, LastModifiedDate, LastModifiedBy.Name, {0} From {1} Where Name = '{2}'".format(body_field, apex_type['xmlName'], apex_entity_api_name))
                     if 'records' in qr and type(qr['records']) is list and len(qr['records']) == 1:
                         if qr['records'][0]['LastModifiedById'] != self.sfdc_client.user_id:
                             last_modified_name = qr['records'][0]['LastModifiedBy']['Name']
                             last_modified_date = qr['records'][0]['LastModifiedDate']
                             return mm_util.generate_request_for_action_response(
-                                "{0} was last modified by {1} on {2}. Do you wish to overwrite these changes?"
+                                "{0} was last modified by {1} on {2}."
                                 .format(apex_entity_api_name, last_modified_name, last_modified_date),
                                 'compile',
-                                ["overwrite","cancel"]
+                                ["Diff With Server","Operation Canceled"],
+                                tmp_file_path=mm_util.put_tmp_file_on_disk(apex_entity_api_name, qr['records'][0][body_field], apex_type.get('suffix', ''))
                             )
 
         #use tooling api here, if possible
@@ -588,11 +592,11 @@ class MavensMateProject(object):
                             for item in self.get_org_metadata():
                                if item['xmlName'] == 'CustomObject':
                                     for child in item['children']:
-                                        if not child['key'].endswith("__c"):
+                                        if not child['title'].endswith("__c"):
                                             for props in child['children']:
-                                                if props['key'] == 'fields':
+                                                if props['title'] == 'fields':
                                                     for field in props['children']:
-                                                        custom_fields.append(child['key']+'.'+field['key'])
+                                                        custom_fields.append(child['title']+'.'+field['title'])
                                                     break
                                             if member != "*":
                                                 break
@@ -820,27 +824,45 @@ class MavensMateProject(object):
     #executes 1 or more unit tests
     def run_unit_tests(self, params):
         try:
-            empty_package_xml = mm_util.get_empty_package_xml_contents()
-            tmp, tmp_unpackaged = mm_util.put_tmp_directory_on_disk(True)
-            mm_util.put_empty_package_xml_in_directory(tmp_unpackaged, empty_package_xml)
-            zip_file = mm_util.zip_directory(tmp, tmp)
-            deploy_params = {
-                "zip_file"          : zip_file,
-                "rollback_on_error" : True,
-                "ret_xml"           : True,
-                "classes"           : params.get('classes', []),
-                "debug_categories"  : params.get('debug_categories', [])
-            }
-            deploy_result = self.sfdc_client.deploy(deploy_params)
-            d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
-            result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['runTestResult']
-            try:
-                result['log'] = d["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
-            except:
-                result['log'] = 'Log not available.'
+            api = config.connection.get_plugin_client_setting('mm_test_api', 'metadata')
+            if params.get('api', None) != None:
+                api = params.get('api', 'apex')
+            
+            if api == 'apex':
+                run_tests_result = self.sfdc_client.run_tests(params)
+                if "soapenv:Envelope" in run_tests_result:
+                    result = {}
+                    result = run_tests_result["soapenv:Envelope"]["soapenv:Body"]["runTestsResponse"]["result"]
+                    try:
+                        result['log'] = run_tests_result["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
+                    except:
+                        pass
+                    return result
+                elif 'log' in run_tests_result:
+                    run_tests_result['log'] = run_tests_result['log']
+                    return mm_util.generate_response(run_tests_result)
+            else:
+                empty_package_xml = mm_util.get_empty_package_xml_contents()
+                tmp, tmp_unpackaged = mm_util.put_tmp_directory_on_disk(True)
+                mm_util.put_empty_package_xml_in_directory(tmp_unpackaged, empty_package_xml)
+                zip_file = mm_util.zip_directory(tmp, tmp)
+                deploy_params = {
+                    "zip_file"          : zip_file,
+                    "rollback_on_error" : True,
+                    "ret_xml"           : True,
+                    "classes"           : params.get('classes', []),
+                    "debug_categories"  : params.get('debug_categories', [])
+                }
+                deploy_result = self.sfdc_client.deploy(deploy_params,is_test=True)
+                d = xmltodict.parse(deploy_result,postprocessor=mm_util.xmltodict_postprocessor)
+                result = d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result']['runTestResult']
+                try:
+                    result['log'] = d["soapenv:Envelope"]["soapenv:Header"]["DebuggingInfo"]["debugLog"]
+                except:
+                    result['log'] = 'Log not available.'
 
-            shutil.rmtree(tmp)
-            return result
+                shutil.rmtree(tmp)
+                return result
         except BaseException, e:
             return mm_util.generate_error_response(e.message)  
 
@@ -987,7 +1009,7 @@ class MavensMateProject(object):
 
             return mm_util.generate_error_response(e.message)
 
-    def __select_metadata_based_on_package_xml(self, org_index):
+    def __select_metadata_based_on_package_xml_NEW(self, org_index):
         project_package = self.__get_package_as_dict()
         for index_type in org_index:   
             # print index_type['xmlName']
@@ -1110,13 +1132,14 @@ class MavensMateProject(object):
                                     child['checked'] = True
                                     child['select'] = True
 
-    def __select_metadata_based_on_package_xml_OLD(self, return_list):
+    def __select_metadata_based_on_package_xml(self, return_list):
         #process package and select only the items the package has specified
         package_types = self.get_package_types();
         #expand standard "custombjects" to customfields
         custom_fields = []
         for val in package_types:
             metadata_type = val['name']
+
             # If CustomObject is set in package.xml, look at it's members
             if metadata_type == 'CustomObject' and 'members' in val:
                 for member in val['members']:
@@ -1129,10 +1152,10 @@ class MavensMateProject(object):
                                 # Loop through all the CustomObject metadata
                                 for child in item['children']:
                                     # Currently the standard object from the loop or everything
-                                    if child['key'] == member or member == "*":
+                                    if child['title'] == member or member == "*":
                                         for props in child['children']:
                                             for field in props['children']:
-                                                custom_fields.append(child['key']+'.'+field['key'])
+                                                custom_fields.append(child['title']+'.'+field['title'])
                                         # we can break unless we want to add every field to CustomField for *
                                         if member != "*":
                                             break
@@ -1163,6 +1186,8 @@ class MavensMateProject(object):
             metadata_type = val['name']
             metadata_def = mm_util.get_meta_type_by_name(metadata_type)
 
+            #print('processing --> ', metadata_type)
+
             if metadata_def == None:
                 continue
             
@@ -1176,6 +1201,10 @@ class MavensMateProject(object):
             
             server_metadata_item = None
             
+            #print('is_parent_type --> ', is_parent_type)
+            #print('is_child_type --> ', is_child_type)
+            #print('is_folder_based --> ', is_folder_based)
+
             #loop through list of metadata types in the org itself,
             #try to match on the name of this type of metadata
             for item in return_list:
@@ -1190,16 +1219,16 @@ class MavensMateProject(object):
                 continue
 
             if members == "*": #if package is subscribed to all
-                server_metadata_item['selected'] = True
+                server_metadata_item['select'] = True
                 if 'children' in server_metadata_item:
                     for child in server_metadata_item['children']:
-                        child['selected'] = True
+                        child['select'] = True
                         if 'children' in child:
                             for gchild in child['children']:
-                                gchild['selected'] = True
+                                gchild['select'] = True
                                 if 'children' in gchild:
                                     for ggchild in gchild['children']:
-                                        ggchild['selected'] = True
+                                        ggchild['select'] = True
                 continue
             else: #package has specified members (members => ['Account', 'Lead'])
             
@@ -1221,44 +1250,51 @@ class MavensMateProject(object):
                                 if child['title'] == folder_name:
                                     for folder_item in child['children']:
                                         if folder_item['title'] == item_name:
-                                            folder_item['selected'] = True
+                                            folder_item['select'] = True
                                             break
                                     break
 
                 elif is_child_type: #weblink, customfield, etc.
+                    #print('handling child! --> ')
+                    #print('members --> ', members)
+
                     #print 'child type!'
                     parent_type = mm_util.get_meta_type_by_name(metadata_def['parentXmlName'])
                     for item in return_list:
                         if item['xmlName'] == parent_type['xmlName']:
                             parent_server_metadata_item = item
 
-                    for m in members:
+                    for m in members: #members => [Contact.FieldA, Contact.FieldB, etc.]
                         arr = m.split(".")
                         object_name = arr[0]
                         item_name = arr[1]
                         for child in parent_server_metadata_item['children']:
+                            #print 'child: ', child
                             if child['title'] == object_name:
                                 #"Account"
                                 for gchild in child['children']:
+                                    #print 'gchild: ', gchild
                                     #"fields"
                                     for ggchild in gchild['children']:
+                                        #print 'ggchild: ', ggchild
                                         if gchild['title'] == metadata_def['tagName'] and ggchild['title'] == item_name:
+                                            #print 'selecting: ', ggchild
                                             #"field_name__c"
-                                            ggchild['selected'] = True
-                                        break
-                                break
+                                            ggchild['select'] = True
+                                        #break
+                                #break
 
                 else:
                     #print 'regular type with specific items selected'
                     for m in members:
                         for child in server_metadata_item['children']:
                             if child['title'] == m:
-                                child['selected'] = True
+                                child['select'] = True
                                 if 'children' in child:
                                     for gchild in child['children']:
-                                        gchild['selected'] = True
+                                        gchild['select'] = True
                                         for ggchild in gchild['children']:
-                                            ggchild['selected'] = True
+                                            ggchild['select'] = True
         
         return return_list
 
@@ -1375,38 +1411,11 @@ class MavensMateProject(object):
         except Exception, e:
             return mm_util.generate_error_response(e.message)
 
-    #downloads logs and apex checkpoints
-    def fetch_logs(self, payload):
-        number_of_logs = 0
+    def fetch_checkpoints(self, payload):
         number_of_checkpoints = 0
         try:
             user_id = payload.get('user_id', self.sfdc_client.user_id)
             limit   = payload.get('limit', 20)
-            log_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location != \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
-            logs = []
-            if 'records' in log_result:
-                for r in log_result['records']:
-                    id = r["Id"]
-                    log = self.sfdc_client.download_log(id)
-                    logs.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":log,"userid":r["LogUserId"]})
-                if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")) == False:
-                    os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","logs"))
-                for the_file in os.listdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")):
-                    file_path = os.path.join(config.connection.workspace,self.project_name,"debug","logs", the_file)
-                    try:
-                        if os.path.isfile(file_path):
-                            os.unlink(file_path)
-                    except Exception, e:
-                        print e
-                number_of_logs = len(logs)
-                for log in logs:
-                    file_name = log["modstamp"]+"|"+log["userid"]+".json"
-                    src = open(os.path.join(config.connection.workspace,self.project_name,"debug","logs",file_name), "w")
-                    src.write(log["log"])
-                    src.close() 
-            else:
-                config.logger.debug("No logs to download")
-
             checkpoint_results = self.sfdc_client.get_apex_checkpoint_results(self.sfdc_client.user_id, limit)
             if 'records' in checkpoint_results:
                 number_of_checkpoints = len(checkpoint_results['records'])
@@ -1444,7 +1453,42 @@ class MavensMateProject(object):
             else:
                 config.logger.debug("No checkpoints to download")
         
-            return mm_util.generate_success_response(str(number_of_logs)+' Logs and '+str(number_of_checkpoints)+' Checkpoints successfully downloaded') 
+            return mm_util.generate_success_response(str(number_of_checkpoints)+' Checkpoints successfully downloaded') 
+        except Exception, e:
+            print mm_util.generate_error_response(e.message)
+
+    #downloads logs and apex checkpoints
+    def fetch_logs(self, payload):
+        number_of_logs = 0
+        try:
+            user_id = payload.get('user_id', self.sfdc_client.user_id)
+            limit   = config.connection.get_plugin_client_setting('mm_number_of_logs_limit', 20)
+            log_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location != \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
+            logs = []
+            if 'records' in log_result:
+                for r in log_result['records']:
+                    id = r["Id"]
+                    log = self.sfdc_client.download_log(id)
+                    logs.append({"id":id,"modstamp":str(r["SystemModstamp"]),"log":log,"userid":r["LogUserId"]})
+                if os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")) == False:
+                    os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","logs"))
+                for the_file in os.listdir(os.path.join(config.connection.workspace,self.project_name,"debug","logs")):
+                    file_path = os.path.join(config.connection.workspace,self.project_name,"debug","logs", the_file)
+                    try:
+                        if os.path.isfile(file_path):
+                            os.unlink(file_path)
+                    except Exception, e:
+                        print e
+                number_of_logs = len(logs)
+                for log in logs:
+                    file_name = log["modstamp"]+"|"+log["userid"]+".json"
+                    src = open(os.path.join(config.connection.workspace,self.project_name,"debug","logs",file_name), "w")
+                    src.write(log["log"])
+                    src.close() 
+            else:
+                config.logger.debug("No logs to download")
+
+            return mm_util.generate_success_response(str(number_of_logs)+' Logs successfully downloaded') 
         except Exception, e:
             print mm_util.generate_error_response(e.message)
 
