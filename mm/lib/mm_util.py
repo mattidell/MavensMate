@@ -238,12 +238,20 @@ def parse_json(filename):
 
 def put_tmp_directory_on_disk(put_unpackaged_directory=False):
     tmp_dir = tempfile.gettempdir()
-    mm_tmp_directory = "{0}/.org.mavens.mavensmate.{1}".format(tmp_dir, get_random_string())
+    mm_tmp_directory = os.path.join("{0}",".org.mavens.mavensmate.{1}".format(tmp_dir, get_random_string()))
     os.makedirs(mm_tmp_directory)
     if put_unpackaged_directory == True:
         os.makedirs(mm_tmp_directory+"/unpackaged")
         return mm_tmp_directory, mm_tmp_directory+"/unpackaged"
     return mm_tmp_directory
+
+def put_tmp_file_on_disk(name, body, ext=''):
+    tmp_dir = tempfile.gettempdir()
+    file_name = '[--SERVER COPY--] '+name
+    f = open("{0}/{1}.{2}".format(tmp_dir, file_name, ext), 'w')
+    f.write(body)
+    f.close()
+    return "{0}/{1}.{2}".format(tmp_dir, file_name, ext)
 
 def put_package_xml_in_directory(directory, file_contents, isDelete=False):
     file_name = 'package.xml' if isDelete == False else 'destructiveChanges.xml'
@@ -560,7 +568,7 @@ def generate_success_response(message, type="text"):
     }
     return json.dumps(res)
 
-def generate_request_for_action_response(message, operation, actions=[]):
+def generate_request_for_action_response(message, operation, actions=[], **kwargs):
     res = {
         "success"       : False,
         "body_type"     : "text",
@@ -568,6 +576,8 @@ def generate_request_for_action_response(message, operation, actions=[]):
         "actions"       : actions,
         "operation"     : operation
     }
+    if 'tmp_file_path' in kwargs and kwargs['tmp_file_path'] != None:
+        res['tmp_file_path'] = kwargs['tmp_file_path']
     return json.dumps(res)
 
 def generate_error_response(message):
