@@ -9,11 +9,11 @@ from lib.mm_connection import MavensMatePluginConnection
 
 
 params = {
-	"project_name" 	: "fdjlsdf",
+	"project_name" 	: "bloat",
 	"client" 		: "SUBLIME_TEXT_3"
 }
 connection = MavensMatePluginConnection(params)
 r = connection.project.get_org_metadata(False, True)
 
 pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(r[4])
+pp.pprint(r)
