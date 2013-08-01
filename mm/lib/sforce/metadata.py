@@ -157,10 +157,17 @@ class SforceMetadataClient(SforceBaseClient):
             self._setHeaders('deploy', debug_categories=params['debug_categories'])  
         
         deploy_options = {}
-        deploy_options['checkOnly']         = params.get('check_only', False)
-        deploy_options['rollbackOnError']   = params.get('rollback_on_error', True)
-        deploy_options['runAllTests']       = params.get('run_tests', False)
-        deploy_options['runTests']          = params.get('classes', False)
+
+        is_test = kwargs.get('is_test', False)
+        if is_test:
+            deploy_options['checkOnly']         = True
+            deploy_options['runAllTests']       = False
+            deploy_options['runTests']          = params.get('classes', [])
+        else:
+            deploy_options['checkOnly']         = params.get('check_only', False)
+            deploy_options['rollbackOnError']   = params.get('rollback_on_error', True)
+            deploy_options['runAllTests']       = params.get('run_tests', False)
+            deploy_options['runTests']          = params.get('classes', [])
 
         result = self._handleResultTyping(self._sforce.service.deploy(params['zip_file'], deploy_options))
         #config.logger.debug('deploy request')
