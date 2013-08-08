@@ -123,11 +123,7 @@
 	<script>
 		var has_indexed_metadata = {{ has_indexed_metadata|lower }};
 		var operation;
-		$(function() {
-			$("#subscription").change(function() {
-				console.log('sub changed')
-			})
-		})
+		
 		function updateProjectCreds() {
 			console.log('updating project creds')
 			operation = "update_creds"
@@ -173,7 +169,7 @@
 					if (response["success"] == false) {
 						show_message(response["body"])
 					} else {
-						show_message(response["body"], 'success', true)
+						show_message_with_custom_action(response["body"], 'success', 'Refresh Index', 'hide_message();index_org(true)')
 					}
 					hideLoading();
 				}
@@ -263,15 +259,25 @@
 
 			$("#select-btn").click(function() {
 				if ($(this).html().indexOf('icon-check-empty') !== -1) {
-					tree.getRootNode().cascadeBy(function(n){
-						n.set('cls', '');
-						n.set("checked",true);
+					$("#tree").dynatree("getRoot").visit(function(node){
+						if ($("#txtFilter").val() == '') {
+							if (node.data.cls !== 'hidden')
+								node.select(true);
+						} else {
+							if (node.data.level != 1 && node.data.cls !== 'hidden')
+								node.select(true);
+						}
 					});
 					$(this).html('<i class="icon-check"></i>')
 				} else {
-					tree.getRootNode().cascadeBy(function(n){
-						n.set('cls', '');
-						n.set("checked",false);
+					$("#tree").dynatree("getRoot").visit(function(node){
+						if ($("#txtFilter").val() == '') {
+							if (node.data.cls !== 'hidden')
+								node.select(false);
+						} else {
+							if (node.data.level != 1 && node.data.cls !== 'hidden')
+								node.select(false);
+						}
 					});
 					$(this).html('<i class="icon-check-empty"></i>')
 				}

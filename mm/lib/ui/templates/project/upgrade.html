@@ -55,7 +55,6 @@
 
 {% block body_js %}
 	<script type="text/javascript">
-		var mm_cpd = '{{ project_location }}';
 		
 		function upgrade() {
 			$.ajax({
@@ -85,7 +84,7 @@
 			} else {
 				$("#btnSubmit").remove()
 				$("#btnCancel").html("Done")
-				show_message("Your project has been successfully upgraded. Happy coding :)", "success")
+				show_message("Your project has been successfully upgraded. Happy coding :)", 'success', true)
 				notify_sound()
 			}
 			hideLoading();
