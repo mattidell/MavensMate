@@ -1163,15 +1163,21 @@ class MavensMateProject(object):
 
                 else:
                     #print 'regular type with specific items selected'
+                    if item['xmlName'] == 'CustomObject':
+                        selected = 0
                     for m in members:
                         for child in server_metadata_item['children']:
                             if child['title'] == m:
                                 child['select'] = True
+                                if item['xmlName'] == 'CustomObject':
+                                    selected += 1
                                 if 'children' in child:
                                     for gchild in child['children']:
                                         gchild['select'] = True
                                         for ggchild in gchild['children']:
                                             ggchild['select'] = True
+                    if item['xmlName'] == 'CustomObject' and selected == len(server_metadata_item['children']):
+                        item['select'] = True
         
         return return_list
 
@@ -1524,7 +1530,7 @@ class MavensMateProject(object):
                 "environment"           : self.org_type,
                 "namespace"             : self.sfdc_client.get_org_namespace(),
                 "id"                    : self.id,
-                "subscription"          : self.subscription or []
+                "subscription"          : self.subscription or config.connection.get_plugin_client_setting('mm_default_subscription')
             }
             if int(float(mm_util.SFDC_API_VERSION)) >= 27:
                 settings['metadata_container'] = self.sfdc_client.get_metadata_container_id()
