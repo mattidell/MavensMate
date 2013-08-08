@@ -390,18 +390,24 @@
 		$("#select-btn").click(function() {
 			if ($(this).html().indexOf('icon-check-empty') !== -1) {
 				$("#tree").dynatree("getRoot").visit(function(node){
-					console.log(node.data.id)
-					console.log(node.data.cls)
-					if (node.data.cls !== 'hidden')
-						console.log('not a hidden node, selecting it!')
-						node.select(true);
+					if ($("#txtFilter").val() == '') {
+						if (node.data.cls !== 'hidden')
+							node.select(true);
+					} else {
+						if (node.data.level != 1 && node.data.cls !== 'hidden')
+							node.select(true);
+					}
 				});
 				$(this).html('<i class="icon-check"></i>')
 			} else {
 				$("#tree").dynatree("getRoot").visit(function(node){
-					console.log(node.data.cls)
-					if (node.data.cls !== 'hidden')
-						node.select(false);
+					if ($("#txtFilter").val() == '') {
+						if (node.data.cls !== 'hidden')
+							node.select(false);
+					} else {
+						if (node.data.level != 1 && node.data.cls !== 'hidden')
+							node.select(false);
+					}
 				});
 				$(this).html('<i class="icon-check-empty"></i>')
 			}
@@ -416,7 +422,6 @@
 	});
 
 	function repopulate_connection_list(conns) {
-		console.log('repopping')
 		var connHtml = ''
 		for (c in conns) {
 			connHtml += '<option value="'+conns[c]['username']+';'+conns[c]['environment']+';'+conns[c]['id']+'">'
@@ -428,7 +433,6 @@
 	}
 
 	function index_org(refresh) {
-		console.log('indexing org')
 		operation = "index"
 		$.ajax({
 			type: "POST",
