@@ -408,6 +408,18 @@ function hide_global_error() {
 	$("#global_message").html('')
 }
 
+function show_message_with_custom_action(message, mtype, button_label, script) {
+	if (mtype === undefined) {
+		mtype = 'error'
+	}
+	message += '<br/><a href="#" class="btn btn-info btn-wide" onclick="'+script+'">'+button_label+'</a>'
+	$("#error_message").parent().attr('class', 'alert')
+	$("#error_message").parent().addClass('alert-'+mtype)
+	$("#error_message").html(message)
+	$("#result_output").show()
+	resizeElements()
+}
+
 function show_message(message, mtype, showCloseButton) {
 	if (mtype === undefined) {
 		mtype = 'error'
