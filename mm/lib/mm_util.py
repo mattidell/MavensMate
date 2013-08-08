@@ -606,6 +606,9 @@ def generate_error_response(message):
             except:
                 pass
 
+        if 'nodename nor servname provided' in stack_trace:
+            message = 'No internet connection'
+
         config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
         config.logger.debug(stack_trace)
         res = {
