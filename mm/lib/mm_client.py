@@ -510,6 +510,13 @@ class MavensMateClient(object):
     #APEX CHECKPOINTS
     #################
 
+    def get_completions(self, type):
+        payload = { 'type' : 'apex' }
+        print payload
+        r = requests.get(self.get_tooling_url()+"/completions", params=payload, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        print r.text
+
     def get_apex_checkpoints(self, **kwargs):        
         if 'file_path' in kwargs:
             id = kwargs.get('id', None)
