@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>MavensMate Changelog</title>
+      <link>http://mavensconsulting.com/mavensmate/builds/appcast.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 0.35</title>
+						<description><![CDATA[
+                <h2>MavensMate.app Version 0.35</h2>
+
+<p>
+	<h2><u>IMPORTANT</u></h2>
+	Versions 0.35+ of MavensMate.app are intended for use with <b><u>Sublime Text 3 ONLY</u></b>. Given that Sublime Text 3 plugins require Python 3, all MavensMate for Sublime Text plugin development moving forward will be focused on Sublime Text 3. To download Sublime Text 3, <a href="http://www.sublimetext.com/3">click here</a>. Sublime Text 3 is markedly faster and more stable than Sublime Text 2 and we think you'll agree that MavensMate for Sublime Text 3 is the best plugin we've released.
+</p>
+<p>
+	<b>Once you download MavensMate.app, be sure to update the MavensMate for Sublime Text 3 plugin from the MavensMate.app "Plugins" menu.</b>
+</p>
+<p>
+	<h3>Rundown of changes/fixes/improvements</h3>
+	<ul>
+		<li>Awesome new website with easy-to-use documentation: <a href="http://mavensmate.com/?utm_source=mmapp&utm_medium=update&utm_campaign=0.35">mavensmate.com</a></li>
+		<li>Compile multiple Apex metadata types at once with the Tooling API</li>
+		<li>Create debug logs from MavensMate</li>
+		<li>Create/delete Apex checkpoints (heap dumps) for Apex Classes and Triggers</li>
+		<li>Fetch Apex logs and checkpoints to your project (stored in the project's "debug" directory)</li>
+		<li>Better metadata tree, including optimized, server-side search and filter</li>
+		<li>Much improved Apex code assist</li>
+		<li>Visualforce code assist (this is awesome)</li>
+		<li>Metadata subscription to cut down on the long index times in large orgs</li>
+		<li>Server diff and merge on compile conflict (also awesome)</li>
+		<li>Debug panel in Sublime Text 3 is much, much better.</li>
+	</ul>	
+</p>
+
+            ]]>
+            </description>
+            <pubDate>Sat, 10 August 2013 17:38:55 +0000</pubDate>
+            <enclosure url="http://cdn.mavensconsulting.com/mavensmate/builds/MavensMate.zip" sparkle:version="0.35" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC0CFQCjX2X24/NJSamepDQpb/Ib6n3x7gIUC4gODGzX64+e85kmxaaHgwvVawM=" />
+         </item>
+   </channel>
+</rss>
