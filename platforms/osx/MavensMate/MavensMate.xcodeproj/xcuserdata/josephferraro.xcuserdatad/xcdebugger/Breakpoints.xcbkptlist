@@ -151,11 +151,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "PluginViewsController.m"
-         timestampString = "386444535.089279"
+         timestampString = "397741768.714422"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "182"
-         endingLineNumber = "182"
+         startingLineNumber = "180"
+         endingLineNumber = "180"
          landmarkName = "-downloadAndInstallPluginWrapper:"
          landmarkType = "5">
       </FileBreakpoint>

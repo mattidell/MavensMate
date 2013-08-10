@@ -276,7 +276,7 @@ class MavensMateProject(object):
 
             shutil.rmtree(tmp)
 
-            self.refresh_selected_properties({'project_name':self.project_name, 'directories': [os.path.join(self.location, 'src')]})
+            #self.refresh_selected_properties({'project_name':self.project_name, 'directories': [os.path.join(self.location, 'src')]})
 
             return json.dumps(dictionary, sort_keys=True, indent=2, separators=(',', ': '))
             #return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]['checkDeployStatusResponse']['result'], sort_keys=True, indent=2, separators=(',', ': '))
