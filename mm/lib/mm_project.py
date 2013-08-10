@@ -1586,7 +1586,33 @@ class MavensMateProject(object):
             sublime_project_file_path = os.path.join(config.connection.workspace,self.project_name,self.project_name+".sublime-project")
             project_path = os.path.join(config.connection.workspace,self.project_name)
             src = open(sublime_project_file_path, "w")
-            src.write('{"folders":[{"path": "'+project_path+'"}]}')
+            project_file = {
+                "folders" : [
+                    { "path": project_path }
+                ],
+                "settings" : {
+                    "auto_complete_triggers" :
+                    [
+                        {
+                            "selector": "source",
+                            "characters": "."
+                        },
+                        {
+                            "selector": "text.html", 
+                            "characters": ":"
+                        },
+                        {
+                            "selector": "text.html", 
+                            "characters": "<"
+                        },
+                        {
+                            "selector": "text.html", 
+                            "characters": " "
+                        }
+                    ]
+                }
+            }
+            src.write(json.dumps(project_file, sort_keys=False, indent=4))
             src.close()
 
     #returns the cached session information (handles yaml [legacy] & json)
