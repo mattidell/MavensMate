@@ -110,22 +110,20 @@
             })
         }
 
+        //right now this only supports existing projects (not new project UI)
         function refreshNode(mtype) {
-            //console.log(node)
-            //if (node.data.level === 1) {
-                $.ajax({
-                    type: "POST",
-                    url: baseLocalServerURL+"/project/refresh_index", 
-                    data: JSON.stringify({
-                        metadata_types  : mtype,
-                        project_name    : project_name
-                    }),
-                    beforeSend: function() { showLoading("Refreshing Metadata Type: "+ mtype +"..."); },
-                    complete: function(data){
-                        $("#tree").dynatree("getTree").reload()
-                    } 
-                });
-            //}
+            $.ajax({
+                type: "POST",
+                url: baseLocalServerURL+"/project/refresh_index", 
+                data: JSON.stringify({
+                    metadata_types  : mtype,
+                    project_name    : project_name
+                }),
+                beforeSend: function() { showLoading("Refreshing Metadata Type: "+ mtype +"..."); },
+                complete: function(data){
+                    $("#tree").dynatree("getTree").reload()
+                } 
+            });
         }
     </script>
 </head>

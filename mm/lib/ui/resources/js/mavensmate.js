@@ -73,6 +73,10 @@ function renderTree() {
 }
 
 function renderBufferedTree(metadata) {
+	try {
+		$("#tree").dynatree("destroy");
+	} catch(e) {}
+	
 	tree = $("#tree").dynatree({
 		ajaxDefaults: { // Used by initAjax option
 	        timeout: 600000, // >0: Make sure we get an ajax error for invalid URLs
@@ -82,42 +86,23 @@ function renderBufferedTree(metadata) {
 		selectMode: 3,
 		debugLevel: 0,
 		persist: false,
-		onCreate: function(node, span) {
-			bindContextMenu(span);
-		},
-		onSelect: function(check, node) {
-		    
-		},
-		onPostInit: function(isReloading, isError) {
-			
-		},
+		// onCreate: function(node, span) {
+		// 	if (node.data.level === 1)
+		// 		bindContextMenu(span);
+		// },
 		onLazyRead: function(node) {
-			node.appendAjax({
-				url: baseLocalServerURL+"/metadata/list",
-	  			data: {
+			$.ajax({
+	            url: baseLocalServerURL+"/metadata/list/async",
+	            data: {
 					"metadata_type"			: node.data.title,
 					"sid"					: $("#sid").val(),
 					"metadata_server_url" 	: $("#metadata_server_url").val(),
 					"server_url" 			: $("#server_url").val()
 				},
-				dataFilter: function (data, type) {
-					console.log('processing data')
-					console.log(data)
-					try {
-						var json_data = JSON.parse(data)
-						for (i in json_data) {
-							json_data[i]['title'] 		= json_data[i]['title']    	|| json_data[i]['fullName']
-							json_data[i]['key'] 		= json_data[i]['key'] 		|| json_data[i]['fullName']
-							json_data[i]['isFolder'] 	= json_data[i]['isFolder'] 	|| false
-							json_data[i]['isLazy'] 		= json_data[i]['isLazy']   	|| false
-						}
-						var json_string = JSON.stringify(json_data);
-						return json_string
-					} catch(e) {
-						return []
-					}
-				}
-			});
+	            complete: function(data){
+	                list_handler(data, node)
+	            }
+	        });
 	 	}
 	});
 	tree = $("#tree").dynatree("getTree")
@@ -395,6 +380,67 @@ function global_init_handler(data) {
 	} catch(e) {
 		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. Try restarting your text editor and MavensMate.app.');
 		hideLoading()
+	}
+}
+
+function list_handler(data, node) {
+	console.log(data)
+	console.log('node: ')
+	console.log(node)
+	try {
+		var response = JSON.parse(data.responseText)
+		check_list_status(response["id"], node)
+	} catch(e) {
+		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. Try restarting your text editor and MavensMate.app.');
+		hideLoading()
+	}
+}
+
+function check_list_status(request_id, node) {
+    $.ajax({
+        type: "GET",
+        url: baseLocalServerURL+"/status", 
+        data: {
+             id: request_id
+        },
+        complete: function(data, status, xhr) {
+            try {
+                console.log('checking status of async request')
+                console.log(data)
+                console.log('json response: ')
+                console.log(data.responseText)
+                var response = JSON.parse(data.responseText)
+                if (response["status"] == 'pending') {
+                    setTimeout(function() { check_list_status(request_id, node); }, CHECK_STATUS_INTERVAL); //poll for completed async request
+                } else {
+                    handle_list_response(response, node);
+                }
+            } catch(e) {
+                console.log(e)
+                console.log('caught an error, polling again...')
+                setTimeout(function() { check_list_status(request_id, node); }, 2000);
+            }
+                        
+        } 
+    });
+}
+
+function handle_list_response(data, node) {
+	console.log('processing data')
+	console.log(data)
+	try {
+		for (i in data) {
+			data[i]['title'] 		= data[i]['title']    	|| data[i]['fullName']
+			data[i]['key'] 			= data[i]['key'] 		|| data[i]['fullName']
+			data[i]['isFolder'] 	= data[i]['isFolder'] 	|| false
+			data[i]['isLazy'] 		= data[i]['isLazy']   	|| false
+		}
+		node.setLazyNodeStatus(DTNodeStatus_Ok);
+    	node.addChild(data);
+
+	} catch(e) {
+		console.log(e)
+		return []
 	}
 }
 
