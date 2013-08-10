@@ -18,7 +18,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         handler = None
         try:
             handler = self.mappings[request_url][method]
-        except KeyError, e:
+        except KeyError:
             # no mapping found for the request
             self.send_response(404)
             self.end_headers()
@@ -26,7 +26,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         try:
             handler(self)
-        except KeyError, e:
+        except KeyError:
             # method not found
             self.send_response(501)
             self.end_headers()

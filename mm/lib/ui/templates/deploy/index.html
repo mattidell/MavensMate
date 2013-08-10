@@ -294,22 +294,14 @@
 			
 			<div class="alert alert-info" id="filter">
 				<input type="text" placeholder="Search for metadata" id="txtFilter" style="width:300px;height:35px;" />
-				<div class="select-wrapper">
-					<select id="meta_type" class="">
-						
-					</select>
-				</div>
-				<a href="#" class="btn btn-success" id="search-btn"><i class="icon-search"></i></a>
-				<a href="#" class="btn btn-select" id="select-btn"><i class="icon-check"></i></a>
+				<a href="#" class="btn btn-success" id="search-btn" style="right:45px"><i class="icon-search"></i></a>
+				<a href="#" class="btn btn-select" id="select-btn" ><i class="icon-check-empty"></i></a>
 			</div>
+
 			<div id="project_wrapper">
 								
 				<div id="treewrapper">
-					<div id="tree">
-						<ul>
-							{{ tree_body }}
-						</ul>												
-					</div>
+					<div id="tree"></div>
 					<div id="info"></div>
 				</div> 
 			</div>
@@ -351,12 +343,7 @@
 		return $("#rollback").is(":checked")
 	}
 
-	$("#save_changeset").click(function() {
-		$("#changeset_name_wrapper").toggle(this.checked)
-	});
-
 	$(function() {
- 		
 		$("#check_only").change(function() {
 			var text = (this.checked)? 'Validate Deployment' : 'Deploy to Server';
 			$("#btnDeploy").val(text);
@@ -380,80 +367,61 @@
 			$("#un").val($("#un_list").val());
 		}  
 
-		$('#meta_type').html('')
-		$("#tree ul > li.level1").each(function() {
-			$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
-		});
-		
 		$(window).resize(function() {
 			resize_arcade()
 			resizeProjectWrapper()
 		});
 
-		
-		$("#txtFilter").bind('keyup', function(e) {
-			var code = (e.keyCode ? e.keyCode : e.which);
-			if (code == 13) {
-				submitSearch()
+		//render tree when tab is clicked, otherwise there's an extjs and it doesnt render
+		$('a[data-toggle="tab"]').on('shown', function (e) {
+			if (e.target.href.indexOf("metadata") != -1) {
+				if (tree === undefined) {
+					renderTree()
+					setTimeout(resizeProjectWrapper(),500)
+					resizeFilter()
+				}
 			}
 		})
-		.change(function() {
-			var filter = $("#txtFilter").val();
-			if (!filter) {
-				clearFilter();
-				scrollToTop("#project_wrapper");	
-			}
-		})
-		.keyup(function() {
-	        $(this).change();
-	    });
-
-	    $("#search-btn").on('click', function() {
-	    	if ($(this).hasClass('btn-success')) {
-	    		submitSearch()
-	    	} else {
-	    		clearFilter()
-	    	}
-	    })
-
-		$("#select-btn").on('click', function(){
-			icon = $(this).find("i");
-			$("#tree").dynatree("getRoot").visit(function(node){
-				node.select(icon.hasClass('icon-check'));
-			});
-			icon.toggleClass('icon-check');
-			icon.toggleClass('icon-check-empty');
-			return false;
-		});
-
-		$('#txtFilter, #meta_type').on('change', function(){
-			clearFilter();
-		});
 		
 		if (!has_indexed_metadata) {
-				index_org();
-		} else {
-			$("#tree").dynatree({
-				persist: false,
-				checkbox: true,
-				selectMode: 3
-			});
-			$("#tree").dynatree("getRoot").visit(function(node) {
-        		node.expand(false);
-    		});  
-			rootNode = $("#tree").dynatree("getRoot");
+			index_org();
 		}
+
+		$("#select-btn").click(function() {
+			if ($(this).html().indexOf('icon-check-empty') !== -1) {
+				$("#tree").dynatree("getRoot").visit(function(node){
+					if ($("#txtFilter").val() == '') {
+						if (node.data.cls !== 'hidden')
+							node.select(true);
+					} else {
+						if (node.data.level != 1 && node.data.cls !== 'hidden')
+							node.select(true);
+					}
+				});
+				$(this).html('<i class="icon-check"></i>')
+			} else {
+				$("#tree").dynatree("getRoot").visit(function(node){
+					if ($("#txtFilter").val() == '') {
+						if (node.data.cls !== 'hidden')
+							node.select(false);
+					} else {
+						if (node.data.level != 1 && node.data.cls !== 'hidden')
+							node.select(false);
+					}
+				});
+				$(this).html('<i class="icon-check-empty"></i>')
+			}
+		})
 
 		$('label.checkbox input').checkbox();
 
 		resize_games()
 		window.resizeTo(900, 720)
 		centerWindow()
-		resizeProjectWrapper()
+		setTimeout(resizeProjectWrapper(),500)
 	});
 
 	function repopulate_connection_list(conns) {
-		console.log('repopping')
 		var connHtml = ''
 		for (c in conns) {
 			connHtml += '<option value="'+conns[c]['username']+';'+conns[c]['environment']+';'+conns[c]['id']+'">'
@@ -464,19 +432,15 @@
 		$('#un_list').trigger("liszt:updated");
 	}
 
-	var rootNode;
-
-
 	function index_org(refresh) {
-		console.log('indexing org')
 		operation = "index"
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/index", 
+			url: "{{ base_local_server_url() }}/project/index", 
 			data: JSON.stringify({
 				project_name 	: '{{ name }}'
 			}),
-			beforeSend: function() { showLoading('Indexing your Salesforce.com metadata.  This operation could take a while depending on the size of your org.<br/><br/>Thanks for being patient! :)'); },
+			beforeSend: function() { showLoading('Updating the metadata index for this project. This operation can take a few minutes in large orgs.<br/><br/>Thanks for being patient! :)'); },
 			complete: function(data, status, xhr){
 				global_init_handler(data)				
 			} 
@@ -499,7 +463,6 @@
 		}
 		return ts
 	}
-
 
 	function handle_response(response) {
 		if (operation == "deploy") {
@@ -540,22 +503,11 @@
 			if (response["success"] == false) {
 				show_message(response["body"])
 			} else {
-				$("#tree").dynatree("destroy")
-				$("#tree ul").html(response["body"]);
-				$('#meta_type').html('')
-				$("#tree ul > li.level1").each(function() {
-					$('#meta_type').append('<option>'+$(this).attr('id')+'</option>')
-				});
-				
-				$("#tree").dynatree({
-					persist: false,
-					checkbox: true,
-					selectMode: 3
-				});
-				$("#tree").dynatree("getRoot").visit(function(node) {
-	        		node.expand(false);
-	    		});  
-				rootNode = $("#tree").dynatree("getRoot");
+				if (tree === undefined) {
+					renderTree()  
+				} else {
+					$("#tree").dynatree("getTree").reload();
+				}
 			}
 			resizeProjectWrapper();
 			notify_sound();
@@ -567,7 +519,7 @@
 		operation = "deploy"
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/deploy", 
+			url: "{{ base_local_server_url() }}/project/deploy", 
 			data: JSON.stringify({
 				destinations 		: get_target_json(),
 			    check_only 			: isValidateOnly(),
@@ -591,7 +543,7 @@
 	function listConnections() {
 		$.ajax({
 			type: "GET",
-			url: "http://127.0.0.1:9000/project/conns/list", 
+			url: "{{ base_local_server_url() }}/project/conns/list", 
 			data: {
 				 project_name	: '{{name}}'
 			},
@@ -618,7 +570,7 @@
 			type: "POST",
 			dataType: 'json',
 			contentType: 'application/json; charset=utf-8',
-			url: "http://127.0.0.1:9000/project/conns/delete", 
+			url: "{{ base_local_server_url() }}/project/conns/delete", 
 			data: JSON.stringify({
 				project_name	: '{{name}}',
 				id 				: id
@@ -646,7 +598,7 @@
 			type: "POST",
 			dataType: 'json',
 			contentType: 'application/json; charset=utf-8',
-			url: "http://127.0.0.1:9000/project/conns/new", 
+			url: "{{ base_local_server_url() }}/project/conns/new", 
 			data: JSON.stringify({
 				username 		: $("#connection_un").val(), 
 				password 		: $("#connection_pw").val(), 

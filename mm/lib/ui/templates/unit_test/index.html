@@ -271,7 +271,7 @@
 	function run_tests() {
 		$.ajax({
 			type: "POST",
-			url: "http://127.0.0.1:9000/project/unit_test", 
+			url: "{{ base_local_server_url() }}/project/unit_test", 
 			dataType: "json",
 			data: JSON.stringify({
 				project_name 		: '{{ name }}',
@@ -291,18 +291,18 @@
 
 	function resize_test_container_sizes() {
 		$(".ms-selectable, .ms-selection").css("width", $(".tab-content").width()/2 - 15)
-		$(".ms-selectable, .ms-selection").css("height", $(window).height() - 200)
-		$(".ms-list").css("height", $(".ms-selectable").height()-70)
+		$(".ms-selectable, .ms-selection").css("height", $(window).height() - 220)
+		$(".ms-list").css("height", $(".ms-selectable").height()-90)
 	}
 
 	$(function(){
 	
 		$(window).resize(function() {
-			$("#result_wrapper").height($(window).height() - 190)
-			$("#class_coverage_wrapper").height($(window).height() - 240)   
-			$("#trigger_coverage_wrapper").height($(window).height() - 240)
-			$("#warnings_coverage_wrapper").height($(window).height() - 190)
-			$("#log_coverage_wrapper").height($(window).height() - 190)
+			$("#result_wrapper").height($(window).height() - 210)
+			$("#class_coverage_wrapper").height($(window).height() - 260)   
+			$("#trigger_coverage_wrapper").height($(window).height() - 260)
+			$("#warnings_coverage_wrapper").height($(window).height() - 210)
+			$("#log_coverage_wrapper").height($(window).height() - 210)
 			resize_test_container_sizes()  
 			resize_arcade()
 		});
@@ -359,11 +359,11 @@
 		$("#"+type+"_code_result_"+index).toggle();        
 	}
 
-	$("#result_wrapper").height($(window).height() - 190)
-	$("#class_coverage_wrapper").height($(window).height() - 240)
-	$("#trigger_coverage_wrapper").height($(window).height() - 240)
-	$("#warnings_coverage_wrapper").height($(window).height() - 190)
-	$("#log_coverage_wrapper").height($(window).height() - 190)
+	$("#result_wrapper").height($(window).height() - 210)
+	$("#class_coverage_wrapper").height($(window).height() - 260)
+	$("#trigger_coverage_wrapper").height($(window).height() - 260)
+	$("#warnings_coverage_wrapper").height($(window).height() - 210)
+	$("#log_coverage_wrapper").height($(window).height() - 210)
 	
 	$("#category").change(function() {
 		if (this.value == "Apex_code") {

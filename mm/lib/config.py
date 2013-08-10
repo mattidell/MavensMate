@@ -4,7 +4,7 @@ import sys
 import time
 import tempfile
 
-mm_start = time.clock()
+mm_start = time.time()
 
 logging.raiseExceptions = False
 logging.basicConfig(level=logging.INFO)

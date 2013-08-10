@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
 import os.path
-import sys
 import argparse
-import traceback
 import inspect
 import json
 import lib.config as config
 import lib.mm_util as util
-import time #TODO: remove
 import urllib
-from suds.client import Client
 from lib.mm_connection import MavensMatePluginConnection
 from lib.mm_client import MavensMateClient
 from lib.mm_exceptions import MMException
@@ -79,11 +75,17 @@ def setup_connection(args):
 
 # echo '{ "username" : "", "password" : "", "metadata_type" : "ApexClass" ' | joey2 mavensmate.py -o 'list_metadata'
 def list_metadata():
-    client = MavensMateClient(credentials={
-        "sid"                   : request_payload.get('sid', None),
-        "metadata_server_url"   : urllib.unquote(request_payload.get('metadata_server_url', None)),
-        "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
-    }) 
+    if 'sid' in request_payload:
+        client = MavensMateClient(credentials={
+            "sid"                   : request_payload.get('sid', None),
+            "metadata_server_url"   : urllib.unquote(request_payload.get('metadata_server_url', None)),
+            "server_url"            : urllib.unquote(request_payload.get('server_url', None)),
+        }) 
+    elif 'username' in request_payload:
+        client = MavensMateClient(credentials={
+            "username"              : request_payload.get('username', None),
+            "password"              : request_payload.get('password', None)
+        })
     print json.dumps(client.list_metadata(request_payload['metadata_type']))
 
 def open_sfdc_url():
@@ -113,10 +115,18 @@ def index_metadata(args):
         html = util.generate_html_response(args.operation, index_result, request_payload)
         print util.generate_success_response(html, "html")
     else:
-        print util.generate_success_response(index_result)
+        print util.generate_success_response("Project metadata indexed successfully")
+
+def refresh_metadata_index():
+    config.connection.project.index_metadata(request_payload['metadata_types'])
+    print util.generate_success_response("Metadata refreshed successfully.")
 
 def get_metadata_index():
-    print config.connection.project.get_org_metadata(None, True)
+    if 'keyword' in request_payload or 'ids' in request_payload:
+        print config.connection.project.filter_indexed_metadata(request_payload)
+    else:
+        #print config.connection.project.get_org_metadata(True, True)
+        print config.connection.project.get_org_metadata(True, True)
 
 def new_project():
     print config.connection.new_project(request_payload,action='new')
@@ -126,6 +136,9 @@ def new_project_from_existing_directory():
 
 def edit_project():
     print config.connection.project.edit(request_payload)
+
+def update_subscription():
+    print config.connection.project.update_subscription(request_payload)
 
 def upgrade_project():
     print config.connection.project.upgrade()
@@ -138,9 +151,6 @@ def compile_project():
 
 def clean_project():
     print config.connection.project.clean()
-
-def synchronize():
-    print config.connection.project.synchronize_selected_metadata(request_payload)
 
 def refresh():
     print config.connection.project.refresh_selected_metadata(request_payload)
@@ -155,8 +165,14 @@ def new_metadata():
 def execute_apex():
     print config.connection.project.execute_apex(request_payload)
 
+def fetch_checkpoints():
+    print config.connection.project.fetch_checkpoints(request_payload)
+
 def fetch_logs():
     print config.connection.project.fetch_logs(request_payload)
+
+def new_trace_flag():
+    print config.connection.project.new_trace_flag(request_payload)
 
 # echo '{ "project_name" : "bloat", "classes" : [ "MyTester" ] }' | joey2 mavensmate.py -o 'test'
 def run_unit_tests(args):
@@ -203,7 +219,7 @@ def get_active_session():
             "user_id"               : client.user_id,
             "metadata_server_url"   : client.metadata_server_url,
             "server_url"            : client.server_url,
-            "metadata"              : client.get_org_metadata(),
+            "metadata"              : client.get_org_metadata(subscription=request_payload.get('subscription', None)),
             "success"               : True
         }
         print util.generate_response(response)
@@ -229,13 +245,16 @@ def update_credentials():
     except BaseException, e:
         print util.generate_error_response(e.message)
 
-
 def get_symbol_table():
     print config.connection.project.get_symbol_table(request_payload)
 
 def index_apex_file_properties():
     #print util.generate_error_response("Operation not currently supported")
     print config.connection.project.index_apex_file_properties()
+
+def eval_function():
+    python_request = request_payload['python']
+    print eval(python_request)
 
 operation_dict = {
     'new_project'                           : new_project,
@@ -244,7 +263,6 @@ operation_dict = {
     'checkout_project'                      : checkout_project,
     'compile_project'                       : compile_project,
     'new_metadata'                          : new_metadata,
-    'synchronize'                           : synchronize,
     'refresh'                               : refresh,
     'clean_project'                         : clean_project,
     'refresh_properties'                    : refresh_properties,
@@ -259,6 +277,7 @@ operation_dict = {
     'test'                                  : run_unit_tests,
     'list_metadata'                         : list_metadata,
     'index_metadata'                        : index_metadata,
+    'refresh_metadata_index'                : refresh_metadata_index,
     'get_indexed_metadata'                  : get_metadata_index,
     'list_connections'                      : list_connections,
     'new_connection'                        : new_connection,
@@ -267,12 +286,15 @@ operation_dict = {
     'new_apex_overlay'                      : new_apex_overlay,
     'delete_apex_overlay'                   : delete_apex_overlay,
     'fetch_logs'                            : fetch_logs,
+    'fetch_checkpoints'                     : fetch_checkpoints,
     'new_project_from_existing_directory'   : new_project_from_existing_directory,
     'open_sfdc_url'                         : open_sfdc_url,
     'get_symbols'                           : get_symbol_table,
     'index_apex_file_properties'            : index_apex_file_properties,
-    'index_apex'                            : index_apex_file_properties
-    #'debug_log' : todo
+    'index_apex'                            : index_apex_file_properties,
+    'update_subscription'                   : update_subscription,
+    'new_log'                               : new_trace_flag,
+    'eval'                                  : eval_function
 }
 
 if  __name__ == '__main__':

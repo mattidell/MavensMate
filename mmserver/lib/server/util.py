@@ -2,7 +2,6 @@ import os
 import random
 import string
 import json
-import shutil
 import threading
 import subprocess
 import pipes
@@ -89,8 +88,8 @@ class BackgroundWorker(threading.Thread):
             args['--html'] = None
         elif self.operation == 'unit_test':
             args['--html'] = None
-        elif self.operation == 'index_metadata':
-            args['--html'] = None    
+        #elif self.operation == 'index_metadata':
+        #    args['--html'] = None    
                 
         arg_string = []
         for x in args.keys():

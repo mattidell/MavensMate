@@ -1,4 +1,3 @@
-import keyring
 import os
 import yaml
 import json
@@ -21,6 +20,8 @@ import traceback
 import plistlib
 import platform
 import itertools
+import keyring
+from operator import itemgetter
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
@@ -29,7 +30,7 @@ from jinja2htmlcompress import HTMLCompress
 
 TOOLING_API_EXTENSIONS = ['cls', 'trigger', 'page', 'component']
 
-SFDC_API_VERSION = "27.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
+SFDC_API_VERSION = "28.0" #is overridden upon instantiation of mm_connection if plugin specifies mm_api_version
 
 PRODUCTION_ENDPOINT = "https://www.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
 SANDBOX_ENDPOINT    = "https://test.salesforce.com/services/Soap/u/"+SFDC_API_VERSION
@@ -58,7 +59,6 @@ template_path = config.base_path + "/lib/templates"
 
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
-
 def get_timestamp():
     ts = time.time()
     return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H:%M:%S')
@@ -85,6 +85,15 @@ def parse_xml_from_file(location):
         return data
     except:
         return {}
+
+def get_iso_8601_timestamp(delta_in_minutes=None):
+    now = datetime.datetime.now()
+    if delta_in_minutes == None:
+        return now.isoformat()
+    else:
+        delta = datetime.timedelta(minutes = delta_in_minutes)
+        expiration_date = now + delta
+        return expiration_date.isoformat()
 
 def get_sfdc_endpoint(url):
     endpoint = PRODUCTION_ENDPOINT
@@ -229,12 +238,20 @@ def parse_json(filename):
 
 def put_tmp_directory_on_disk(put_unpackaged_directory=False):
     tmp_dir = tempfile.gettempdir()
-    mm_tmp_directory = "{0}/.org.mavens.mavensmate.{1}".format(tmp_dir, get_random_string())
+    mm_tmp_directory = os.path.join("{0}",".org.mavens.mavensmate.{1}".format(tmp_dir, get_random_string()))
     os.makedirs(mm_tmp_directory)
     if put_unpackaged_directory == True:
         os.makedirs(mm_tmp_directory+"/unpackaged")
         return mm_tmp_directory, mm_tmp_directory+"/unpackaged"
     return mm_tmp_directory
+
+def put_tmp_file_on_disk(name, body, ext=''):
+    tmp_dir = tempfile.gettempdir()
+    file_name = '[--SERVER COPY--] '+name
+    f = open("{0}/{1}.{2}".format(tmp_dir, file_name, ext), 'w')
+    f.write(body)
+    f.close()
+    return "{0}/{1}.{2}".format(tmp_dir, file_name, ext)
 
 def put_package_xml_in_directory(directory, file_contents, isDelete=False):
     file_name = 'package.xml' if isDelete == False else 'destructiveChanges.xml'
@@ -279,14 +296,20 @@ def get_meta_type_by_suffix(suffix):
     if '-meta' in suffix:
         suffix = suffix.split('-meta')[0]
     data = get_default_metadata_data()
+    if '.' in suffix:
+        suffix = suffix.replace('.','')
     for item in data["metadataObjects"]: 
         if 'suffix' in item and item['suffix'] == suffix:
             return item
 
 def get_meta_type_by_dir(dir_name):
-    data = get_default_metadata_data()
-    for item in data["metadataObjects"]: 
-        if 'directoryName' in item and item['directoryName'] == dir_name:
+    parent_data = get_default_metadata_data()
+    child_data = get_child_metadata_data()
+    data = parent_data['metadataObjects'] + child_data
+    for item in data: 
+        if 'directoryName' in item and item['directoryName'].lower() == dir_name.lower():
+            return item
+        elif 'tagName' in item and item['tagName'].lower() == dir_name.lower():
             return item
 
 def get_meta_type_by_name(name):
@@ -339,10 +362,18 @@ def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='
 def parse_manifest(location):
     return parse_json_from_file(location)
 
+def base_local_server_url():
+    port = config.connection.get_plugin_client_setting('mm_server_port', 9876)
+    return 'http://127.0.0.1:{0}'.format(port)
+
 def generate_ui(operation,params={}):
     template_path = config.base_path + "/lib/ui/templates"
     env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
-    env.globals['play_sounds'] = play_sounds
+    env.globals['play_sounds']              = play_sounds
+    env.globals['project_settings']         = project_settings
+    env.globals['metadata_types']           = metadata_types
+    env.globals['client_subscription_list'] = client_subscription_list
+    env.globals['base_local_server_url']    = base_local_server_url
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -359,11 +390,6 @@ def generate_ui(operation,params={}):
             client=config.connection.plugin_client
         ).encode('UTF-8')
     elif operation == 'edit_project':
-        tree_body = ''
-        # if config.connection.project.is_metadata_indexed == True:
-        #     template = env.get_template('/project/tree.html')
-        #     org_metadata = config.connection.project.get_org_metadata()
-        #     tree_body = template.render(metadata=org_metadata)
         template = env.get_template('/project/edit.html')
         creds = config.connection.project.get_creds()
         file_body = template.render(
@@ -372,9 +398,8 @@ def generate_ui(operation,params={}):
             username=creds['username'],
             password=creds['password'],
             org_type=creds['org_type'],
-            # has_indexed_metadata=config.connection.project.is_metadata_indexed,
+            has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
-            # tree_body=tree_body,
             client=config.connection.plugin_client
         ).encode('UTF-8')
     elif operation == 'unit_test':
@@ -404,12 +429,6 @@ def generate_ui(operation,params={}):
             selected=selected,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'deploy':
-        tree_body = ''
-        if config.connection.project.is_metadata_indexed == True:
-            template = env.get_template('/project/tree.html')
-            selected = params['selected'] if 'selected' in params else None
-            org_metadata = config.connection.project.get_org_metadata(selected)
-            tree_body = template.render(metadata=org_metadata,operation=operation)
         template = env.get_template('/deploy/index.html')
         file_body = template.render(
             base_path=config.base_path,
@@ -417,7 +436,6 @@ def generate_ui(operation,params={}):
             has_indexed_metadata=config.connection.project.is_metadata_indexed,
             project_location=config.connection.project.location,
             connections=config.connection.project.get_org_connections(False),
-            tree_body=tree_body,
             operation=operation,
             client=config.connection.plugin_client).encode('UTF-8')
     elif operation == 'execute_apex':
@@ -441,7 +459,8 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             project_name=config.connection.project.project_name,
             users=config.connection.project.get_org_users_list(),
-            logs=config.connection.project.get_org_logs(),
+            apex_items=config.connection.project.sfdc_client.get_apex_classes_and_triggers(),
+            #logs=config.connection.project.get_org_logs(),
             client=config.connection.plugin_client).encode('UTF-8')
     temp.write(file_body)
     temp.close()
@@ -477,14 +496,26 @@ def generate_html_response(operation, obj, params):
         config.logger.debug(obj)
         config.logger.debug(deploy_results)
         html = template.render(deploy_results=deploy_results,args=params)
-    elif operation == 'index_metadata':
-        template = env.get_template('/project/tree.html')
-        org_metadata = config.connection.project.get_org_metadata()
-        html = template.render(metadata=org_metadata)
     return html
 
 def play_sounds():
     return config.connection.get_plugin_client_setting('mm_play_sounds', False)
+
+def project_settings():
+    try:
+        return config.connection.project.settings
+    except:
+        return {}
+
+def client_subscription_list():
+    try:
+        return config.connection.get_plugin_client_setting('mm_default_subscription')
+    except:
+        return []
+
+def metadata_types():
+    return sorted(get_default_metadata_data()["metadataObjects"], key=itemgetter('xmlName'))
+
 
 def does_file_exist(api_name, metadata_type_name):
     metadata_type = get_meta_type_by_name(metadata_type_name)
@@ -530,30 +561,40 @@ def generate_response(obj):
 
 def generate_success_response(message, type="text"):
     res = {
-        "time"   : repr(time.clock() - config.mm_start),
+        "time"      : repr(time.time() - config.mm_start),
         "success"   : True,
         "body_type" : type,
         "body"      : message
     }
     return json.dumps(res)
 
+def generate_request_for_action_response(message, operation, actions=[], **kwargs):
+    res = {
+        "success"       : False,
+        "body_type"     : "text",
+        "body"          : message,
+        "actions"       : actions,
+        "operation"     : operation
+    }
+    if 'tmp_file_path' in kwargs and kwargs['tmp_file_path'] != None:
+        res['tmp_file_path'] = kwargs['tmp_file_path']
+    return json.dumps(res)
+
 def generate_error_response(message):
-    # hide path info from build
     try:
+        stack_trace = ''
         trace = re.sub( r'\"/(.*?\.pyz/)', r'', traceback.format_exc()).strip()
         message = message.strip()
-        if trace != None and trace != 'None' and 'raise MMException' not in trace:
+        if trace != None and trace != 'None' and 'MMException' not in trace:
             # if message = e.message just use the trace
             if len(trace):
-                if trace.endswith(message):
-                    message = ''
-                message += '\n' + '[STACKTRACE]: ' + trace
-            message += '\n'+'[ENVIRONMENT]: '
+                stack_trace += trace
+            stack_trace += '\n'+'[ENVIRONMENT]: '
             # get OS info
             try:
                 if sys.platform == 'darwin':
                     release, versioninfo, machine = platform.mac_ver()
-                    message += 'MacOS ' + release
+                    stack_trace += 'MacOS ' + release
                 #todo: support windows and linux
             except:
                 pass
@@ -561,24 +602,51 @@ def generate_error_response(message):
             try:
                 dic = plistlib.readPlist('/Applications/MavensMate.app/Contents/Info.plist')
                 if 'CFBundleVersion' in dic:
-                    message += ', MavensMate ' + dic['CFBundleVersion']
+                    stack_trace += ', MavensMate ' + dic['CFBundleVersion']
             except:
                 pass
 
+        if 'nodename nor servname provided' in stack_trace:
+            message = 'No internet connection'
+
         config.logger.exception("[MAVENSMATE CAUGHT ERROR]")
+        config.logger.debug(stack_trace)
         res = {
-            "success"   : False,
-            "body_type" : "text",
-            "body"      : message
+            "success"       : False,
+            "body_type"     : "text",
+            "body"          : message,
+            "stack_trace"   : stack_trace
         }
         return json.dumps(res)
     except:
         res = {
-            "success"   : False,
-            "body_type" : "text",
-            "body"      : message
+            "success"       : False,
+            "body_type"     : "text",
+            "body"          : message,
+            "stack_trace"   : stack_trace
         }
         return json.dumps(res)
+
+def prepare_for_metadata_tree(metadata_list):
+    apex_types = ['ApexClass', 'ApexComponent', 'ApexTrigger', 'ApexPage', 'StaticResource']
+    for mt in metadata_list:
+        mt['text']          = mt['xmlName']
+        mt['title']         = mt['xmlName']
+        mt['key']           = mt['xmlName']
+        mt['folder']        = True
+        mt['checked']       = True if mt['xmlName'] in apex_types else False
+        mt['select']        = True if mt['xmlName'] in apex_types else False
+        mt['children']      = []
+        mt['cls']           = "folder"
+        mt['isLazy']        = True
+        mt['children']      = []
+        mt['isFolder']      = True
+        # mt['type']          = mt
+        mt['level']         = 1
+        mt['id']            = mt['xmlName']
+        #mt["inFolder"]      = mt['inFolder'],
+        mt["hasChildTypes"] = 'childXmlNames' in mt
+    return metadata_list
 
 def get_request_payload():
     try:
@@ -704,8 +772,8 @@ def get_file_extension_no_period(path):
     return ext.replace(".", "")
 
 def get_file_name_no_extension(path):
-    name, ext = os.path.splitext(path)
-    return name.split("/")[-1]
+    base=os.path.basename(path)
+    return os.path.splitext(base)[0]
 
 #returns metadata hash of selected files  #=> {"ApexClass" => ["aclass", "anotherclass"], "ApexTrigger" => ["atrigger", "anothertrigger"]}
 def get_metadata_hash(selected_files=[]):

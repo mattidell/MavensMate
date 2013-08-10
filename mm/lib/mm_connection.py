@@ -175,7 +175,7 @@ class MavensMatePluginConnection(object):
                         os.system("'{0}/Sublime Text 2.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
                 elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
                     if self.platform == 'darwin':
-                        os.system("'{1}/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
+                        os.system("'{0}/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
 
             return result
         except BaseException, e:
@@ -198,17 +198,6 @@ class MavensMatePluginConnection(object):
             return self.get_plugin_client_setting('mm_api_version')
         except:
             return None
-        # if 'mm_api_version' in self.plugin_client_settings['user'] and self.plugin_client_settings['user']['mm_api_version'] != None:
-        #     return self.plugin_client_settings['user']['mm_api_version']
-        # else:
-        #     return self.plugin_client_settings['default']['mm_api_version']
-
-
-    # tooling_api_extensions = ['.cls', '.trigger', '.page', '.component']
-
-    # def alert(message):
-    #     return { "success" : False, "body" : message }
-
 
 
 

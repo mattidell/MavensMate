@@ -2,14 +2,14 @@ import urlparse
 import sys
 import util
 import json
-import cgi
-import time
+#import cgi
+#import time
 import multiprocessing
-from multiprocessing import Queue
-from multiprocessing import Manager
+#from multiprocessing import Queue
+#from multiprocessing import Manager
 sys.path.append('../')
 from util import BackgroundWorker
-from urlparse import urlparse, parse_qs
+#from urlparse import urlparse, parse_qs
 import lib.config as gc
 
 # async_request_queue holds list of active async requests
@@ -120,6 +120,12 @@ def metadata_index_request(request_handler):
     '''
     run_async_operation(request_handler, 'index_metadata')
 
+def new_log_request(request_handler):
+    '''
+        call to create a new debug log
+    '''
+    run_async_operation(request_handler, 'new_log')
+
 
 ##########################
 ## SYNCHRONOUS REQUESTS ##
@@ -159,6 +165,23 @@ def update_credentials_request(request_handler):
     worker_thread.join()
     response = worker_thread.response
     respond(request_handler, response)
+
+def project_edit_subscription(request_handler):
+    '''
+        POST /project/subscription
+        {
+            "project_name"  : "my project name"
+            "subscription"  : ["ApexClass", "ApexPage"]
+        }
+    '''
+    request_id = util.generate_request_id()
+    params, raw_post_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('update_subscription', params, False, request_id, raw_post_body, plugin_client)
+    worker_thread.start()
+    worker_thread.join()
+    response = worker_thread.response
+    respond(request_handler, response)
+
 
 def connections_list_request(request_handler):
     request_id = util.generate_request_id()
@@ -207,20 +230,38 @@ def metadata_list_request(request_handler):
 
 def get_metadata_index(request_handler):
     '''
-        GET /project/index
+        GET /project/get_index
         {
-            "project_name"  : "my project name"
+            "project_name"  : "my project name",
+            "keyword"       : "mykeyword" //optional
         }
         call to get the metadata index for a project
     '''
-    print 'FUCK'
     request_id = util.generate_request_id()
     params, json_body, plugin_client = get_request_params(request_handler)
     worker_thread = BackgroundWorker('get_indexed_metadata', params, False, request_id, json_body, plugin_client)
     worker_thread.start()
     worker_thread.join()
     response = worker_thread.response
-    respond(request_handler, response)    
+    respond(request_handler, response) 
+
+def refresh_metadata_index(request_handler):
+    '''
+        GET /project/get_index/refresh
+        {
+            "project_name"      : "my project name",
+            "metadata_types"    : ["ApexClass"]
+        }
+        call to refresh a certain type of metadata
+    '''
+    request_id = util.generate_request_id()
+    params, json_body, plugin_client = get_request_params(request_handler)
+    worker_thread = BackgroundWorker('refresh_metadata_index', params, False, request_id, json_body, plugin_client)
+    worker_thread.start()
+    worker_thread.join()
+    response = worker_thread.response
+    respond(request_handler, response) 
+
 
 ##########################
 ## END REQUEST HANDLERS ##
@@ -312,8 +353,17 @@ def get_request_params(request_handler):
     elif request_handler.command == 'GET':
         params = parse_qs(urlparse(request_handler.path).query)
         for key in params:
-            params[key] = params[key][0]
-        json_string = json.dumps(params)
+            if '[]' in key:
+                params[key] = params[key]
+            else:
+                params[key] = params[key][0]
+        return_params = {}
+        for key in params:
+            if '[]' in key:
+                return_params[key.replace('[]','')] = params[key]
+            else:
+                return_params[key] = params[key]       
+        json_string = json.dumps(return_params)
         return params, json_string, plugin_client
 
 def process_request_in_background(worker):
@@ -352,22 +402,25 @@ def respond(request_handler, body, type='text/json'):
 ##################
 
 mappings = {
-    '/status'               : { 'GET'   : status_request },     
-    '/project'              : { 'POST'  : project_request }, 
-    '/project/edit'         : { 'POST'  : project_edit_request }, 
-    '/project/creds'        : { 'POST'  : update_credentials_request },
-    '/project/deploy'       : { 'POST'  : deploy_request },
-    '/project/unit_test'    : { 'POST'  : unit_test_request },
-    '/project/get_index'    : { 'GET'   : get_metadata_index },
-    '/project/index'        : { 'POST'  : metadata_index_request },
-    '/project/conns/list'   : { 'GET'   : connections_list_request },
-    '/project/conns/new'    : { 'POST'  : connections_new_request },
-    '/project/conns/delete' : { 'POST'  : connections_delete_request },
-    '/project/upgrade'      : { 'POST'  : project_upgrade_request },
-    '/project/existing'     : { 'POST'  : project_existing_request },
-    '/session'              : { 'GET'   : get_active_session_request },
-    '/apex/execute'         : { 'POST'  : execute_apex_request },
-    '/metadata/list'        : { 'GET'   : metadata_list_request }
+    '/status'                   : { 'GET'   : status_request },     
+    '/project'                  : { 'POST'  : project_request }, 
+    '/project/edit'             : { 'POST'  : project_edit_request }, 
+    '/project/subscription'     : { 'POST'  : project_edit_subscription }, 
+    '/project/creds'            : { 'POST'  : update_credentials_request },
+    '/project/deploy'           : { 'POST'  : deploy_request },
+    '/project/unit_test'        : { 'POST'  : unit_test_request },
+    '/project/get_index'        : { 'POST'  : get_metadata_index },
+    '/project/refresh_index'    : { 'POST'  : refresh_metadata_index },    
+    '/project/index'            : { 'POST'  : metadata_index_request },
+    '/project/conns/list'       : { 'GET'   : connections_list_request },
+    '/project/conns/new'        : { 'POST'  : connections_new_request },
+    '/project/conns/delete'     : { 'POST'  : connections_delete_request },
+    '/project/upgrade'          : { 'POST'  : project_upgrade_request },
+    '/project/existing'         : { 'POST'  : project_existing_request },
+    '/project/new_log'          : { 'POST'  : new_log_request },
+    '/session'                  : { 'GET'   : get_active_session_request },
+    '/apex/execute'             : { 'POST'  : execute_apex_request },
+    '/metadata/list'            : { 'GET'   : metadata_list_request }
 }
 
 if __name__ == "__main__":

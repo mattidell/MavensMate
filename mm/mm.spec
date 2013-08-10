@@ -5,7 +5,7 @@ import tools.packaging.pyinstaller_hooks as hook
 a = Analysis(['/Users/josephferraro/Development/Python/mavensmate/mm/mm.py'],
              pathex=['/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller'],
              hiddenimports=['jinja2.ext'],
-             hookspath='/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/privatehooks/hooks')
+             hookspath='/Users/josephferraro/Development/Python/mavensmate/tools/pyinstaller/privatehooks')
 
 pyz = PYZ(a.pure)
 exe = EXE(pyz,

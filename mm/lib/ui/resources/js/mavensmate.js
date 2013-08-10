@@ -23,6 +23,176 @@ $(function() {
 	
 });
 
+function renderTree() {
+	tree = $("#tree").dynatree({
+	    initAjax: {
+	    	type 	 : "POST",
+	    	dataType : "json",
+	    	url 	 : baseLocalServerURL+"/project/get_index",
+		    data 	 : JSON.stringify({
+				"project_name" : project_name
+			})
+		},
+		checkbox: true,
+		selectMode: 3,
+		debugLevel: 0,
+		persist: false,
+		selectedIds: '',
+		onSelect: function(check, node) {
+		    var selectedNodes = tree.getSelectedNodes()
+		    var ids = $.map(selectedNodes, function(node){
+                return node.data.id;
+            });
+		    this.selectedIds = ids
+		},
+		onPostInit: function(isReloading, isError) {
+			if (this.selectedIds === undefined || this.selectedIds === '' || this.selectedIds == []) {
+			    this.selectedIds = []
+			    var selected = this.getSelectedNodes();
+			    var ids = $.map(selected, function(node){
+                    return node.data.id;
+                });
+			    this.selectedIds = ids
+			}
+
+			var filter = $("#txtFilter").val();
+			if (filter && filter.length > 2) {
+				$("#tree").dynatree("getRoot").visit(function(node){
+				    node.expand(true);
+				});
+			}
+			resizeProjectWrapper()
+			hideLoading()
+		},
+		onCreate: function(node, span) {
+			if (node.data.level === 1)
+				bindContextMenu(span);
+		}
+	});
+	tree = $("#tree").dynatree("getTree")
+}
+
+function renderBufferedTree(metadata) {
+	try {
+		$("#tree").dynatree("destroy");
+	} catch(e) {}
+	
+	tree = $("#tree").dynatree({
+		ajaxDefaults: { // Used by initAjax option
+	        timeout: 600000, // >0: Make sure we get an ajax error for invalid URLs
+	    },
+		children: metadata,
+		checkbox: true,
+		selectMode: 3,
+		debugLevel: 0,
+		persist: false,
+		// onCreate: function(node, span) {
+		// 	if (node.data.level === 1)
+		// 		bindContextMenu(span);
+		// },
+		onLazyRead: function(node) {
+			$.ajax({
+	            url: baseLocalServerURL+"/metadata/list/async",
+	            data: {
+					"metadata_type"			: node.data.title,
+					"sid"					: $("#sid").val(),
+					"metadata_server_url" 	: $("#metadata_server_url").val(),
+					"server_url" 			: $("#server_url").val()
+				},
+	            complete: function(data){
+	                list_handler(data, node)
+	            }
+	        });
+	 	}
+	});
+	tree = $("#tree").dynatree("getTree")
+}
+
+function getPackage() {
+    var json = { }
+    var child_def = {}
+    for (item in child_metadata) {
+        child_def[child_metadata[item]['tagName']] = child_metadata[item]['xmlName']
+    }
+    try {
+        var records = tree.getSelectedNodes()
+        $.each(records, function(index, rec) {
+            if (rec.data.level == 1) {
+                if (json[rec.parent.data.text] === undefined) {
+                    try {
+                        if (Object.prototype.toString.call(rec.data.type.childXmlNames) === '[object Array]') {
+                            if (rec.data.type.childXmlNames.length == 0) {
+                                json[rec.data.text] = '*'
+                            } else {
+                                json[rec.data.text] = []
+                            }
+                        } else {
+                            json[rec.data.text] = '*'
+                        }
+                    } catch(e) {
+                        json[rec.data.text] = '*'
+                    }
+                    
+                }
+            } else if (rec.data.level == 2) {
+                if (json[rec.parent.data.text] === undefined) {
+                    json[rec.parent.data.text] = []
+                    json[rec.parent.data.text].push(rec.data.text)
+                } else if (json[rec.parent.data.text] !== '*') {
+                    json[rec.parent.data.text].push(rec.data.text)
+                }
+            } else if (rec.data.level == 3) {
+                if (rec.parent.parent.data.type.inFolder) {
+                    if (json[rec.parent.parent.data.text] === undefined) {
+                        json[rec.parent.parent.data.text] = []
+                    }
+                    //this is a folder name, add it
+                    json[rec.parent.parent.data.text].push(rec.parent.data.text + "/" + rec.data.text)
+                } else {
+                    //this is a sub type like a custom field, list view, etc.
+                    
+                    if (rec.children != null) {
+                    	metadata_type = child_def[rec.data.text]
+                    	if (!json[metadata_type]) {
+                    	    json[metadata_type] = []
+                    	} 
+
+                    	$.each(rec.children, function(index, childNode) {
+                    	    if (childNode.data.checked) {
+                    	        json[metadata_type].push(childNode.parent.parent.data.text+"."+childNode.data.text)  
+                    	    }
+                    	})
+                    }
+                } 
+            } else if (rec.data.level == 4) {
+                //this is a child metadata object, like a custom field
+                metadata_type = child_def[rec.parent.data.text]
+                if (json.hasOwnProperty(rec.parent.parent.parent.data.text)) { //json['CustomObject'] exists already
+                	if ($.inArray(rec.parent.parent.data.text, json[rec.parent.parent.parent.data.text]) === -1) {
+		            	if (!json[metadata_type]) {
+		            	    json[metadata_type] = []
+		            	} 
+		            	json[metadata_type].push(rec.parent.parent.data.text+"."+rec.data.text) 	
+		        	}
+                } else {
+                	if (!json[metadata_type]) {
+                	    json[metadata_type] = []
+                	} 
+                	json[metadata_type].push(rec.parent.parent.data.text+"."+rec.data.text) 	
+                } 
+            }
+        })  
+    } catch(e) {
+        console.log(e)
+        return []
+    }
+    return json
+}
+
+function resizeFilter() {
+	$("#txtFilter").width($("#filter").width() - $("#search-btn").width() - $("#select-btn").width()  - 70)
+}
+
 function scrollToTop(selector) {
 	$(selector).animate({ scrollTop: 0 }, 300);
 }
@@ -104,97 +274,28 @@ function resizeWindowOnDomElementRemoved() {
 
 //submit form on enter
 function submitFormOnEnter() {
-	//submit form on enter
 	$(".content").bind('keyup', function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
 		 if(code == 13) { //enter pressed
-		 	//if ($('#un').val() && $('#pw').val() && $('#pn').val())
-				$("#btnSubmit").click();
+			$("#btnSubmit").click();
 		 }
 	}); 
 } 
 
-//gets tree content in ruby hash form
+//gets tree content in json format
 function get_tree() {			
-	var json = { }
-	var tree = $("#tree").dynatree("getTree")
-	var child_def = {}
-	for (item in child_metadata) {
-		child_def[child_metadata[item]['tagName']] = child_metadata[item]['xmlName']
-	}
-	try {
-		//process top level (these are top level metadata types)
-		var selected_items = tree.getSelectedAndPartselNodesByLevel(1)
-		for (var i in selected_items) {
-			json[selected_items[i].data.title] = selected_items[i].bSelected && !selected_items[i].data.inFolder && !selected_items[i].data.in_folder ? "*" : []
-		} 
-		
-		
-		//process children (can either be files or folders)
-		selected_items = tree.getSelectedAndPartselNodesByLevel(2)
-		for (var i in selected_items) {
-			if (json[selected_items[i].parent.data.title] == "*") continue;   
-			if (selected_items[i].parent.data.hasChildTypes == true && !selected_items[i].bSelected) continue;
-			json[selected_items[i].parent.data.title].push(selected_items[i].data.title)
+	if (tree !== undefined) {
+		return getPackage()
+		//return tree.getPackage()
+	} else {
+		return {
+			"ApexClass" 		: "*",
+			"ApexComponent" 	: "*",
+			"ApexPage"			: "*",
+			"ApexTrigger" 		: "*",
+			"StaticResource" 	: "*"
 		}
-		
-		//console.log('after second level processing')
-		//return json
-		
-		//process grandchildren (this is either metadata in folders or child metadata types like fields, weblinks, listviews, etc.)
-		selected_items = tree.getSelectedAndPartselNodesByLevel(3)
-		for (var i in selected_items) {
-			if (selected_items[i].parent.parent.data.inFolder || selected_items[i].parent.parent.data.in_folder) {
-				//this is folder-based metadata, we need to add this item explicitly
-			    items = json[selected_items[i].parent.parent.data.title] //=> items is an array
-			  	var item;
-				folder_name = ""
-				for (var j = 0; j < items.length; j++) {
-					if (items[j].name == selected_items[i].parent.data.title) {
-						folder_name = items[j].name
-						item = items[j]
-						break;
-					}
-				} 
-				//console.log(item)
-				items.push(selected_items[i].parent.data.title + "/" + selected_items[i].data.title)
-			} else if (selected_items[i].parent.parent.data.hasChildTypes) {
-				//this is metadata types like weblinks, fields, etc.
-				//console.log('processing child item')
-				//console.log(selected_items[i])
-				if (selected_items[i].parent.parent.data.select || selected_items[i].parent.parent.bSelected) {
-					//console.log('topmost parent is selected, continuing')
-					continue;
-				} else {
-					if (selected_items[i].parent.data.select || selected_items[i].parent.bSelected) {
-						console.log('direct parent is selected, continuing')
-						continue;
-					}
-					metadata_type = child_def[selected_items[i].data.title]
-					//console.log('type is: ')
-					//console.log(metadata_type)
-					if (!json[metadata_type]) {
-						json[metadata_type] = []
-					}    
-					//console.log(metadata_type)
-					for (var j = 0; j < selected_items[i].childList.length; j++) {
-						//console.log(selected_items[i].childList[j])
-						if (selected_items[i].childList[j].bSelected || selected_items[i].childList[j].data.select) {
-							json[metadata_type].push(selected_items[i].parent.data.title+"."+selected_items[i].childList[j].data.title)  
-						}
-					}
-				}
-			}
-		}      
-		for (item in json) {
-			if (json[item] !== "*" && json[item].length == 0) {
-				delete json[item]
-			}
-		} 
-	} catch(e) {
-		return []
 	}
-	return json
 }
 
 function get_log_levels_json() {
@@ -207,6 +308,27 @@ function get_log_levels_json() {
 			options.push({
 				"category" 	: logCategory,
 				"level" 	: logLevel
+			})
+		}
+	}
+	return options
+}
+
+function get_log_levels_json_tooling() {
+	var options = []
+	var logCategories = ['Database', 'System', 'Visualforce', 'Workflow', 'Validation', 'Callout', 'ApexCode', 'ApexProfiling']
+	for (category in logCategories) {
+		var logCategory = logCategories[category]
+		var logLevel = $("#select-"+logCategory).val()
+		if (logLevel != '') {
+			options.push({
+				"category" 	: logCategory,
+				"level" 	: logLevel
+			})
+		} else {
+			options.push({
+				"category" 	: logCategory,
+				"level" 	: 'INFO'
 			})
 		}
 	}
@@ -256,8 +378,69 @@ function global_init_handler(data) {
 		var response = JSON.parse(data.responseText)
 		check_status(response["id"])
 	} catch(e) {
-		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. If MavensMate.app is not running, please start it. Otherwise, try restarting MavensMate.app.');
+		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. Try restarting your text editor and MavensMate.app.');
 		hideLoading()
+	}
+}
+
+function list_handler(data, node) {
+	console.log(data)
+	console.log('node: ')
+	console.log(node)
+	try {
+		var response = JSON.parse(data.responseText)
+		check_list_status(response["id"], node)
+	} catch(e) {
+		show_global_error('The local MavensMate server did not respond properly. This likely means it is not running or it is malfunctioning. Try restarting your text editor and MavensMate.app.');
+		hideLoading()
+	}
+}
+
+function check_list_status(request_id, node) {
+    $.ajax({
+        type: "GET",
+        url: baseLocalServerURL+"/status", 
+        data: {
+             id: request_id
+        },
+        complete: function(data, status, xhr) {
+            try {
+                console.log('checking status of async request')
+                console.log(data)
+                console.log('json response: ')
+                console.log(data.responseText)
+                var response = JSON.parse(data.responseText)
+                if (response["status"] == 'pending') {
+                    setTimeout(function() { check_list_status(request_id, node); }, CHECK_STATUS_INTERVAL); //poll for completed async request
+                } else {
+                    handle_list_response(response, node);
+                }
+            } catch(e) {
+                console.log(e)
+                console.log('caught an error, polling again...')
+                setTimeout(function() { check_list_status(request_id, node); }, 2000);
+            }
+                        
+        } 
+    });
+}
+
+function handle_list_response(data, node) {
+	console.log('processing data')
+	console.log(data)
+	try {
+		for (i in data) {
+			data[i]['title'] 		= data[i]['title']    	|| data[i]['fullName']
+			data[i]['key'] 			= data[i]['key'] 		|| data[i]['fullName']
+			data[i]['isFolder'] 	= data[i]['isFolder'] 	|| false
+			data[i]['isLazy'] 		= data[i]['isLazy']   	|| false
+		}
+		node.setLazyNodeStatus(DTNodeStatus_Ok);
+    	node.addChild(data);
+
+	} catch(e) {
+		console.log(e)
+		return []
 	}
 }
 
@@ -271,9 +454,27 @@ function hide_global_error() {
 	$("#global_message").html('')
 }
 
-function show_message(message, mtype) {
+function show_message_with_custom_action(message, mtype, button_label, script) {
 	if (mtype === undefined) {
 		mtype = 'error'
+	}
+	message += '<br/><a href="#" class="btn btn-info btn-wide" onclick="'+script+'">'+button_label+'</a>'
+	$("#error_message").parent().attr('class', 'alert')
+	$("#error_message").parent().addClass('alert-'+mtype)
+	$("#error_message").html(message)
+	$("#result_output").show()
+	resizeElements()
+}
+
+function show_message(message, mtype, showCloseButton) {
+	if (mtype === undefined) {
+		mtype = 'error'
+	}
+	if (showCloseButton === undefined) {
+		showCloseButton = false
+	}
+	if (showCloseButton) {
+		message += '<br/><a href="#" class="btn btn-info btn-wide" onclick="window.close()">Done</a>'
 	}
 	$("#error_message").parent().attr('class', 'alert')
 	$("#error_message").parent().addClass('alert-'+mtype)
@@ -290,28 +491,14 @@ function hide_message(message) {
 
 function resize_arcade() {
 	$(".flash_game").css("width", $(".tab-content").width() - 45)
-	$(".flash_game").css("height", $(window).height() - 270)
+	$(".flash_game").css("height", $(window).height() - 290)
 }
 
 function resizeElements() {
-    // if ($("#result_output").css('display') != 'none') {
-    //     if ($(".tab-content").hasClass('tab-content-nested')) {
-
-    //     } else {
-    //     	$(".tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 140)
-    //     }
-    // } else {
-    //     if ($(".tab-content").hasClass('tab-content-nested')) {
-
-    //     } else {
-    //     	$(".tab-content").height($(window).height() - $(".navbar").height() - 120)
-    //     }
-    // }
-
     if ($("#result_output").css('display') != 'none') {
-		$("#main-tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 140)
+		$("#main-tab-content").height($(window).height() - $(".navbar").height() - $("#result_output").height() - 160)
     } else {
-        $("#main-tab-content").height($(window).height() - $(".navbar").height() - 120)
+        $("#main-tab-content").height($(window).height() - $(".navbar").height() - 140)
     }
 }
 
@@ -320,42 +507,14 @@ function resizeProjectWrapper(offset) {
 		offset = 90
 	}
 	$("#project_wrapper").height($("#main-tab-content").height() - offset)
+	if (tree !== undefined) {
+		//TODO:tree.setHeight($("#project_wrapper").height())
+	}
 }
-
-function check_status(request_id) {
-	$.ajax({
-		type: "GET",
-		url: "http://127.0.0.1:9000/status", 
-		data: {
-			 id: request_id
-		},
-		complete: function(data, status, xhr) {
-			try {
-				console.log('checking status of async request')
-			    console.log(data)
-			    console.log('json response: ')
-			    console.log(data.responseText)
-			    var response = JSON.parse(data.responseText)
-				if (response["status"] == 'pending') {
-			    	setTimeout(function() { check_status(request_id); }, CHECK_STATUS_INTERVAL); //poll for completed async request
-			    } else {
-			    	handle_response(response);
-			    }
-			} catch(e) {
-				console.log(e)
-				console.log('caught an error, polling again...')
-				setTimeout(function() { check_status(request_id); }, 2000);
-			}
-						
-		} 
-	});
-}
-
 
 jQuery.fn.selectText = function(){
 	var doc = document;
 	var element = this[0];
-	console.log(this, element);
 	if (doc.body.createTextRange) {
 		var range = document.body.createTextRange();
 		range.moveToElementText(element);
@@ -369,73 +528,12 @@ jQuery.fn.selectText = function(){
 	}
 };
 
-function filter_tree(searchTerm, parent) {
-	if (searchTerm === undefined || searchTerm.length < 2) {
-		return;
-	}
-	if (parent === undefined) {
-		parent = 'ApexClass'
-	}
-	var st = searchTerm.toLowerCase()
-	$("#tree").dynatree("getRoot").visit(function(node) {
-		if (node.data.level == 1) {
-			if (node.data.title == parent) {
-				node.expand(true);
-				node.visit(function(child_node) {
-					
-					var nodeTitle = child_node.data.title;
-					var nt = nodeTitle.toLowerCase()
-					if ( nt.indexOf(st) >= 0 ) {
-						$(child_node.li).show();
-						child_node.visitParents(function(parent_node) {
-							$(parent_node.li).show();
-							return (parent_node.parent != null);
-						}, false); 
-						return 'skip';  
-					} else {
-						$(child_node.li).hide();
-					}
-
-				}, false);
-			} else {
-				$(node.li).hide();
-			}
-		}
-	});
-}
-
 function expandAll() {
-	$("#tree").dynatree("getRoot").visit(function(node){
-		if (node.hasChildren()) {
-			node.expand(true);
-		}
-	});
+	tree.expandAll()
 }
 
 function collapseAll() {
-	$("#tree").dynatree("getRoot").visit(function(node){
-		node.expand(false);
-	});
-}
-
-var isTreeFiltered = false;
-
-function submitSearch() {
-	var filter = $("#txtFilter").val();
-	if (filter && filter.length > 2) {
-		tree.filterByText(filter);
-		//filter_tree(filter, $('#meta_type').val());
-		//scrollToTop("#project_wrapper");
-		$("#search-btn").removeClass('btn-success').addClass('btn-danger').html('<i class="icon-remove"></i>')
-	}
-}
-
-function clearFilter() {
-	tree.clearFilter();
-	$('#txtFilter').val('');
-	$('#txtFilter').focus();
-	$("#search-btn").removeClass('btn-danger').addClass('btn-success').html('<i class="icon-search"></i>');
-	tree.collapseAll();
+	tree.collapseAll()
 }
 
 $.expr[':'].Contains = function(a, i, m) {

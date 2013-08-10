@@ -1,12 +1,6 @@
-import datetime
-import re
-import string
 import sys
-import unittest
-import traceback
 import json
 import os
-import yaml
 import mm_util
 import shutil
 import config
@@ -134,16 +128,23 @@ class MavensMateClient(object):
             self.mclient = self.__get_metadata_client()
         return self.mclient.describeMetadata(**kwargs)
 
-    def get_org_metadata(self, as_dict=True):
+    def get_org_metadata(self, as_dict=True, **kwargs):
         describe_result = self.describeMetadata()
         d = xmltodict.parse(describe_result,postprocessor=mm_util.xmltodict_postprocessor)
+        result = d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"]
+        mlist = []
+        subscription_setting = kwargs.get('subscription', None)
+        if subscription_setting == None:
+            subscription_setting = config.connection.get_plugin_client_setting('mm_default_subscription')
+        if subscription_setting != None and type(subscription_setting) is list:
+            for m in result['metadataObjects']:
+                if m['xmlName'] in subscription_setting:
+                    mlist.append(m)
+        sorted_list = sorted(mlist, key=itemgetter('xmlName'))
         if as_dict:
-            result = d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"]
-            sorted_list = sorted(result['metadataObjects'], key=itemgetter('xmlName')) 
-            result['metadataObjects'] = sorted_list
-            return result
+            return mm_util.prepare_for_metadata_tree( sorted_list )
         else:
-            return json.dumps(d["soapenv:Envelope"]["soapenv:Body"]["describeMetadataResponse"]["result"], sort_keys=True, indent=4)
+            return json.dumps(sorted_list, sort_keys=True, indent=4)
 
     def retrieve(self, **kwargs):
         if self.mclient == None:
@@ -194,6 +195,29 @@ class MavensMateClient(object):
             pass
         return record_id
 
+    def get_apex_classes_and_triggers(self, **kwargs):
+        return_list = {
+            "Apex Classes" : [],
+            "Apex Triggers" : []
+        }
+        if self.pclient == None:
+            self.pclient = self.__get_partner_client()
+        query_result = self.pclient.query('SELECT Id, Name From ApexClass Where NamespacePrefix = null Order By Name')
+        try:
+            recs = query_result['records']
+            for a in recs:
+                return_list["Apex Classes"].append(a)
+        except:
+            pass
+        query_result = self.pclient.query('SELECT Id, Name From ApexTrigger Where NamespacePrefix = null AND Status = \'Active\' Order By Name')
+        try:
+            recs = query_result['records']
+            for a in recs:
+                return_list["Apex Triggers"].append(a)
+        except:
+            pass
+        return return_list
+
     def list_metadata_basic(self, request):
         if self.mclient == None:
             self.mclient = self.__get_metadata_client()
@@ -204,6 +228,8 @@ class MavensMateClient(object):
             if self.mclient == None:
                 self.mclient = self.__get_metadata_client()
             metadata_type_def = mm_util.get_meta_type_by_name(metadata_type)
+            if metadata_type_def == None:
+                return []
             has_children_metadata = False
             if 'childXmlNames' in metadata_type_def and type(metadata_type_def['childXmlNames']) is list:
                 has_children_metadata = True
@@ -262,10 +288,14 @@ class MavensMateClient(object):
 
             return_elements = []
             for element in list_response:
+                if config.connection.get_plugin_client_setting('mm_ignore_managed_metadata') == True:
+                    if 'manageableState' in element and element["manageableState"] != "unmanaged":
+                        continue
+
                 children = []
                 full_name = element['fullName']
-                if full_name == "PersonAccount":
-                    full_name = "Account" 
+                #if full_name == "PersonAccount":
+                #    full_name = "Account" 
                 #print 'processing: ', element
                 if has_children_metadata == True:
                     if not full_name in object_hash:
@@ -284,21 +314,26 @@ class MavensMateClient(object):
                             for gchild_el in object_detail[tag_name]:
                                 gchildren.append({
                                     "text"      : gchild_el,
-                                    "key"       : gchild_el,
                                     "isFolder"  : False,
                                     "checked"   : False,
-                                    "level"     : 4
+                                    "level"     : 4,
+                                    "leaf"      : True,
+                                    "id"        : metadata_type_def['xmlName']+"."+full_name+"."+tag_name+"."+gchild_el,
+                                    "select"    : False,
+                                    "title"     : gchild_el
                                 })
                                 children = sorted(children, key=itemgetter('text')) 
                           
                             children.append({
                                 "text"      : child_type_def['tagName'],
-                                "key"       : child_type_def['tagName'],
                                 "isFolder"  : True,
                                 "cls"       : "folder",
                                 "children"  : gchildren,
                                 "checked"   : False,
-                                "level"     : 3
+                                "level"     : 3,
+                                "id"        : metadata_type_def['xmlName']+"."+full_name+"."+tag_name,
+                                "select"    : False,
+                                "title"     : child_type_def['tagName']
                             })
                                             
                 #if this type has folders, run queries to grab all metadata in the folders
@@ -317,23 +352,40 @@ class MavensMateClient(object):
                     for folder_element in list_basic_response:
                         children.append({
                             "text"      : folder_element['fullName'].split("/")[1],
-                            "key"       : folder_element['fullName'],
                             "leaf"      : True,
                             "isFolder"  : False,
                             "checked"   : False,
-                            "level"     : 3
+                            "level"     : 3,
+                            "id"        : folder_element['fullName'].replace('/', '.'),
+                            "select"    : False,
+                            "title"     : folder_element['fullName'].split("/")[1]
+
                         })
                     
                 children = sorted(children, key=itemgetter('text')) 
+                is_leaf = True
+                cls = ''
+                if is_folder_metadata:
+                    is_leaf = False
+                    cls = 'folder'
+                if has_children_metadata:
+                    is_leaf = False
+                    cls = 'folder'
+                if metadata_type_def['xmlName'] == 'Workflow':
+                    is_leaf = True
+                    cls = ''
+
                 return_elements.append({
                     "text"      : element['fullName'],
-                    "key"       : element['fullName'],
                     "isFolder"  : is_folder_metadata or has_children_metadata,
-                    "cls"       : "folder" if is_folder_metadata or has_children_metadata else "",
-                    "leaf"      : not is_folder_metadata and not has_children_metadata,
+                    "cls"       : cls,
+                    "leaf"      : is_leaf,
                     "children"  : children,
                     "checked"   : False,
-                    "level"     : 2
+                    "level"     : 2,
+                    "id"        : metadata_type_def['xmlName']+'.'+full_name.replace(' ', ''),
+                    "select"    : False,
+                    "title"     : element['fullName']
                 })
 
             return_elements = sorted(return_elements, key=itemgetter('text')) 
@@ -348,54 +400,63 @@ class MavensMateClient(object):
             else:
                 raise e
 
-    def compile_with_tooling_api(self, file_path, container_id):
-        file_name = file_path.split('.')[0]
-        file_suffix = file_path.split('.')[-1]
-        file_name = file_name.split('/')[-1]
-        metadata_def = mm_util.get_meta_type_by_suffix(file_path.split('.')[-1])
-        metadata_type = metadata_def['xmlName']
-        payload = {}
-        if metadata_type == 'ApexPage':
-            tooling_type = 'ApexPageMember'
-        elif metadata_type == 'ApexComponent':
-            tooling_type = 'ApexComponentMember'
-        elif metadata_type == 'ApexClass':
-            tooling_type = 'ApexClassMember'
-        elif metadata_type == 'ApexTrigger':
-            tooling_type = 'ApexTriggerMember'
 
-        #create/submit "member"
-        payload['MetadataContainerId'] = container_id
-        payload['ContentEntityId'] = self.get_apex_entity_id_by_name(object_type=metadata_type, name=file_name)
-        payload['Body'] = open(file_path, 'r').read()
-        # payload['Metadata'] = {
-        #     "label": "foo",
-        #     "apiVersion": 27
-        # }
-        payload = json.dumps(payload)
-        config.logger.debug(payload)
-        r = requests.post(self.get_tooling_url()+"/sobjects/"+tooling_type, data=payload, headers=self.get_rest_headers('POST'), verify=False)
-        response = mm_util.parse_rest_response(r.text)
-        
-        #if it's a dup (probably bc we failed to delete before, let's delete and retry)
-        if type(response) is list and 'errorCode' in response[0]:
-            if response[0]['errorCode'] == 'DUPLICATE_VALUE':
-                dup_id = response[0]['message'].split(':')[-1]
-                dup_id = dup_id.strip()
-                query_string = "Select Id from "+tooling_type+" Where Id = '"+dup_id+"'"
-                r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
-                r.raise_for_status()
-                query_result = mm_util.parse_rest_response(r.text)
-                
-                r = requests.delete(self.get_tooling_url()+"/sobjects/{0}/{1}".format(tooling_type, query_result['records'][0]['Id']), headers=self.get_rest_headers(), verify=False)
-                r.raise_for_status()
 
-                #retry member request
-                r = requests.post(self.get_tooling_url()+"/sobjects/"+tooling_type, data=payload, headers=self.get_rest_headers('POST'), verify=False)
-                response = mm_util.parse_rest_response(r.text)
+
+    ##TOOLING API PLUMMING##
+    ##TODO: MOVE TO A MODULE##
+
+
+
+    #compiles files with the tooling api
+    #if multiple files are sent, we need to create
+    #"members" for all of them associated to a single
+    #metadatacontainerid and send that container for compile
+    def compile_with_tooling_api(self, files, container_id):
+        for file_path in files:
+            payload = {}
+            file_name = file_path.split('.')[0]
+            #file_suffix = file_path.split('.')[-1]
+            file_name = file_name.split('/')[-1]
+            metadata_def = mm_util.get_meta_type_by_suffix(file_path.split('.')[-1])
+            metadata_type = metadata_def['xmlName']
+            if metadata_type == 'ApexPage':
+                tooling_type = 'ApexPageMember'
+            elif metadata_type == 'ApexComponent':
+                tooling_type = 'ApexComponentMember'
+            elif metadata_type == 'ApexClass':
+                tooling_type = 'ApexClassMember'
+            elif metadata_type == 'ApexTrigger':
+                tooling_type = 'ApexTriggerMember'
+
+            #create/submit "member"
+            payload['MetadataContainerId'] = container_id
+            payload['ContentEntityId'] = self.get_apex_entity_id_by_name(object_type=metadata_type, name=file_name)
+            payload['Body'] = open(file_path, 'r').read()
+            payload = json.dumps(payload)
+            config.logger.debug(payload)
+            r = requests.post(self.get_tooling_url()+"/sobjects/"+tooling_type, data=payload, headers=self.get_rest_headers('POST'), verify=False)
+            response = mm_util.parse_rest_response(r.text)
+    
+            #if it's a dup (probably bc we failed to delete before, let's delete and retry)
+            if type(response) is list and 'errorCode' in response[0]:
+                if response[0]['errorCode'] == 'DUPLICATE_VALUE':
+                    dup_id = response[0]['message'].split(':')[-1]
+                    dup_id = dup_id.strip()
+                    query_string = "Select Id from "+tooling_type+" Where Id = '"+dup_id+"'"
+                    r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+                    r.raise_for_status()
+                    query_result = mm_util.parse_rest_response(r.text)
+                    
+                    r = requests.delete(self.get_tooling_url()+"/sobjects/{0}/{1}".format(tooling_type, query_result['records'][0]['Id']), headers=self.get_rest_headers(), verify=False)
+                    r.raise_for_status()
+
+                    #retry member request
+                    r = requests.post(self.get_tooling_url()+"/sobjects/"+tooling_type, data=payload, headers=self.get_rest_headers('POST'), verify=False)
+                    response = mm_util.parse_rest_response(r.text)
+                    member_id = response['id']
+            else:
                 member_id = response['id']
-        else:
-            member_id = response['id']
 
         #ok, now we're ready to submit an async request
         payload = {}
@@ -406,7 +467,6 @@ class MavensMateClient(object):
         config.logger.debug(payload)
         r = requests.post(self.get_tooling_url()+"/sobjects/ContainerAsyncRequest", data=payload, headers=self.get_rest_headers('POST'), verify=False)
         response = mm_util.parse_rest_response(r.text)
-
 
         finished = False
         while finished == False:
@@ -430,7 +490,6 @@ class MavensMateClient(object):
 
     def get_metadata_container_id(self):
         query_string = "Select Id from MetadataContainer Where Name = 'MavensMate-"+self.user_id+"'"
-        #print self.get_tooling_url()+"/query/"
         r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
         query_result = mm_util.parse_rest_response(r.text)
@@ -447,7 +506,18 @@ class MavensMateClient(object):
             else:
                 return "error"
 
-    def get_overlay_actions(self, **kwargs):        
+    #################
+    #APEX CHECKPOINTS
+    #################
+
+    def get_completions(self, type):
+        payload = { 'type' : 'apex' }
+        print payload
+        r = requests.get(self.get_tooling_url()+"/completions", params=payload, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        print r.text
+
+    def get_apex_checkpoints(self, **kwargs):        
         if 'file_path' in kwargs:
             id = kwargs.get('id', None)
             file_path = kwargs.get('file_path', None)
@@ -466,35 +536,8 @@ class MavensMateClient(object):
             r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
             return mm_util.parse_rest_response(r.text)
 
-    def get_trace_flags(self, **kwargs):        
-        query_string = "Select Id, ScopeId, TracedEntityId, ExpirationDate from TraceFlag limit 5000"
-        payload = { 'q' : query_string }
-        r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
-        return mm_util.parse_rest_response(r.text)    
-
-    #pass a list of apex class/trigger ids and return the symbol tables
-    def get_symbol_table(self, ids=[]):        
-        id_string = "','".join(ids)
-        id_string = "'"+id_string+"'"
-        query_string = "Select ContentEntityId, SymbolTable From ApexClassMember Where ContentEntityId IN (" + id_string + ")"
-        payload = { 'q' : query_string }
-        r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
-        return mm_util.parse_rest_response(r.text)
-
-    def create_trace_flag(self, payload):
-        if 'ScopeId' not in payload:
-            payload['ScopeId'] = self.user_id
-        payload = json.dumps(payload)
-        r = requests.post(self.get_tooling_url()+"/sobjects/TraceFlag", data=payload, headers=self.get_rest_headers('POST'), verify=False)
-        return mm_util.parse_rest_response(r.text)
-
-    #TODO: support in the future
-    def run_async_apex_tests(self, payload):
-        payload = json.dumps(payload)
-        r = requests.post(self.get_tooling_url()+"/sobjects/ApexTestQueueItem", data=payload, headers=self.get_rest_headers('POST'), verify=False)
-        return mm_util.parse_rest_response(r.text)
-
-    def create_overlay_action(self, payload):
+    #creates a checkpoint at a certain line on an apex class/trigger
+    def create_apex_checkpoint(self, payload):        
         if 'ScopeId' not in payload:
             payload['ScopeId'] = self.user_id
         if 'API_Name' in payload:
@@ -504,9 +547,39 @@ class MavensMateClient(object):
 
         payload = json.dumps(payload)
         r = requests.post(self.get_tooling_url()+"/sobjects/ApexExecutionOverlayAction", data=payload, headers=self.get_rest_headers('POST'), verify=False)
-        return mm_util.parse_rest_response(r.text)
+        r.raise_for_status()
+        
+        ##WE ALSO NEED TO CREATE A TRACE FLAG FOR THIS USER
+        expiration = mm_util.get_iso_8601_timestamp(30)
 
-    def remove_overlay_action(self, **kwargs):
+        payload = {
+            "ApexCode"          : "FINEST",
+            "ApexProfiling"     : "INFO",
+            "Callout"           : "INFO",
+            "Database"          : "INFO",
+            "ExpirationDate"    : expiration,
+            "ScopeId"           : self.user_id,
+            "System"            : "DEBUG",
+            "TracedEntityId"    : self.user_id,
+            "Validation"        : "INFO",
+            "Visualforce"       : "INFO",
+            "Workflow"          : "INFO"
+        }
+        self.create_trace_flag(payload)
+
+        return mm_util.generate_success_response("Done")
+
+    #deletes ALL checkpoints in the org
+    def delete_apex_checkpoints(self):
+        query_string = 'Select Id FROM ApexExecutionOverlayAction'
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for r in qr['records']:
+            self.delete_tooling_entity("ApexExecutionOverlayAction", r["Id"])
+
+    #deletes a single checkpoint
+    def delete_apex_checkpoint(self, **kwargs):
         if 'overlay_id' in kwargs:
             r = requests.delete(self.get_tooling_url()+"/sobjects/ApexExecutionOverlayAction/{0}".format(kwargs['overlay_id']), headers=self.get_rest_headers(), verify=False)
             r.raise_for_status()
@@ -530,17 +603,142 @@ class MavensMateClient(object):
             r.raise_for_status()
             return mm_util.generate_success_response('OK')
 
+    ########################
+    #APEX CHECKPOINT RESULTS
+    ########################
+
+    def get_apex_checkpoint_results(self, user_id=None, limit=20):
+        if user_id == None:
+            user_id = self.user_id
+        #dont query heapdump, soqlresult, or apexresult here - JF
+        query_string = 'Select Id, CreatedDate, ActionScript, ActionScriptType, ExpirationDate, IsDumpingHeap, Iteration, Line, UserId From ApexExecutionOverlayResult order by CreatedDate desc limit '+str(limit)
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for record in qr['records']:
+            heap_query = 'SELECT HeapDump, ApexResult, SOQLResult, ActionScript FROM ApexExecutionOverlayResult WHERE Id = \''+record['Id']+'\''
+            rr = requests.get(self.get_tooling_url()+"/query/", params={'q':heap_query}, headers=self.get_rest_headers(), verify=False)
+            rr.raise_for_status()
+            qrr = mm_util.parse_rest_response(rr.text)
+            record["HeapDump"] = qrr['records'][0]['HeapDump']
+            record["ApexResult"] = qrr['records'][0]['ApexResult']
+            record["SOQLResult"] = qrr['records'][0]['SOQLResult']
+            record["ActionScript"] = qrr['records'][0]['ActionScript']
+        return qr
+
+    def delete_apex_checkpoint_results(self):
+        query_string = 'Select Id From ApexExecutionOverlayResult Where UserId = \''+self.user_id+'\' order by CreatedDate'
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for record in qr['records']:
+            self.delete_tooling_entity("ApexExecutionOverlayResult", record["Id"])
+        return mm_util.generate_success_response("Done")
+
+    ############
+    #TRACE FLAGS
+    ############
+
+    #creates a flag only. the flag tells salesforce to generate some kind of debug log
+    def create_trace_flag(self, payload):
+        if 'ScopeId' not in payload:
+            payload['ScopeId'] = self.user_id
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/TraceFlag", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
+    #get the trace flags that have been set up in the org
+    def get_trace_flags(self, delete=False):
+        query_string = 'Select Id,ApexCode,ApexProfiling,Callout,Database,System,Validation,Visualforce,Workflow,ExpirationDate,TracedEntityId,ScopeId FROM TraceFlag order by CreatedDate desc'
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        return mm_util.parse_rest_response(r.text)
+
+    def delete_trace_flags(self):
+        query_string = 'Select Id From TraceFlag'
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for record in qr['records']:
+            self.delete_tooling_entity("TraceFlag", record["Id"])
+        return mm_util.generate_success_response("Done")
+
+
+
+    ###########
+    #DEBUG LOGS
+    ###########
+
+    def delete_debug_logs(self, scope="user"):
+        if scope != "user":
+            query_string = "Select Id From ApexLog"
+        else:
+            query_string = "Select Id From ApexLog WHERE LogUserId = '{0}'".format(self.user_id)
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for record in qr['records']:
+            self.delete_tooling_entity("ApexLog", record["Id"])
+        return mm_util.generate_success_response("Done")
+
+    #get a list of debug logs, STILL NEED TO DOWNLOAD THE LOG
+    def get_debug_logs(self, download_body=False, limit=20, scope="user"):
+        if scope == "user":
+            query_string = "Select Id,Application,Location,LogLength,LogUserId,Operation,Request,StartTime,Status From ApexLog WHERE LogUserId = '{0}' Order By StartTime desc limit {1}".format(self.user_id, limit)
+        else:
+            query_string = "Select Id,Application,Location,LogLength,LogUserId,Operation,Request,StartTime,Status From ApexLog Order By StartTime desc limit {1}".format(self.user_id, limit)
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        for record in qr['records']:
+            if download_body:
+                record['Body'] = self.download_log(record['Id'])
+        return qr
+
     def download_log(self, id):
-        pod = self.metadata_server_url.replace("https://", "").split("-")[0]
-        log_endpoint = "https://{0}.salesforce.com/apexdebug/traceDownload.apexp".format(pod)
-        r = requests.get(log_endpoint, params={"id":id}, headers=self.get_rest_headers(), verify=False)
+        r = requests.get(self.get_tooling_url()+"/sobjects/ApexLog/"+id+"/Body", headers=self.get_rest_headers(), verify=False)
         return r.text
 
-    def download_checkpoint(self, id):
-        pod = self.metadata_server_url.replace("https://", "").split("-")[0]
-        checkpoint_endpoint = "https://{0}.salesforce.com/servlet/debug/apex/ApexCSIJsonServlet".format(pod)
-        r = requests.get(checkpoint_endpoint, params={"log":id,"extent":"fewmet","doDelete":False,"page":1,"start":0,"limit":25}, headers=self.get_rest_headers(), verify=False)
-        return r.text
+    
+
+    #############
+    #SYMBOL TABLE
+    #############
+
+    #pass a list of apex class/trigger ids and return the symbol tables
+    def get_symbol_table(self, ids=[]):        
+        id_string = "','".join(ids)
+        id_string = "'"+id_string+"'"
+        query_string = "Select ContentEntityId, SymbolTable From ApexClassMember Where ContentEntityId IN (" + id_string + ")"
+        payload = { 'q' : query_string }
+        r = requests.get(self.get_tooling_url()+"/query/", params=payload, headers=self.get_rest_headers(), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
+    ############################
+    #TODO: support in the future
+    ############################
+    def run_async_apex_tests(self, payload):
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/ApexTestQueueItem", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)
+
+
+    #####
+    #UTIL
+    #####
+
+    def delete_tooling_entity(self, type, id):
+        r = requests.delete(self.get_tooling_url()+"/sobjects/{0}/{1}".format(type, id), headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+
+
+    ##END TOOLING PLUMBING##
+
+
+    def query(self, soql):
+        r = requests.get(self.get_base_url()+"/query/", params={'q':soql}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        return r.json()
 
     def get_rest_headers(self, method='GET'):
         headers = {}
@@ -548,6 +746,11 @@ class MavensMateClient(object):
         if method == 'POST':
             headers['Content-Type'] = 'application/json'
         return headers
+
+    def get_base_url(self):
+        pod = self.metadata_server_url.replace("https://", "")
+        pod = pod.split('.salesforce.com')[0]
+        return "https://{0}.salesforce.com/services/data/v{1}".format(pod, mm_util.SFDC_API_VERSION)
 
     def get_tooling_url(self):
         pod = self.metadata_server_url.replace("https://", "")

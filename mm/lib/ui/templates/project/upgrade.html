@@ -55,12 +55,11 @@
 
 {% block body_js %}
 	<script type="text/javascript">
-		var mm_cpd = '{{ project_location }}';
 		
 		function upgrade() {
 			$.ajax({
 				type: "POST",
-				url: "http://127.0.0.1:9000/project/upgrade", 
+				url: "{{ base_local_server_url() }}/project/upgrade", 
 				dataType: 'json',
 				contentType: 'application/json; charset=utf-8',
 				data: JSON.stringify({
@@ -85,7 +84,7 @@
 			} else {
 				$("#btnSubmit").remove()
 				$("#btnCancel").html("Done")
-				show_message("Your project has been successfully upgraded. Happy coding :)", "success")
+				show_message("Your project has been successfully upgraded. Happy coding :)", 'success', true)
 				notify_sound()
 			}
 			hideLoading();

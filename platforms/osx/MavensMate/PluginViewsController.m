@@ -57,7 +57,6 @@
     //check for Sublime Text 2 status
     BOOL mavensMateSublimeText2PluginPathExists = [filemgr fileExistsAtPath:mavensMateSublimeText2PluginPath isDirectory:&mavensMateSublimeText2PluginPathIsDirectory];
     if (mavensMateSublimeText2PluginPathExists && mavensMateSublimeText2PluginPathIsDirectory) {
-        //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://raw.github.com/joeferraro/MavensMate-SublimeText/master/packages.json"]];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://raw.github.com/joeferraro/MavensMate-SublimeText/2.0/packages.json"]];
         NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
         
@@ -104,8 +103,7 @@
     //check for Sublime Text 3 status
     BOOL mavensMateSublimeText3PluginPathExists = [filemgr fileExistsAtPath:mavensMateSublimeText3PluginPath isDirectory:&mavensMateSublimeText3PluginPathIsDirectory];
     if (mavensMateSublimeText3PluginPathExists && mavensMateSublimeText3PluginPathIsDirectory) {
-        //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://raw.github.com/joeferraro/MavensMate-SublimeText/master/packages.json"]];
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://raw.github.com/joeferraro/MavensMate-SublimeText/2.0/packages.json"]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://raw.github.com/joeferraro/MavensMate-SublimeText/master/packages.json"]];
         NSData *response = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
         
         NSError *jsonParsingError = nil;
@@ -206,15 +204,23 @@
     NSString* sublimeTextPackagesPath;
     NSString* mavensMateSublimeTextPluginPath;
     NSString* mavensMateSublimeTextPluginPathLegacy;
-
+    
+    NSString *sublimeTextPluginGitHubURL;
+    
+    //SUBLIME TEXT 2 BUTTON
     if ([identifier isEqual: @"st2InstallButton"]) {
         sublimeTextPackagesPath = [@"~/Library/Application Support/Sublime Text 2/Packages" stringByExpandingTildeInPath];
         mavensMateSublimeTextPluginPath = [@"~/Library/Application Support/Sublime Text 2/Packages/MavensMate" stringByExpandingTildeInPath];
         mavensMateSublimeTextPluginPathLegacy = [@"~/Library/Application Support/Sublime Text 2/Packages/MavensMate-SublimeText-2.0" stringByExpandingTildeInPath];
-    } else if ([identifier isEqual: @"st3InstallButton"]) {
+        sublimeTextPluginGitHubURL = @"https://github.com/joeferraro/MavensMate-SublimeText/archive/2.0.zip";
+    }
+    
+    //SUBLIME TEXT 2 BUTTON
+    else if ([identifier isEqual: @"st3InstallButton"]) {
         sublimeTextPackagesPath = [@"~/Library/Application Support/Sublime Text 3/Packages" stringByExpandingTildeInPath];
         mavensMateSublimeTextPluginPath = [@"~/Library/Application Support/Sublime Text 3/Packages/MavensMate" stringByExpandingTildeInPath];
         mavensMateSublimeTextPluginPathLegacy = [@"~/Library/Application Support/Sublime Text 3/Packages/MavensMate-SublimeText-2.0" stringByExpandingTildeInPath];
+        sublimeTextPluginGitHubURL = @"https://github.com/joeferraro/MavensMate-SublimeText/archive/master.zip";
     }
     
     NSFileManager *filemgr;
@@ -237,8 +243,7 @@
         NSLog(@"Unable to remove zip from tmp path: %@", [error localizedDescription]);
     
     //download latest version
-    NSString *myurl = @"https://github.com/joeferraro/MavensMate-SublimeText/archive/2.0.zip";
-    NSData* data = [NSData dataWithContentsOfURL:[NSURL URLWithString:myurl]];
+    NSData* data = [NSData dataWithContentsOfURL:[NSURL URLWithString:sublimeTextPluginGitHubURL]];
     
     if (data == nil) {
         NSLog(@"Install/Update likely failed");
@@ -267,7 +272,15 @@
             NSLog(@"Could not find MavensMate-SublimeText-2.0 in packages: %@", [error localizedDescription]);
         
         //move fresh installation to packages path
-        NSString *origin = [NSTemporaryDirectory() stringByAppendingString:@"MavensMate-SublimeText-2.0"];
+        NSString *origin;
+        
+        if ([identifier isEqual: @"st2InstallButton"]) {
+            origin = [NSTemporaryDirectory() stringByAppendingString:@"MavensMate-SublimeText-2.0"];
+        }
+        
+        else if ([identifier isEqual: @"st3InstallButton"]) {
+            origin = [NSTemporaryDirectory() stringByAppendingString:@"MavensMate-SublimeText-master"];
+        }
         
         //clean up tmp directory
         if ([filemgr moveItemAtPath:origin toPath:mavensMateSublimeTextPluginPath error:&error] != YES)

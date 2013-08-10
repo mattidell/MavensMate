@@ -15,13 +15,24 @@
  #search-btn {
  	position: absolute;
  	top:-5px;
- 	left:551px;
+ 	right:0px;
  }
 
  #select-btn {
  	position: absolute;
  	top:-5px;
- 	left:600px;
+ 	right:0px;
+ }
+
+ a.btn-info {
+ 	color:#fff !important;
+ }
+
+ #footer {
+ 	background:#34495e;
+ 	color:#fff;
+ 	padding:5px 0px;
+ 	width:100%;
  }
 
  .navbar {
@@ -168,8 +179,18 @@
 #project_wrapper {
 	height:500px;
 	overflow-y:auto; 
-	/*border:1px solid #ddd;*/
+	border:3px solid #3398db;
+	border-radius: 6px;
 }  
+
+.dynatree-hidden {
+	display: none;
+}
+
+#treewrapper {
+	padding:10px 5px;
+	box-sizing: border-box;
+}
 
 #connections {
 	height:500px;
@@ -303,6 +324,11 @@ ul.dynatree-container {
 	-webkit-transition: 0s;
 	transition: 0s;
 	outline: none;
+	/*line-height: 1.1em;*/
+}
+
+a.dynatree-title {
+	line-height: 1.1em;
 }
 
 .dynatree-container li .dynatree-node a:active {
@@ -349,9 +375,82 @@ ul.dynatree-container {
 	width:15px !important;
 }
 
+.x-panel-default-framed {
+	border-color: #7bafde !important;
+	border-width: 3px !important;
+	border-radius: 6px !important;
+}
+
+.x-grid-body {
+	border:none !important;
+}
+
 div.x-panel-body .x-tree-checkbox-checked-disabled input.x-tree-checkbox {
     background-position: 0 -30px;
 }
+
+/* Generic context menu styles */
+.contextMenu {
+	position: absolute;
+	width: auto;
+	z-index: 99999;
+	border: solid 1px #CCC;
+	background: #EEE;
+	padding: 0px;
+	margin: 0px;
+	display: none;
+}
+
+.contextMenu LI {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.contextMenu A {
+	color: #333;
+	text-decoration: none;
+	display: block;
+	line-height: 20px;
+	height: 20px;
+	background-position: 6px center;
+	background-repeat: no-repeat;
+	outline: none;
+	padding: 2px 10px;
+}
+
+.contextMenu LI.hover A {
+	color: #FFF;
+	background-color: #3399FF;
+}
+
+.contextMenu LI.disabled A {
+	color: #AAA;
+	cursor: default;
+}
+
+.contextMenu LI.hover.disabled A {
+	background-color: transparent;
+}
+
+.contextMenu LI.separator {
+	border-top: solid 1px #CCC;
+}
+
+/*
+	Adding Icons
+
+	You can add icons to the context menu by adding
+	classes to the respective LI element(s)
+*/
+
+.contextMenu LI.edit A { background-image: url(images/page_white_edit.png); }
+.contextMenu LI.cut A { background-image: url(images/cut.png); }
+.contextMenu LI.copy A { background-image: url(images/page_white_copy.png); }
+.contextMenu LI.paste A { background-image: url(images/page_white_paste.png); }
+.contextMenu LI.delete A { background-image: url(images/page_white_delete.png); }
+.contextMenu LI.quit A { background-image: url(images/door.png); }
+
 
 /* BIG CIRCLE */
 

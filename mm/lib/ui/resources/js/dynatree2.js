@@ -353,10 +353,14 @@ DynaTreeNode.prototype = {
 					+ (this.bExpanded ? "e" : "c")
 					+ (data.isFolder ? "f" : "")
 					);
-			this.span.className = cnList.join(" ");
+			this.span.className = cnList.join(" "); //TODO
 
 			// TODO: we should not set this in the <span> tag also, if we set it here:
 			this.li.className = isLastSib ? cn.lastsib : "";
+
+			if (this.span.className.indexOf("hidden") !== -1) {
+				this.li.className = this.li.className += " hidden";
+			}
 
 			// Allow tweaking, binding, after node was created for the first time
 			if(firstTime && opts.onCreate){
