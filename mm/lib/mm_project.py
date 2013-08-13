@@ -315,12 +315,14 @@ class MavensMateProject(object):
                         if qr['records'][0]['LastModifiedById'] != self.sfdc_client.user_id:
                             last_modified_name = qr['records'][0]['LastModifiedBy']['Name']
                             last_modified_date = qr['records'][0]['LastModifiedDate']
+                            body = qr['records'][0][body_field]
+                            body = body.encode('utf-8')
                             return mm_util.generate_request_for_action_response(
                                 "{0} was last modified by {1} on {2}."
                                 .format(apex_entity_api_name, last_modified_name, last_modified_date),
                                 'compile',
                                 ["Diff With Server","Operation Canceled"],
-                                tmp_file_path=mm_util.put_tmp_file_on_disk(apex_entity_api_name, qr['records'][0][body_field], apex_type.get('suffix', ''))
+                                tmp_file_path=mm_util.put_tmp_file_on_disk(apex_entity_api_name, body, apex_type.get('suffix', ''))
                             )
 
         #use tooling api here, if possible
