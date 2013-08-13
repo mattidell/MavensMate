@@ -12,14 +12,11 @@
 #import "LoadingController.h"
 
 @interface PluginViewsController : DBPrefsWindowController {
-    IBOutlet NSButton *st2InstallButton;
     IBOutlet NSButton *st3InstallButton;
     
-    IBOutlet NSProgressIndicator *st2ButtonLoading;
     IBOutlet NSProgressIndicator *st3ButtonLoading;
 }
 
-@property (strong, nonatomic) IBOutlet NSView *sublimeText2View;
 @property (strong, nonatomic) IBOutlet NSView *sublimeText3View;
 @property (strong, nonatomic) IBOutlet NSView *futurePluginView;
 
@@ -27,10 +24,8 @@
 @property (strong) LoadingController *loadingController;
 @property (strong) AlertController *alertController;
 
-@property (strong) IBOutlet NSButton *st2InstallButton;
 @property (strong) IBOutlet NSButton *st3InstallButton;
 
-@property (strong) IBOutlet NSProgressIndicator *st2ButtonLoading;
 @property (strong) IBOutlet NSProgressIndicator *st3ButtonLoading;
 
 + (NSString *)nibName;

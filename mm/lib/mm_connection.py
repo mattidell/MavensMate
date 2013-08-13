@@ -175,7 +175,10 @@ class MavensMatePluginConnection(object):
                         os.system("'{0}/Sublime Text 2.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
                 elif self.plugin_client == self.PluginClients.SUBLIME_TEXT_3:
                     if self.platform == 'darwin':
-                        os.system("'{0}/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
+                        if os.path.exists(os.path.join('{0}/Sublime Text 3.app'.format(client_location))):
+                            os.system("'{0}/Sublime Text 3.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
+                        else:
+                            os.system("'{0}/Sublime Text.app/Contents/SharedSupport/bin/subl' --project '{1}'".format(client_location,self.project.location+"/"+self.project.project_name+".sublime-project"))
 
             return result
         except BaseException, e:
