@@ -7,6 +7,7 @@ import config
 import xmltodict
 import requests
 import time
+import datetime
 from operator import itemgetter
 sys.path.append('../')
 
@@ -406,8 +407,6 @@ class MavensMateClient(object):
     ##TOOLING API PLUMMING##
     ##TODO: MOVE TO A MODULE##
 
-
-
     #compiles files with the tooling api
     #if multiple files are sent, we need to create
     #"members" for all of them associated to a single
@@ -512,10 +511,8 @@ class MavensMateClient(object):
 
     def get_completions(self, type):
         payload = { 'type' : 'apex' }
-        print payload
         r = requests.get(self.get_tooling_url()+"/completions", params=payload, headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
-        print r.text
 
     def get_apex_checkpoints(self, **kwargs):        
         if 'file_path' in kwargs:
@@ -715,12 +712,60 @@ class MavensMateClient(object):
         return mm_util.parse_rest_response(r.text)
 
     ############################
-    #TODO: support in the future
+    #Runs asynchronous apex tests
     ############################
     def run_async_apex_tests(self, payload):
-        payload = json.dumps(payload)
-        r = requests.post(self.get_tooling_url()+"/sobjects/ApexTestQueueItem", data=payload, headers=self.get_rest_headers('POST'), verify=False)
-        return mm_util.parse_rest_response(r.text)
+        classes = payload["classes"]
+        responses = []
+        for c in classes:
+            payload = {
+                "ApexClassId" : self.get_apex_entity_id_by_name(object_type="ApexClass", name=c)
+            }
+            payload = json.dumps(payload)
+            r = requests.post(self.get_tooling_url()+"/sobjects/ApexTestQueueItem", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+            res = mm_util.parse_rest_response(r.text)
+            
+            if res["success"] == True:
+                parentJobId = None
+                qr = self.query("Select ParentJobId FROM ApexTestQueueItem WHERE Id='{0}'".format(res["id"]))
+                if qr["done"] == True and qr["totalSize"] == 1 and 'records' in qr:
+                    parentJobId = qr['records'][0]["ParentJobId"]
+                finished = False
+                while finished == False:
+                    time.sleep(1)
+                    query_string = "SELECT ApexClassId, Status, ExtendedStatus FROM ApexTestQueueItem WHERE ParentJobId = '{0}'".format(parentJobId)
+                    query_result = self.query(query_string)
+                    if query_result["done"] == True and query_result["totalSize"] == 1 and 'records' in query_result:
+                        done_statuses = ['Aborted', 'Completed', 'Failed']
+                        if query_result['records'][0]["Status"] in done_statuses:
+                            #now check for method results
+                            qr = self.query("SELECT Outcome, ApexClass.Name, MethodName, Message, StackTrace, ApexLogId FROM ApexTestResult WHERE AsyncApexJobId ='{0}'".format(parentJobId))
+                            parent_response = query_result['records'][0]
+                            parent_response["detailed_results"] = []
+                            for r in qr["records"]:
+                                parent_response["detailed_results"].append(r)
+                                if "ApexLogId" in r and r["ApexLogId"] != None:
+                                    if os.path.isdir(os.path.join(config.connection.workspace,config.connection.project.project_name,"debug","test_logs")) == False:
+                                        os.makedirs(os.path.join(config.connection.workspace,config.connection.project.project_name,"debug","test_logs"))
+                                    ts = time.time()
+                                    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                                    file_name = st+"."+r["ApexLogId"]+".json"
+                                    file_path = os.path.join(config.connection.workspace,config.connection.project.project_name,"debug","test_logs", file_name)
+                                    debug_log_body = self.download_log(r["ApexLogId"])
+                                    src = open(file_path, "w")
+                                    src.write(debug_log_body)
+                                    src.close() 
+
+                                    #file_name = mm_util.get_random_string(12) + ".json"
+                                    #log_location = mm_util.put_file_in_tmp_directory(file_name, debug_log_body)
+                                    #r["log_location"] = log_location
+                            responses.append(parent_response)
+                            finished = True
+            else:
+                responses.append({"class":c,"success":False})
+
+        return json.dumps(responses)
+
 
 
     #####
@@ -731,9 +776,21 @@ class MavensMateClient(object):
         r = requests.delete(self.get_tooling_url()+"/sobjects/{0}/{1}".format(type, id), headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
 
+    def get_field_definition(self, object_enum_or_id):
+        query_string = "Select DeveloperName, Metadata FROM CustomField WHERE TableEnumOrId = '{0}'".format('01IA0000002C6aMMAS')
+        #Sponsorship_Grant_AEU__c
+        #01IA0000002C6aMMAS
+        qr = self.tooling_query(query_string)
+        if qr["done"] == True and qr["totalSize"] == 1 and 'records' in qr:
+            print qr
 
     ##END TOOLING PLUMBING##
 
+    def tooling_query(self, soql):
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':soql}, headers=self.get_rest_headers(), verify=False)
+        #print r.text.encode('utf-8').strip()
+        r.raise_for_status()
+        return r.json()
 
     def query(self, soql):
         r = requests.get(self.get_base_url()+"/query/", params={'q':soql}, headers=self.get_rest_headers(), verify=False)

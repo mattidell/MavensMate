@@ -183,6 +183,9 @@ def run_unit_tests(args):
     else:
         print test_result
 
+def run_async_tests():
+    print config.connection.project.sfdc_client.run_async_apex_tests(request_payload)
+
 def deploy_to_server(args):
     deploy_result = config.connection.project.deploy_to_server(request_payload)
     if args.respond_with_html == True:
@@ -275,6 +278,7 @@ operation_dict = {
     'deploy'                                : deploy_to_server,
     'unit_test'                             : run_unit_tests,
     'test'                                  : run_unit_tests,
+    'test_async'                            : run_async_tests,
     'list_metadata'                         : list_metadata,
     'index_metadata'                        : index_metadata,
     'refresh_metadata_index'                : refresh_metadata_index,

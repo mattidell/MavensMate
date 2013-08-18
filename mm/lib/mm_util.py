@@ -253,6 +253,13 @@ def put_tmp_file_on_disk(name, body, ext=''):
     f.close()
     return "{0}/{1}.{2}".format(tmp_dir, file_name, ext)
 
+def put_file_in_tmp_directory(file_name, body):
+    tmp_dir = tempfile.gettempdir()
+    f = open(os.path.join(tmp_dir, file_name), 'w')
+    f.write(body)
+    f.close()
+    return os.path.join(tmp_dir, file_name)
+
 def put_package_xml_in_directory(directory, file_contents, isDelete=False):
     file_name = 'package.xml' if isDelete == False else 'destructiveChanges.xml'
     f = open("{0}/{1}".format(directory, file_name), 'w')
