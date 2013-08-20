@@ -146,6 +146,8 @@ class MavensMateProject(object):
             api_name                        = params.get('api_name', None)
             apex_class_type                 = params.get('apex_class_type', None)
             apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
+            apex_trigger_object_api_name    = params.get('apex_trigger_object_api_name', None)
+            github_template                 = params.get('github_template', None)
 
             if metadata_type == 'ApexClass' and apex_class_type == None:
                 apex_class_type = 'default'
@@ -164,7 +166,8 @@ class MavensMateProject(object):
                 return mm_util.generate_error_response("This API name is already in use in your org" + fetched + ".")      
 
             tmp, tmp_unpackaged = mm_util.put_tmp_directory_on_disk(True)
-            mm_util.put_skeleton_files_on_disk(metadata_type, api_name, tmp_unpackaged, apex_class_type, apex_trigger_object_api_name)
+            
+            mm_util.put_skeleton_files_on_disk(metadata_type, api_name, tmp_unpackaged, apex_class_type, apex_trigger_object_api_name, github_template)
             package_xml_body = mm_util.get_package_xml_contents({metadata_type : [ api_name ]})
             mm_util.put_package_xml_in_directory(tmp_unpackaged, package_xml_body)
             zip_file = mm_util.zip_directory(tmp, tmp)
@@ -1255,6 +1258,21 @@ class MavensMateProject(object):
         self.index_apex_overlays()
         return delete_result
 
+    def new_quick_trace_flag(self):
+        debug_users = self.__get_debug_users()
+        debug_settings = self.__get_debug_settings()
+        for u in debug_users:
+            payload = {}
+            payload["debug_categories"] = debug_settings["levels"]
+            payload["expiration"]       = debug_settings["expiration"]
+            payload["user_id"]          = u
+            payload["type"]             = "user"
+            response = self.new_trace_flag(payload)
+            response = json.loads(response)
+            if "success" in response and response["success"] == False:
+                return mm_util.generate_error_response(response["errors"][0])
+        return mm_util.generate_success_response('{0} Log(s) created successfully'.format(str(len(debug_users))))
+
     def new_trace_flag(self, payload):
         try:
             '''
@@ -1282,7 +1300,8 @@ class MavensMateProject(object):
                 request['TracedEntityId'] = payload['apex_id']
 
             for c in payload['debug_categories']:
-                request[c['category']] = c['level']
+                if 'category' in c:
+                    request[c['category']] = c['level']
             
             request['ExpirationDate'] = mm_util.get_iso_8601_timestamp(int(float(payload.get('expiration', 30))))
 
@@ -1324,10 +1343,6 @@ class MavensMateProject(object):
                         if not os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name,str(l))):
                             os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity_name,str(l)))
 
-                # for apex_entity in apex_classes_and_triggers:
-                #     if not os.path.isdir(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity)):
-                #         os.makedirs(os.path.join(config.connection.workspace,self.project_name,"debug","checkpoints",apex_entity))
-                
                 for r in checkpoint_results['records']:
                     if 'HeapDump' in r and 'className' in r['HeapDump']:
                         file_name = r["HeapDump"]["heapDumpDate"]+"|"+r["UserId"]+".json"
@@ -1346,9 +1361,9 @@ class MavensMateProject(object):
     def fetch_logs(self, payload):
         number_of_logs = 0
         try:
-            user_id = payload.get('user_id', self.sfdc_client.user_id)
             limit   = config.connection.get_plugin_client_setting('mm_number_of_logs_limit', 20)
-            log_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location != \'HeapDump\' and LogUserId = \''+user_id+'\' order by SystemModstamp desc limit '+str(limit))
+            id_list = ','.join("'"+item+"'" for item in self.__get_debug_users())
+            log_result = self.sfdc_client.execute_query('Select Id, LogUserId, SystemModstamp From ApexLog Where SystemModstamp >= TODAY and Location != \'HeapDump\' AND LogUserId IN ({0}) order by SystemModstamp desc limit {1}'.format(id_list, str(limit)))
             logs = []
             if 'records' in log_result:
                 for r in log_result['records']:
@@ -1582,6 +1597,30 @@ class MavensMateProject(object):
             os.makedirs(os.path.join(config.connection.workspace,self.project_name,"config"))
         self.__put_settings_file()
         self.__put_describe_file()
+        self.__put_debug_file()
+
+    def __put_debug_file(self):
+        project_path = os.path.join(config.connection.workspace,self.project_name)
+        if not os.path.exists(os.path.join(project_path, 'config')):
+            os.makedirs(os.path.join(project_path, 'config'))
+        src = open(os.path.join(project_path, 'config', '.debug'), "w")  
+        debug_settings = {
+            "users" : [
+                self.sfdc_client.user_id
+            ],
+            "levels" : {
+                "Database"      : "INFO",
+                "System"        : "INFO",
+                "Visualforce"   : "DEBUG",
+                "Workflow"      : "INFO",
+                "Validation"    : "INFO",
+                "Callout"       : "INFO",
+                "ApexCode"      : "DEBUG"
+            },
+            "expiration" : 60
+        } 
+        src.write(json.dumps(debug_settings, sort_keys=False, indent=4))
+        src.close()
 
     def __put_project_file(self):
         if config.connection.plugin_client == 'SUBLIME_TEXT_2' or config.connection.plugin_client == 'SUBLIME_TEXT_3':
@@ -1651,6 +1690,23 @@ class MavensMateProject(object):
         except:
             pass
 
+    def __get_debug_settings(self):
+        try:
+            debug_settings = mm_util.parse_json_from_file(os.path.join(self.location,"config",".debug"))
+            return debug_settings
+        except:
+            return None
+
+    #returns the cached session information (handles yaml [legacy] & json)
+    def __get_debug_users(self):
+        users = []
+        try:
+            debug_settings = mm_util.parse_json_from_file(os.path.join(self.location,"config",".debug"))
+            users = debug_settings["users"]
+        except:
+            return ["{0}".format(self.sfdc_client.user_id)]
+        return users
+        
 
 class DeploymentHandler(threading.Thread):
 

@@ -475,6 +475,7 @@ def generate_ui(operation,params={}):
             base_path=config.base_path,
             project_name=config.connection.project.project_name,
             users=config.connection.project.get_org_users_list(),
+            user_id=config.connection.project.sfdc_client.user_id,
             apex_items=config.connection.project.sfdc_client.get_apex_classes_and_triggers(),
             #logs=config.connection.project.get_org_logs(),
             client=config.connection.plugin_client).encode('UTF-8')

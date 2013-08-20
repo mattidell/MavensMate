@@ -19,9 +19,9 @@
 				<fieldset>
 					<div class="clearfix">
 						<label for="type">Log Type</label> 
-						<select style="width:90%;" id="type" data-placeholder="Select a log type">
+						<select style="width:90%;" id="type" class="" data-placeholder="Select a log type">
 							<option value="">--Select--</option>
-							<option value="user">User log</option>
+							<option value="user" selected="selected">User log</option>
 							<option value="apex">Apex log</option>
 						</select>	
 					</div>			
@@ -30,7 +30,7 @@
 				<fieldset>
 					<div class="clearfix">
 						<label for="apex">Apex Class/Trigger</label> 
-						<select style="width:90%;" id="apex" data-placeholder="Select an Apex Class or Apex Trigger">
+						<select style="width:90%;" id="apex" class="" data-size="10" data-placeholder="Select an Apex Class or Apex Trigger">
 							<option value="">--Select--</option>
 							<optgroup label="Apex Classes">
 								{% for a in apex_items['Apex Classes'] %}
@@ -53,12 +53,18 @@
 				<fieldset>
 					<div class="clearfix">
 						<label for="un_list">Debug Log User</label> 
-						<select style="width:90%;" id="un_list" data-placeholder="Select a User...">
+						<select style="width:90%;" id="un_list" class="" data-size="10" data-placeholder="Select a User...">
 							<option value="">--Select--</option>
 							{% for u in users %}
-								<option value="{{ u['Id'] }}">
-									{{ u['Name'] }}
-								</option>
+								{% if u['Id'] == user_id %}
+									<option selected="selected" value="{{ u['Id'] }}">
+										{{ u['Name'] }}
+									</option>
+								{% else %}
+									<option value="{{ u['Id'] }}">
+										{{ u['Name'] }}
+									</option>
+								{% endif %}
 							{% endfor %} 
 						</select>	
 					</div>			
@@ -67,12 +73,11 @@
 				<fieldset>
 					<div class="clearfix">
 						<label for="expiration">Expiration</label> 
-						<select style="width:90%;" id="expiration" data-placeholder="Expiration">
+						<select style="width:90%;" id="expiration" class="" data-placeholder="Expiration">
 							<option value="30">30 minutes</option>
-							<option value="60">60 minutes</option>
+							<option value="60" selected="selected">60 minutes</option>
 							<option value="90">90 minutes</option>
 							<option value="480">8 hours</option>
-							<option value="1440">24 hours</option>
 						</select>	
 					</div>			
 				</fieldset>
@@ -138,6 +143,8 @@
 			resizeProjectWrapper(10)
 		});
 
+		$("#apex").prop('disabled', true);
+
 		$("#type").change(function() {
 			if ($(this).val() == 'user') {
 				$("#apex").prop('disabled', true);
@@ -148,7 +155,7 @@
 			}
 		})
 
-		window.resizeTo(850, 650)
+		window.resizeTo(780, 810)
 		centerWindow()
 	});
 
