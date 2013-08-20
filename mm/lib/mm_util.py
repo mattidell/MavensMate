@@ -21,6 +21,7 @@ import plistlib
 import platform
 import itertools
 import keyring
+import urllib2
 from operator import itemgetter
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
@@ -329,30 +330,38 @@ def get_meta_type_by_name(name):
         if 'xmlName' in item and item['xmlName'] == name:
             return item
 
-def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='default', apex_trigger_object_api_name=''):
-    template_map = config.connection.get_plugin_client_setting('mm_default_apex_templates_map', {})
-    custom_templates = config.connection.get_plugin_client_setting('mm_apex_templates_map', {})
-    #merge custom and default template maps
-    for apextype in template_map:
-        if apextype in custom_templates:
-            template_map[apextype] = dict(template_map[apextype], **custom_templates[apextype])
-    #get the template name
-    template_name = ''
-    try:
-        template_name = template_map[metadata_type][apex_class_type]
-    except:
-        template_name = template_map[metadata_type]['default']
-    try:
-        custom_template_path = config.connection.get_plugin_client_setting('mm_apex_templates_dir', config.connection.get_plugin_settings_path("User", "templates"))
-        if os.path.exists(os.path.join(custom_template_path, template_name)):
-            custom_env = Environment(loader=FileSystemLoader(custom_template_path),trim_blocks=True)
-            #try to load custom
-            template = custom_env.get_template(template_name)
-        else:
-            raise Exception("Template does not exist")
-    except:
-        #load default template
-        template = env.get_template(template_name)
+def put_skeleton_files_on_disk(metadata_type, api_name, where, apex_class_type='default', apex_trigger_object_api_name='', github_template=None):
+    
+    if github_template == None:
+        template_map = config.connection.get_plugin_client_setting('mm_default_apex_templates_map', {})
+        custom_templates = config.connection.get_plugin_client_setting('mm_apex_templates_map', {})
+        #merge custom and default template maps
+        for apextype in template_map:
+            if apextype in custom_templates:
+                template_map[apextype] = dict(template_map[apextype], **custom_templates[apextype])
+        #get the template name
+        template_name = ''
+        try:
+            template_name = template_map[metadata_type][apex_class_type]
+        except:
+            template_name = template_map[metadata_type]['default']
+        try:
+            custom_template_path = config.connection.get_plugin_client_setting('mm_apex_templates_dir', config.connection.get_plugin_settings_path("User", "templates"))
+            if os.path.exists(os.path.join(custom_template_path, template_name)):
+                custom_env = Environment(loader=FileSystemLoader(custom_template_path),trim_blocks=True)
+                #try to load custom
+                template = custom_env.get_template(template_name)
+            else:
+                raise Exception("Template does not exist")
+        except:
+            #load default template
+            template = env.get_template(template_name)
+    else:
+        file_name = github_template["file_name"]
+        template_body = urllib2.urlopen("https://raw.github.com/joeferraro/MavensMate-Templates/master/{0}/{1}".format(metadata_type, file_name)).read()
+        template = env.from_string(template_body)
+
+
     file_body = template.render(api_name=api_name,object_name=apex_trigger_object_api_name)
     metadata_type = get_meta_type_by_name(metadata_type)
     os.makedirs("{0}/{1}".format(where, metadata_type['directoryName']))

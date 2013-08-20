@@ -259,6 +259,9 @@ def eval_function():
     python_request = request_payload['python']
     print eval(python_request)
 
+def sign_in_with_github():
+    print config.connection.sign_in_with_github()
+
 operation_dict = {
     'new_project'                           : new_project,
     'edit_project'                          : edit_project,
@@ -298,7 +301,8 @@ operation_dict = {
     'index_apex'                            : index_apex_file_properties,
     'update_subscription'                   : update_subscription,
     'new_log'                               : new_trace_flag,
-    'eval'                                  : eval_function
+    'eval'                                  : eval_function,
+    'sign_in_with_github'                   : sign_in_with_github
 }
 
 if  __name__ == '__main__':
