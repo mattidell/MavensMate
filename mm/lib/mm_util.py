@@ -123,21 +123,27 @@ def put_project_directory_on_disk(project_name, **kwargs):
             shutil.rmtree(os.path.join(config.connection.workspace,project_name))
     os.makedirs(os.path.join(config.connection.workspace,project_name))
 
-def put_password(project_name, password):
-    keyring.set_password('MavensMate: '+project_name+'-mm', project_name+'-mm', password)
-
-def get_password_by_project_name(project_name):
-    #TODO: transition to ID-based processing
-    pw = keyring.get_password('MavensMate: '+project_name+'-mm', project_name+'-mm')
-    if pw == None:
-        pw = keyring.get_password('MavensMate: '+project_name, project_name+'-mm')
-    return pw
-
 def put_password_by_key(key, password):
-    keyring.set_password('MavensMate: '+key, key, password)
+    if sys.platform == 'linux2':
+        try:
+            import gnomekeyring
+            gnomekeyring.set_network_password_sync(None, key, 'MavensMate: '+key,
+                None, None, None, None, 0, password)
+        except gnomekeyring.CancelledError:
+            raise MMException('Unable to set password')
+    else:
+        keyring.set_password('MavensMate: '+key, key, password)
 
 def get_password_by_key(key):
-    return keyring.get_password('MavensMate: '+key, key)
+    if sys.platform == 'linux2':
+        try:
+            import gnomekeyring
+            items = gnomekeyring.find_network_password_sync(key, 'MavensMate: '+key)
+            return items[0]['password']
+        except gnomekeyring.CancelledError:
+            raise MMException('Unable to retrieve password')
+    else:
+        return keyring.get_password('MavensMate: '+key, key)
 
 def delete_password_by_key(key):
     try:
