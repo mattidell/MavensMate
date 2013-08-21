@@ -20,9 +20,9 @@ class MavensMatePluginConnection(object):
         params = dict(params.items() + kwargs.items())
         self.operation              = params.get('operation', None)
         self.platform               = sys.platform
-        self.plugin_client          = params.get('client', 'SUBLIME_TEXT_2') #=> "Sublime Text", "Notepad++", "TextMate"
+        self.plugin_client          = params.get('client', 'SUBLIME_TEXT_3') #=> "Sublime Text", "Notepad++", "TextMate"
         if self.plugin_client not in self.currently_supported_clients:
-            self.plugin_client = 'SUBLIME_TEXT_2'
+            self.plugin_client = 'SUBLIME_TEXT_3'
         self.plugin_client_version  = params.get('client_version', '2.0.1') #=> "1.0", "1.1.1", "v1"
         self.plugin_client_settings = self.get_plugin_client_settings()
         self.workspace              = self.get_workspace()
@@ -124,7 +124,11 @@ class MavensMatePluginConnection(object):
             return None
 
         if self.platform == 'darwin':
-            return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
+            if sublime_ver == "Sublime Text 3":
+                if os.path.exists(os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))):
+                    return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
+                else:
+                    return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format("Sublime Text", type, obj))
         elif self.platform == 'win32' or self.platform == 'cygwin':
             return path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
         elif self.platform == 'linux2':
