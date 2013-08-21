@@ -9,7 +9,7 @@ mm_start = time.time()
 logging.raiseExceptions = False
 logging.basicConfig(level=logging.INFO)
 
-logging_handler = logging.FileHandler(tempfile.gettempdir()+"/mm.log")
+logging_handler = logging.FileHandler(os.path.join(tempfile.gettempdir(),"mm.log"))
 
 #suds log setup
 suds_logger = logging.getLogger('suds.client')
