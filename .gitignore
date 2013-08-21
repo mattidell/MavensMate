@@ -57,3 +57,5 @@ tools/pyinstaller-dev/mmserver/build/pyi.darwin/mmserver/out00-PYZ.toc
 platforms/osx/MavensMate/build/upload_release_use_this_one_last_time.py
 
 platforms/osx/MavensMate/build/release_notes.html
+
+platforms/osx/MavensMate/build/upload_release_cdn.py
