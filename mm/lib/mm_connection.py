@@ -126,16 +126,16 @@ class MavensMatePluginConnection(object):
 
         if self.platform == 'darwin':
             if sublime_ver == "Sublime Text 3":
-                if os.path.exists(os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))):
-                    return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
+                if os.path.exists(os.path.expanduser(os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj))):
+                    return os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj)
                 else:
-                    return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format("Sublime Text", type, obj))
+                    return os.path.join(os.path.expanduser('~'),"Library","Application Support","Sublime Text","Packages",type,obj)
             else:
                 return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
         elif self.platform == 'win32' or self.platform == 'cygwin':
-            return os.path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
+            return os.path.join(os.environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate', obj)
         elif self.platform == 'linux2':
-            pass
+            return os.path.join(os.path.expanduser('~'),".config","sublime-text-3","Packages",type,obj)
         else:
             return None
 
