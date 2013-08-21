@@ -20,7 +20,10 @@ import traceback
 import plistlib
 import platform
 import itertools
-import keyring
+if sys.platform == 'linux2':
+    import gnomekeyring
+else:
+    import keyring
 import urllib2
 import webbrowser
 from operator import itemgetter
@@ -126,7 +129,6 @@ def put_project_directory_on_disk(project_name, **kwargs):
 def put_password_by_key(key, password):
     if sys.platform == 'linux2':
         try:
-            import gnomekeyring
             gnomekeyring.set_network_password_sync(None, key, 'MavensMate: '+key,
                 None, None, None, None, 0, password)
         except gnomekeyring.CancelledError:
@@ -137,7 +139,6 @@ def put_password_by_key(key, password):
 def get_password_by_key(key):
     if sys.platform == 'linux2':
         try:
-            import gnomekeyring
             items = gnomekeyring.find_network_password_sync(key, 'MavensMate: '+key)
             return items[0]['password']
         except gnomekeyring.CancelledError:
