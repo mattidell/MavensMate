@@ -137,6 +137,8 @@
                 <div style="text-align:center;">
                     {% if 'project_name' in project_settings() %}
                         {{ project_settings()['project_name'] }} ({{ project_settings()['username'] }})
+                    {% elif operation == 'github' %}
+                        {{ 'Github Connection' }}
                     {% else %}
                         {{ 'New Project' }}
                     {% endif %}

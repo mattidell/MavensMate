@@ -3,6 +3,7 @@
 import os
 import json
 import mm_util
+import mm_github
 import sys
 import config
 import logging
@@ -207,6 +208,26 @@ class MavensMatePluginConnection(object):
             return self.get_plugin_client_setting('mm_api_version')
         except:
             return None
+
+    def sign_in_with_github(self, creds):
+        try:
+            response = mm_github.sign_in(creds)
+            if 'message' in response:
+                return mm_util.generate_error_response(response['message'])
+            elif 'authentication' in response:
+                if self.platform == 'darwin':
+                    if not os.path.exists(os.path.join(os.path.expanduser('~'),'Library','Application Support','MavensMate')):
+                        os.makedirs(os.path.join(os.path.expanduser('~'),'Library','Application Support','MavensMate'))
+
+                    src = open(os.path.join(os.path.expanduser('~'),'Library','Application Support','MavensMate','.github.json'), "w")
+                    src.write(json.dumps(response, sort_keys=False, indent=4))
+                    src.close() 
+                    return mm_util.generate_success_response('Connected to GitHub successfully!')
+            else:
+                return mm_util.generate_error_response(response)
+        except Exception, e:
+            return mm_util.generate_error_response("Error connecting to GitHub: "+e.message)
+
 
 
 
