@@ -170,8 +170,9 @@ def parse_rest_response(body):
     rjson = json.loads(body)
     return rjson
 
-def zip_directory(directory_to_zip, where_to_put_zip_file=tempfile.gettempdir(), base64_encode=True):
-    #shutil.make_archive(where_to_put_zip_file+'/mm', 'zip', directory_to_zip+"/")
+def zip_directory(directory_to_zip, where_to_put_zip_file=None, base64_encode=True):
+    if where_to_put_zip_file == None:
+        where_to_put_zip_file = get_temp_directory()
     shutil.make_archive(os.path.join(where_to_put_zip_file,'mm'), 'zip', os.path.join(directory_to_zip))
     if base64_encode == True:
         file_contents = open(os.path.join(where_to_put_zip_file,"mm.zip"), "r").read()
@@ -246,9 +247,17 @@ def parse_json(filename):
         # Return json file
         return json.loads(content)
 
+def get_temp_directory():
+    if sys.platform == 'linux2':
+        if not os.path.exists(os.path.join(os.path.expanduser('~'),".mm")):
+            os.makedirs(os.path.join(os.path.expanduser('~'),".mm"))
+        return os.path.join(os.path.expanduser('~'),".mm")
+    else:
+        return tempfile.gettempdir()
+
 def put_tmp_directory_on_disk(put_unpackaged_directory=False):
-    tmp_dir = tempfile.gettempdir()
-    mm_tmp_directory = os.path.join("{0}",".org.mavens.mavensmate.{1}".format(tmp_dir, get_random_string()))
+    tmp_dir = get_temp_directory()
+    mm_tmp_directory = os.path.join(tmp_dir,".org.mavens.mavensmate."+get_random_string())
     os.makedirs(mm_tmp_directory)
     if put_unpackaged_directory == True:
         os.makedirs(mm_tmp_directory+"/unpackaged")
@@ -256,7 +265,7 @@ def put_tmp_directory_on_disk(put_unpackaged_directory=False):
     return mm_tmp_directory
 
 def put_tmp_file_on_disk(name, body, ext=''):
-    tmp_dir = tempfile.gettempdir()
+    tmp_dir = get_temp_directory()
     file_name = '[--SERVER COPY--] '+name
     f = open("{0}/{1}.{2}".format(tmp_dir, file_name, ext), 'w')
     f.write(body)
@@ -264,7 +273,7 @@ def put_tmp_file_on_disk(name, body, ext=''):
     return "{0}/{1}.{2}".format(tmp_dir, file_name, ext)
 
 def put_file_in_tmp_directory(file_name, body):
-    tmp_dir = tempfile.gettempdir()
+    tmp_dir = get_temp_directory()
     f = open(os.path.join(tmp_dir, file_name), 'w')
     f.write(body)
     f.close()
