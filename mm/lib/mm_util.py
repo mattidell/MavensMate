@@ -22,6 +22,7 @@ import platform
 import itertools
 import keyring
 import urllib2
+import webbrowser
 from operator import itemgetter
 from mm_exceptions import MMException
 from jinja2 import Environment, FileSystemLoader
@@ -41,7 +42,7 @@ PRODUCTION_ENDPOINT_SHORT = "https://www.salesforce.com"
 SANDBOX_ENDPOINT_SHORT    = "https://test.salesforce.com"
 PRERELEASE_ENDPOINT_SHORT = "https://prerellogin.pre.salesforce.com"
 
-WSDL_PATH = config.base_path + "/lib/wsdl" #this can be overridden by client settings or request parameter
+WSDL_PATH = os.path.join(config.base_path,"lib","wsdl") #this can be overridden by client settings or request parameter
 
 ENDPOINTS = {
     "production" : PRODUCTION_ENDPOINT,
@@ -56,7 +57,7 @@ URL_TO_ENDPOINT_TYPE = {
     PRERELEASE_ENDPOINT : "prerelease"
 }
 
-template_path = config.base_path + "/lib/templates"
+template_path = os.path.join(config.base_path,"lib","templates")
 
 env = Environment(loader=FileSystemLoader(template_path),trim_blocks=True)
 
@@ -118,9 +119,9 @@ def get_sfdc_endpoint_by_type(type):
 
 def put_project_directory_on_disk(project_name, **kwargs):
     if 'force' in kwargs and kwargs['force'] == True:
-        if os.path.isdir(config.connection.workspace+"/"+project_name):
-            shutil.rmtree(config.connection.workspace+"/"+project_name)
-    os.makedirs(config.connection.workspace+"/"+project_name)
+        if os.path.isdir(os.path.join(config.connection.workspace,project_name)):
+            shutil.rmtree(os.path.join(config.connection.workspace,project_name))
+    os.makedirs(os.path.join(config.connection.workspace,project_name))
 
 def put_password(project_name, password):
     keyring.set_password('MavensMate: '+project_name+'-mm', project_name+'-mm', password)
@@ -163,9 +164,10 @@ def parse_rest_response(body):
     return rjson
 
 def zip_directory(directory_to_zip, where_to_put_zip_file=tempfile.gettempdir(), base64_encode=True):
-    shutil.make_archive(where_to_put_zip_file+'/mm', 'zip', directory_to_zip+"/")
+    #shutil.make_archive(where_to_put_zip_file+'/mm', 'zip', directory_to_zip+"/")
+    shutil.make_archive(os.path.join(where_to_put_zip_file,'mm'), 'zip', os.path.join(directory_to_zip))
     if base64_encode == True:
-        file_contents = open(where_to_put_zip_file+"/mm.zip", "r").read()
+        file_contents = open(os.path.join(where_to_put_zip_file,"mm.zip"), "r").read()
         base64_zip = base64.b64encode(file_contents)
         return base64_zip
 
@@ -390,6 +392,7 @@ def generate_ui(operation,params={}):
     env.globals['metadata_types']           = metadata_types
     env.globals['client_subscription_list'] = client_subscription_list
     env.globals['base_local_server_url']    = base_local_server_url
+    env.globals['operation']                = operation
     temp = tempfile.NamedTemporaryFile(delete=False, prefix="mm")
     if operation == 'new_project':
         template = env.get_template('/project/new.html')
@@ -429,7 +432,7 @@ def generate_ui(operation,params={}):
                 if f == "." or f == ".." or '-meta.xml' in f or ".svn" in f:
                     continue
                 try:
-                    full_file_path = dirname+"/"+f
+                    full_file_path = os.path.join(dirname,f)
                     if istest.search(open(full_file_path).read()) or testmethod.search(open(full_file_path).read()):
                         apex_classes.append(f.split(".")[0])
                 except:
@@ -478,6 +481,11 @@ def generate_ui(operation,params={}):
             user_id=config.connection.project.sfdc_client.user_id,
             apex_items=config.connection.project.sfdc_client.get_apex_classes_and_triggers(),
             #logs=config.connection.project.get_org_logs(),
+            client=config.connection.plugin_client).encode('UTF-8')
+    elif operation == 'github':
+        template = env.get_template('/github/index.html')
+        file_body = template.render(
+            base_path=config.base_path,
             client=config.connection.plugin_client).encode('UTF-8')
     temp.write(file_body)
     temp.close()
@@ -536,7 +544,7 @@ def metadata_types():
 
 def does_file_exist(api_name, metadata_type_name):
     metadata_type = get_meta_type_by_name(metadata_type_name)
-    if os.path.isfile(config.connection.project.location+"/src/"+metadata_type['directoryName']+"/"+api_name+"."+metadata_type['suffix']):
+    if os.path.isfile(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix'])):
         return True
     else:
         return False
@@ -544,8 +552,8 @@ def does_file_exist(api_name, metadata_type_name):
 def get_file_lines(api_name, metadata_type_name):
     try:
         metadata_type = get_meta_type_by_name(metadata_type_name)
-        if os.path.isfile(config.connection.project.location+"/src/"+metadata_type['directoryName']+"/"+api_name+"."+metadata_type['suffix']):
-            return open(config.connection.project.location+"/src/"+metadata_type['directoryName']+"/"+api_name+"."+metadata_type['suffix']).readlines()
+        if os.path.isfile(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix'])):
+            return open(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix']).readlines()
         else:
             return []
     except:
@@ -566,8 +574,12 @@ def htmlize(seed):
         return 'Not Available'
 
 def launch_ui(tmp_html_file_location):
-    os.system("open -n '"+config.base_path+"/bin/MavensMateWindowServer.app' --args -url '"+tmp_html_file_location+"'")
-    threading.Thread(target=remove_tmp_html_file, args=(tmp_html_file_location,)).start()
+    use_browser_as_ui = config.connection.get_plugin_client_setting('mm_use_browser_as_ui', False)
+    if use_browser_as_ui:
+        webbrowser.open_new("{0}{1}".format("file:///",tmp_html_file_location))
+    else:
+        os.system("open -n '"+config.base_path+"/bin/MavensMateWindowServer.app' --args -url '"+tmp_html_file_location+"'")
+    #threading.Thread(target=remove_tmp_html_file, args=(tmp_html_file_location,)).start()
 
 def remove_tmp_html_file(tmp_html_file_location):
     time.sleep(1)

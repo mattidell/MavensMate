@@ -92,7 +92,7 @@ class MavensMateProject(object):
             if action == 'new':
                 project_metadata = self.sfdc_client.retrieve(package=self.package)
                 mm_util.put_project_directory_on_disk(self.project_name, force=True)
-                mm_util.extract_base64_encoded_zip(project_metadata.zipFile, config.connection.workspace+"/"+self.project_name)
+                mm_util.extract_base64_encoded_zip(project_metadata.zipFile, os.path.join(config.connection.workspace,self.project_name))
                 mm_util.rename_directory(os.path.join(config.connection.workspace,self.project_name,"unpackaged"), os.path.join(config.connection.workspace,self.project_name,"src"))
             elif action == 'existing' and existing_is_in_workspace == False:
                 shutil.move(self.directory, config.connection.workspace)
@@ -239,7 +239,7 @@ class MavensMateProject(object):
                 metadata_hash[val['name']] = [val['members']]
 
         new_package_xml_contents = mm_util.get_package_xml_contents(metadata_hash)
-        existing_package_xml = open(self.location+"/src/package.xml", "w")
+        existing_package_xml = open(os.path.join(self.location,"src","package.xml"), "w")
         existing_package_xml.write(new_package_xml_contents)
         existing_package_xml.close()
 
@@ -247,8 +247,8 @@ class MavensMateProject(object):
     def compile(self):
         try:
             tmp = mm_util.put_tmp_directory_on_disk()
-            shutil.copytree(self.location+"/src", tmp+"/src")
-            mm_util.rename_directory(tmp+"/src", tmp+"/unpackaged")
+            shutil.copytree(os.path.join(self.location,"src"), os.path.join(tmp,"src"))
+            mm_util.rename_directory(os.path.join(tmp,"src"), os.path.join(tmp,"unpackaged"))
             zip_file = mm_util.zip_directory(tmp, tmp)
             mm_compile_rollback_on_error = config.connection.get_plugin_client_setting("mm_compile_rollback_on_error", False)
             deploy_params = {
@@ -365,7 +365,7 @@ class MavensMateProject(object):
 
                 metadata_package_dict = mm_util.get_metadata_hash(files)
                 tmp = mm_util.put_tmp_directory_on_disk()
-                os.makedirs(tmp+"/unpackaged")
+                os.makedirs(os.path.join(tmp,"unpackaged"))
                 #copy files from project directory to tmp
                 for full_file_path in files:
                     if '/package.xml' in full_file_path:
@@ -377,7 +377,7 @@ class MavensMateProject(object):
                     shutil.copy2(full_file_path, destination_directory)
 
                 package_xml = mm_util.get_package_xml_contents(metadata_package_dict)
-                mm_util.put_package_xml_in_directory(tmp+"/unpackaged", package_xml)
+                mm_util.put_package_xml_in_directory(os.path.join(tmp,"unpackaged"), package_xml)
                 zip_file = mm_util.zip_directory(tmp, tmp)
                 deploy_params = {
                     "zip_file"          : zip_file,
@@ -512,7 +512,7 @@ class MavensMateProject(object):
             mm_util.extract_base64_encoded_zip(project_metadata.zipFile, self.location)
 
             #removes all metadata from directories
-            for dirname, dirnames, filenames in os.walk(self.location+"/src"):
+            for dirname, dirnames, filenames in os.walk(os.path.join(self.location,"src")):
                 if '.git' in dirnames:
                     dirnames.remove('.git')
                 if '.svn' in dirnames:
@@ -524,7 +524,7 @@ class MavensMateProject(object):
                         os.remove(full_file_path)
 
             #replaces with retrieved metadata
-            for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
+            for dirname, dirnames, filenames in os.walk(os.path.join(self.location,"unpackaged")):
                 for filename in filenames:
                     full_file_path = os.path.join(dirname, filename)
                     if '/unpackaged/package.xml' in full_file_path:
@@ -536,8 +536,8 @@ class MavensMateProject(object):
                     shutil.move(full_file_path, destination)
            
             #remove empty directories
-            for dirname, dirnames, filenames in os.walk(self.location+"/src"):
-                if dirname == self.location+"/src":
+            for dirname, dirnames, filenames in os.walk(os.path.join(self.location,"src")):
+                if dirname == os.path.join(self.location,"src"):
                     continue
                 files = os.listdir(dirname)
                 if len(files) == 0:
@@ -545,9 +545,9 @@ class MavensMateProject(object):
                     
 
             if 'overwrite_package_xml' in kwargs and kwargs['overwrite_package_xml'] == True:
-                os.remove(self.location+"/src/package.xml")
-                shutil.move(self.location+"/unpackaged/package.xml", self.location+"/src")
-            shutil.rmtree(self.location+"/unpackaged")
+                os.remove(os.path.join(self.location,"src","package.xml"))
+                shutil.move(os.path.join(self.location,"unpackaged","package.xml"), os.path.join(self.location,"src"))
+            shutil.rmtree(os.path.join(self.location,"unpackaged"))
             return mm_util.generate_success_response('Project Cleaned Successfully')
         except Exception, e:
             #TODO: if the clean fails, we need to have a way to ensure the project is returned to its original state
@@ -638,7 +638,7 @@ class MavensMateProject(object):
 
             #TODO: handle exception that could render the project unusable bc of lost files
             #replace project metadata with retrieved metadata
-            for dirname, dirnames, filenames in os.walk(self.location+"/unpackaged"):
+            for dirname, dirnames, filenames in os.walk(os.path.join(self.location,"unpackaged")):
                 for filename in filenames:
                     full_file_path = os.path.join(dirname, filename)
                     if '/unpackaged/package.xml' in full_file_path:
@@ -648,7 +648,7 @@ class MavensMateProject(object):
                     if not os.path.exists(destination_directory):
                         os.makedirs(destination_directory)
                     shutil.move(full_file_path, destination)
-            shutil.rmtree(self.location+"/unpackaged")
+            shutil.rmtree(os.path.join(self.location,"unpackaged"))
             return mm_util.generate_success_response("Refresh Completed Successfully")
         except Exception, e:
             return mm_util.generate_error_response(e.message)
@@ -904,7 +904,7 @@ class MavensMateProject(object):
                 'username'      : payload['username'],
                 'environment'   : payload['org_type']
             })
-            src = open(self.location+"/config/.org_connections", 'w')
+            src = open(os.path.join(self.location,"config",".org_connections"), 'w')
             json_data = json.dumps(org_connections, sort_keys=False, indent=4)
             src.write(json_data)
             src.close()
@@ -915,12 +915,12 @@ class MavensMateProject(object):
     #returns a list of all org connections for this project
     def get_org_connections(self, json=True):
         try:
-            if not os.path.exists(self.location+"/config/.org_connections"):
+            if not os.path.exists(os.path.join(self.location,"config",".org_connections")):
                 return []
             if json:
-                return open(self.location+"/config/.org_connections", "r").read()
+                return open(os.path.join(self.location,"config",".org_connections"), "r").read()
             else:
-                return mm_util.parse_json_from_file(self.location+"/config/.org_connections")
+                return mm_util.parse_json_from_file(os.path.join(self.location,"config",".org_connections"))
         except:
             return []
 
@@ -932,7 +932,7 @@ class MavensMateProject(object):
             for connection in org_connections:
                 if connection['id'] != payload['id']:
                     updated_org_connections.append(connection)
-            src = open(self.location+"/config/.org_connections", 'w')
+            src = open(os.path.join(self.location,"config",".org_connections"), 'w')
             json_data = json.dumps(updated_org_connections, sort_keys=False, indent=4)
             src.write(json_data)
             src.close()
@@ -989,7 +989,7 @@ class MavensMateProject(object):
             #so we simply overwirte .org_metadata with the new index 
             if mtypes == None:
                 file_body = json.dumps(return_list, sort_keys=False, indent=4)
-                src = open(self.location+"/config/.org_metadata", "w")
+                src = open(os.path.join(self.location,"config",".org_metadata"), "w")
                 src.write(file_body)
                 src.close()
                 return file_body
@@ -1003,7 +1003,7 @@ class MavensMateProject(object):
                             break
 
                 file_body = json.dumps(existing_index, sort_keys=False, indent=4)
-                src = open(self.location+"/config/.org_metadata", "w")
+                src = open(os.path.join(self.location,"config",".org_metadata"), "w")
                 src.write(file_body)
                 src.close()
                 return file_body

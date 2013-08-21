@@ -257,7 +257,7 @@ class MavensMateClient(object):
                 mm_util.extract_base64_encoded_zip(retrieve_result.zipFile, tmp)
 
                 #iterate extracted directory
-                for dirname, dirnames, filenames in os.walk(tmp+"/unpackaged/"+metadata_type_def['directoryName']):
+                for dirname, dirnames, filenames in os.walk(os.path.join(tmp,"unpackaged",metadata_type_def['directoryName'])):
                     for f in filenames:
                         #f => Account.object
                         full_file_path = os.path.join(dirname, f)

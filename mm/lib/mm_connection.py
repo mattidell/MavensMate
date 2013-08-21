@@ -52,7 +52,7 @@ class MavensMatePluginConnection(object):
 
         if self.project_name != None and self.project_name != '' and not os.path.exists(self.project_location) and self.operation != 'new_project_from_existing_directory' and self.operation != 'new_project':
             raise MMException('The project could not be found')
-        elif self.project_name != None and self.project_name != '' and os.path.exists(self.workspace+"/"+self.project_name) and self.operation != 'new_project_from_existing_directory':
+        elif self.project_name != None and self.project_name != '' and os.path.exists(os.path.join(self.workspace,self.project_name)) and self.operation != 'new_project_from_existing_directory':
             params['location'] = self.project_location
             params['ui'] = self.ui
             self.project = MavensMateProject(params)
@@ -63,7 +63,7 @@ class MavensMatePluginConnection(object):
                 try:
                     config.logger.handlers = []
                     config.suds_logger.handlers = []
-                    handler = logging.FileHandler(self.get_log_location()+"/mm.log")
+                    handler = logging.FileHandler(os.path.join(self.get_log_location(),"mm.log"))
                     config.logger.addHandler(handler)
                     config.suds_logger.addHandler(handler)
                 except:
@@ -129,8 +129,10 @@ class MavensMatePluginConnection(object):
                     return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
                 else:
                     return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format("Sublime Text", type, obj))
+            else:
+                return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
         elif self.platform == 'win32' or self.platform == 'cygwin':
-            return path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
+            return os.path.join(environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate')+obj
         elif self.platform == 'linux2':
             pass
         else:
