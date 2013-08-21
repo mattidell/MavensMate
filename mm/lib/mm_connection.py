@@ -131,7 +131,7 @@ class MavensMatePluginConnection(object):
                 else:
                     return os.path.join(os.path.expanduser('~'),"Library","Application Support","Sublime Text","Packages",type,obj)
             else:
-                return os.path.expanduser('~/Library/Application Support/{0}/Packages/{1}/{2}'.format(sublime_ver, type, obj))
+                return os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj)
         elif self.platform == 'win32' or self.platform == 'cygwin':
             return os.path.join(os.environ['APPDATA'], sublime_ver, 'Packages', 'MavensMate', obj)
         elif self.platform == 'linux2':
