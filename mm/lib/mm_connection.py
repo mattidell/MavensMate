@@ -126,7 +126,7 @@ class MavensMatePluginConnection(object):
 
         if self.platform == 'darwin':
             if sublime_ver == "Sublime Text 3":
-                if os.path.exists(os.path.expanduser(os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj))):
+                if os.path.exists(os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj)):
                     return os.path.join(os.path.expanduser('~'),"Library","Application Support",sublime_ver,"Packages",type,obj)
                 else:
                     return os.path.join(os.path.expanduser('~'),"Library","Application Support","Sublime Text","Packages",type,obj)
