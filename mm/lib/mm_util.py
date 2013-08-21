@@ -553,7 +553,7 @@ def get_file_lines(api_name, metadata_type_name):
     try:
         metadata_type = get_meta_type_by_name(metadata_type_name)
         if os.path.isfile(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix'])):
-            return open(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix']).readlines()
+            return open(os.path.join(config.connection.project.location,"src",metadata_type['directoryName'],api_name+"."+metadata_type['suffix'])).readlines()
         else:
             return []
     except:
@@ -575,7 +575,7 @@ def htmlize(seed):
 
 def launch_ui(tmp_html_file_location):
     use_browser_as_ui = config.connection.get_plugin_client_setting('mm_use_browser_as_ui', False)
-    if use_browser_as_ui:
+    if use_browser_as_ui or sys.platform != 'darwin':
         webbrowser.open_new("{0}{1}".format("file:///",tmp_html_file_location))
     else:
         os.system("open -n '"+config.base_path+"/bin/MavensMateWindowServer.app' --args -url '"+tmp_html_file_location+"'")
