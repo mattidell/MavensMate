@@ -18,8 +18,6 @@ from sforce.metadata import SforceMetadataClient
 from sforce.apex import SforceApexClient
 from sforce.tooling import SforceToolingClient
 
-#wsdl_path = config.base_path + "/lib/wsdl"
-
 class MavensMateClient(object):
 
     def __init__(self, **kwargs):
