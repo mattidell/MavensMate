@@ -63,13 +63,13 @@ def setup_connection(args):
         #project_name        = request_payload.get('project_name', args.projectname)
         #project_directory   = request_payload.get('project_directory', args.projectdirectory)
         config.connection = MavensMatePluginConnection(
-            client=args.client or 'SUBLIME_TEXT_2',
+            client=args.client or 'SUBLIME_TEXT_3',
             ui=args.ui_switch,
             params=request_payload,
             operation=args.operation)
     else:
         config.connection = MavensMatePluginConnection(
-            client=args.client or 'SUBLIME_TEXT_2',
+            client=args.client or 'SUBLIME_TEXT_3',
             params=request_payload,
             operation=args.operation)
 
@@ -174,6 +174,9 @@ def fetch_logs():
 def new_trace_flag():
     print config.connection.project.new_trace_flag(request_payload)
 
+def new_quick_trace_flag():
+    print config.connection.project.new_quick_trace_flag()
+
 # echo '{ "project_name" : "bloat", "classes" : [ "MyTester" ] }' | joey2 mavensmate.py -o 'test'
 def run_unit_tests(args):
     test_result = config.connection.project.run_unit_tests(request_payload)
@@ -260,7 +263,7 @@ def eval_function():
     print eval(python_request)
 
 def sign_in_with_github():
-    print config.connection.sign_in_with_github()
+    print config.connection.sign_in_with_github(request_payload)
 
 operation_dict = {
     'new_project'                           : new_project,
@@ -301,6 +304,7 @@ operation_dict = {
     'index_apex'                            : index_apex_file_properties,
     'update_subscription'                   : update_subscription,
     'new_log'                               : new_trace_flag,
+    'new_quick_log'                         : new_quick_trace_flag,
     'eval'                                  : eval_function,
     'sign_in_with_github'                   : sign_in_with_github
 }
