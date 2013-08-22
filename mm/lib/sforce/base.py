@@ -14,15 +14,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # Written by: David Lanstein ( dlanstein gmail com )
 
-import string
-import sys
 import os.path
-import re
 import lib.config as config
 import lib.mm_util as mm_util
 from suds.plugin import MessagePlugin
 from suds.client import Client
-from suds.xsd.doctor import Import, ImportDoctor
 from suds.transport.http import HttpTransport as SudsHttpTransport
 
 try:

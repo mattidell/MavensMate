@@ -13,5 +13,5 @@ params = {
     "client"        : "SUBLIME_TEXT_3"
 }
 connection = MavensMatePluginConnection(params)
-resp = connection.project.setup_quick_log()
+resp = connection.project.new_quick_trace_flag()
 print resp

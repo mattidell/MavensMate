@@ -15,7 +15,7 @@
 # Written by: David Lanstein ( dlanstein gmail com )
 
 from base import SforceBaseClient
-import xmltodict
+import lib.xmltodict as xmltodict
 import time
 import lib.mm_util as mm_util
 

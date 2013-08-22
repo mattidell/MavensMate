@@ -16,8 +16,6 @@
 
 
 from base import SforceBaseClient
-
-import string
 import suds.sudsobject
 
 class SforcePartnerClient(SforceBaseClient):

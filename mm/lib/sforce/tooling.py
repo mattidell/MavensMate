@@ -1,10 +1,6 @@
 from base import SforceBaseClient
 
 import re
-import string
-import suds.sudsobject
-import xmltodict
-import lib.mm_util as mm_util
 
 class SforceToolingClient(SforceBaseClient):
     def __init__(self, wsdl, *args, **kwargs):

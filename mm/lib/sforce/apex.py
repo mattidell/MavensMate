@@ -3,7 +3,7 @@ from base import SforceBaseClient
 import re
 import string
 import suds.sudsobject
-import xmltodict
+import lib.xmltodict as xmltodict
 import lib.mm_util as mm_util
 
 class SforceApexClient(SforceBaseClient):
