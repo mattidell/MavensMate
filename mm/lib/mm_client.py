@@ -490,6 +490,7 @@ class MavensMateClient(object):
         r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
         query_result = mm_util.parse_rest_response(r.text)
+        print query_result
         try:
             return query_result['records'][0]['Id']
         except:
@@ -502,6 +503,27 @@ class MavensMateClient(object):
                 return create_response["id"]
             else:
                 return "error"
+
+    #creates a flag only. the flag tells salesforce to generate some kind of debug log
+    def new_metadatacontainer_for_this_user(self):
+        payload = {}
+        payload['Name'] = "MavensMate-"+self.user_id
+        payload = json.dumps(payload)
+        r = requests.post(self.get_tooling_url()+"/sobjects/MetadataContainer", data=payload, headers=self.get_rest_headers('POST'), verify=False)
+        return mm_util.parse_rest_response(r.text)            
+
+    #deletes ALL checkpoints in the org
+    def delete_mavensmate_metadatacontainers_for_this_user(self):
+        query_string = "Select Id from MetadataContainer Where Name = 'MavensMate-"+self.user_id+"'"
+        r = requests.get(self.get_tooling_url()+"/query/", params={'q':query_string}, headers=self.get_rest_headers(), verify=False)
+        r.raise_for_status()
+        qr = mm_util.parse_rest_response(r.text)
+        responses = []
+        for r in qr['records']:
+            resp = self.delete_tooling_entity("MetadataContainer", r["Id"])
+            responses.append(resp.status_code)
+        return responses
+
 
     #################
     #APEX CHECKPOINTS
@@ -773,6 +795,7 @@ class MavensMateClient(object):
     def delete_tooling_entity(self, type, id):
         r = requests.delete(self.get_tooling_url()+"/sobjects/{0}/{1}".format(type, id), headers=self.get_rest_headers(), verify=False)
         r.raise_for_status()
+        return r
 
     def get_field_definition(self, object_enum_or_id):
         query_string = "Select DeveloperName, Metadata FROM CustomField WHERE TableEnumOrId = '{0}'".format('01IA0000002C6aMMAS')

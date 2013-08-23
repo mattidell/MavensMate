@@ -330,7 +330,7 @@ class MavensMateProject(object):
 
         #use tooling api here, if possible
         if use_tooling_api == True and compiling_apex_metadata and int(float(mm_util.SFDC_API_VERSION)) >= 27:
-            if 'metadata_container' not in self.settings:
+            if 'metadata_container' not in self.settings or self.settings['metadata_container'] == None:
                 container_id = self.sfdc_client.get_metadata_container_id()
                 new_settings = self.settings
                 new_settings['metadata_container'] = container_id
@@ -507,6 +507,15 @@ class MavensMateProject(object):
             #TESTING: moving to tmp directory in case something goes wrong during clean
             # tmp = mm_util.put_tmp_directory_on_disk()
             # shutil.copytree(self.location, tmp)
+            
+            use_tooling_api = config.connection.get_plugin_client_setting('mm_compile_with_tooling_api', False)
+            if use_tooling_api == True and int(float(mm_util.SFDC_API_VERSION)) >= 27:
+                self.sfdc_client.delete_mavensmate_metadatacontainers_for_this_user()
+                resp = self.sfdc_client.new_metadatacontainer_for_this_user()
+                #{u'errors': [], u'id': u'1dc40000000PBgKAAW', u'success': True}
+                new_settings = self.settings
+                new_settings['metadata_container'] = resp["id"]
+                self.__put_settings_file(new_settings)
 
             project_metadata = self.sfdc_client.retrieve(package=self.package)
             mm_util.extract_base64_encoded_zip(project_metadata.zipFile, self.location)
