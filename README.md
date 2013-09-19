@@ -1,4 +1,4 @@
-# [MavensMate v0.35.1](http://mavensmate.com)
+# [MavensMate](http://mavensmate.com)
 
 MavensMate is a powerful open source tool for building Force.com IDEs. Develop Force.com applications in your favorite text editors, like Sublime Text. MavensMate is created and maintained by [Joe Ferraro](http://twitter.com/joeferraro).
 
