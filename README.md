@@ -8,7 +8,7 @@ To get started, check out [http://mavensmate.com](http://mavensmate.com)!
 
 Have a bug or a feature request? [Please open a new issue](https://github.com/joeferraro/mavensmate/issues). Before opening any issue, please search for existing issues.
 
-**Always include your MavensMate version number(s) (for example, MavensMate.app v0.35.1 and MavensMate for Sublime Text 3.0.8) AND plugin client version number (for example, Sublime Text 3 build 3051)**
+**Always include your MavensMate version number(s) (for example, MavensMate.app v0.35.1 and MavensMate for Sublime Text 3.0.8) AND plugin client version number (for example, Sublime Text 3 build 3051) when submitting issues.**
 
 ## Documentation
 
