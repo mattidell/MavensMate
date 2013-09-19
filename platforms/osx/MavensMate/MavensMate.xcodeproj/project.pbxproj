@@ -29,8 +29,7 @@
 		46CF1690174C0AE9002DC516 /* mm-3-osx.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46CF168F174C0AE9002DC516 /* mm-3-osx.icns */; };
 		46CF169A174C0E41002DC516 /* mm-2-triangle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46CF1699174C0E41002DC516 /* mm-2-triangle@2x.png */; };
 		46CF16A6174CAFF5002DC516 /* mm-2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 46CF16A5174CAFF5002DC516 /* mm-2.icns */; };
-		46DC902816F12F25005ED324 /* mmserver in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902716F12F25005ED324 /* mmserver */; };
-		46DC902A16F12F32005ED324 /* mm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902916F12F32005ED324 /* mm */; };
+		46D8B0BB17EB0032001A5D8A /* mm in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46D8B0BA17EB0032001A5D8A /* mm */; };
 		46DC902C16F12F79005ED324 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46DC902B16F12F79005ED324 /* Sparkle.framework */; };
 		46DC902D16F12FC7005ED324 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 46DC902B16F12F79005ED324 /* Sparkle.framework */; };
 		46FEB9521707019A00515A23 /* PluginViews.xib in Resources */ = {isa = PBXBuildFile; fileRef = 46FEB9511707019A00515A23 /* PluginViews.xib */; };
@@ -55,8 +54,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				46DC902A16F12F32005ED324 /* mm in CopyFiles */,
-				46DC902816F12F25005ED324 /* mmserver in CopyFiles */,
+				46D8B0BB17EB0032001A5D8A /* mm in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,8 +95,7 @@
 		46CF168F174C0AE9002DC516 /* mm-3-osx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "mm-3-osx.icns"; sourceTree = "<group>"; };
 		46CF1699174C0E41002DC516 /* mm-2-triangle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mm-2-triangle@2x.png"; sourceTree = "<group>"; };
 		46CF16A5174CAFF5002DC516 /* mm-2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "mm-2.icns"; sourceTree = "<group>"; };
-		46DC902716F12F25005ED324 /* mmserver */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mmserver; path = ../../../mmserver/dist/mmserver; sourceTree = "<group>"; };
-		46DC902916F12F32005ED324 /* mm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mm; path = ../../../mm/dist/mm; sourceTree = "<group>"; };
+		46D8B0BA17EB0032001A5D8A /* mm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mm; path = ../../../../../Github/mm/dist/mm; sourceTree = "<group>"; };
 		46DC902B16F12F79005ED324 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		46FEB95017042FC600515A23 /* MavensMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MavensMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46FEB9511707019A00515A23 /* PluginViews.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PluginViews.xib; sourceTree = "<group>"; };
@@ -166,12 +163,11 @@
 		46A3907916EDE46A008B5C2C = {
 			isa = PBXGroup;
 			children = (
+				46D8B0BA17EB0032001A5D8A /* mm */,
 				46CF168F174C0AE9002DC516 /* mm-3-osx.icns */,
 				461E5B8716FCA9A5000DA2DD /* Controller */,
 				461E5B8616FCA998000DA2DD /* View */,
 				461E5B8516FCA98F000DA2DD /* Model */,
-				46DC902916F12F32005ED324 /* mm */,
-				46DC902716F12F25005ED324 /* mmserver */,
 				46A3925716EE061E008B5C2C /* Resources */,
 				46A3908B16EDE46A008B5C2C /* MavensMate */,
 				46A3908416EDE46A008B5C2C /* Frameworks */,

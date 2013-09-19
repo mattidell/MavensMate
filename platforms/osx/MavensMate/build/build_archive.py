@@ -3,7 +3,6 @@ import sys
 import shutil
 import subprocess
 import pipes
-import xmltodict
 from jinja2 import Environment, FileSystemLoader
 import jinja2.ext
 import ftplib
