@@ -61,3 +61,5 @@ platforms/osx/MavensMate/build/release_notes.html
 platforms/osx/MavensMate/build/upload_release_cdn.py
 
 mm/build/copy_to_st_package.py
+
+platforms/osx/MavensMate/build/release_mavensmate_app_to_the_world.py
