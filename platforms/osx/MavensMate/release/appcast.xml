@@ -6,9 +6,30 @@
       <description>Most recent changes with links to updates.</description>
       <language>en</language>
          <item>
-            <title>Version 0.35.4</title>
+            <title>Version 0.35.5</title>
 						<description><![CDATA[
-                <h2>MavensMate.app Version 0.35.4</h2>
+                <h2>MavensMate.app Version 0.35.5</h2>
+<p>This is a major release, so updating is recommended (be sure to update both MavensMate.app and MM for ST3 plugin)</p>
+<p>
+<h3>Enhancements</h3>
+<ul>
+   <li>mm_workspace now supports the ability to be set as an array, allowing you to specify multiple possible locations for your projects (see default settings for new setting format)</li>
+   <li>You can now set a "Custom URL" for your project during creation (https://my-custom-url.salesforce.com)</li>
+   <li>Project Health Check can now open the offending items in Sublime Text by clicking the "View" button</li>
+   <li>Adds debug logs to deployment result UI</li>
+   <li>Adds local templates in case GitHub goes down</li>
+   <li>Better "test selector" UI/UX in the Apex test runner</li>
+</ul>
+<h3>Fixes</h3>
+<ul>
+   <li>Refreshing from "src" directory now works properly</li>
+   <li>Resolves issue some Linux/Windows users were experiencing where invalid characters were being displayed in the "execute apex" UI</li>
+   <li>MavensMate panel in Sublime Text now properly scrolls down on metadata api compile errors (shoutout to @tehnrd)</li>
+   <li>Various other minor bug fixes</li>
+</ul>
+</p>
+<hr/>
+<h2>MavensMate.app Version 0.35.4</h2>
 <p>
 <h3>Rundown of changes/fixes/improvements</h3>
 <ul>
@@ -76,8 +97,8 @@ Versions 0.35+ of MavensMate.app are intended for use with <b><u>Sublime Text 3 
 </p>
             ]]>
             </description>
-            <pubDate>Thu, 26 September 2013 20:13:24 +0000</pubDate>
-            <enclosure url="http://push.mavensconsulting.netdna-cdn.com/mavensmate/builds/MavensMate.zip" sparkle:version="0.35.4" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MC4CFQCiEWxG/H538VKEDR7NbnMT37i/mwIVAJ2JI5jp/h9NhEnPwjtfKfbTNbyu" />
+            <pubDate>Wed, 09 October 2013 09:25:44 +0000</pubDate>
+            <enclosure url="http://push.mavensconsulting.netdna-cdn.com/mavensmate/builds/MavensMate.zip" sparkle:version="0.35.5" length="1623481" type="application/octet-stream" sparkle:dsaSignature="MCwCFD5Ib1dSZRG5VaduvccA9eIyUL0iAhQEgyUR7hEdFEpt5uvyvBF45dXjSA==" />
          </item>
    </channel>
 </rss>
